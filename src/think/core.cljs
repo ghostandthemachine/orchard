@@ -139,10 +139,10 @@
   []
   (with-layout
     [:div.row-fluid
-      [:h2 "Thinker"]]
+      [:h2.unselectable "Thinker"]]
     [:div.row-fluid
       [:div#interface]]
-    [:div.row-fluid
+    [:div.unselectable.row-fluid
       [:div#drop-spot
         "Drop file here"]]))
 
@@ -206,7 +206,7 @@
   (setup-drop-zone :#drop-spot)
 
   (.show (nw/window))
-  (.focus (nw/window))
+  ; (.focus (nw/window))
 )
 
 (jq/document-ready init)
