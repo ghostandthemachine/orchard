@@ -8,3 +8,34 @@
 #drop-spot.hover {
     border: 10px dashed #333;
 }
+
+/*
+  Don't allow text etc. to be select/highlighteable
+ */
+*.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
+}
+
+#left-text {
+  border-right-width: 2px;
+  border-right-style: solid;
+  height: 100%;
+}
+
+.CodeMirror {
+  height: 100%;
+}
+
+#right-text {
+  overflow: scroll;
+  height: 100%;
+}
