@@ -1,7 +1,7 @@
 {
   "main": "index.html",
   "name": "Thinker",
-  "version": "0.1",
+  "version": "0.1.0",
   "window": {
       "title": "Thinker",
       "width": 1200,
@@ -11,6 +11,12 @@
       "toolbar": true,
       "resizable": true,
       "icon": "thinker.png"
+  },
+  "dependencies": {
+      "pouchdb": "*"
+  },
+  "devDependencies": {
+      "nw-gyp"  :  "*",
   }
 }
 
