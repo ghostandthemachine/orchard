@@ -14,3 +14,7 @@ pom.xml
 
 /js/application.js
 /*.app
+
+.DS_Store
+/out
+/repl

@@ -6,8 +6,8 @@
       "title": "Thinker",
       "width": 1200,
       "height": 800,
-      "show":false,
-      "frame": true,
+      "show":   false,
+      "frame":  true,
       "toolbar": true,
       "resizable": true,
       "icon": "thinker.png"

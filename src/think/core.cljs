@@ -1,7 +1,10 @@
 (ns think.core
-    (:require [clojure.browser.repl :as repl]
-              [jayq.core :as jq]
-              [node-webkit.core :as nw]))
+  (:use-macros [dommy.core-compile :only [sel]])
+  (:require [clojure.browser.repl :as repl]
+            [jayq.core :as jq]
+            [node-webkit.core :as nw]
+            [dommy.core :as dom]
+            [dommy.template :as dt]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
@@ -10,10 +13,48 @@
 
 ;(def ^:private process (js/require "process"))
 
+
+(defn wrap
+  ([parent elem]
+    (conj parent elem))
+  ([parent elem & elements]
+  (reduce
+    (fn [p n] (conj p n))
+    (conj parent elem)
+    elements)))
+
+(defn with-layout
+  ([elem]
+    [:div.container-fluid
+      (wrap [:div.row-fluid] elem)])
+  ([elem & elems]
+  [:div.container-fluid {:id "main-content"}
+    (wrap [:div.row-fluid]
+      elem
+      elems)]))
+
+(defn drop-view
+  []
+  (with-layout
+    [:div.row-fluid
+      [:h2 "Thinker"]]
+    [:div.row-fluid
+      [:div#interface]]
+    [:div.row-fluid
+      [:div#drop-spot
+        "Drop file here"]]))
+
+
 (def APP "Thinker")
 
-(defn log [& args]
-  (.log js/console (apply pr-str args)))
+; (defn log [& args]
+;   (.log js/console (apply pr-str args)))
+
+(defn log [v & text]
+  (let [vs (if (string? v)
+             (apply str v text)
+             v)]
+    (. js/console (log vs))))
 
 (defn log-obj [obj]
   (.log js/console obj))
@@ -72,19 +113,11 @@
   (.preventDefault evt)
   (set! (.-dropEffect (.-dataTransfer evt)) "copy"))
 
-(defn setup-drop-zone [id]
-  (let [body (aget (.getElementsByTagName js/document "body") 0)
-        zone (.createElement js/document "div")]
-    ;(when-let [x (.getElementById js/document id)]
-    ;  (.removeChild body x))
-    (set! (.-innerHTML zone) "Drop Here")
-    (.setAttribute zone "id" id)
-    (set! (.-position (.-style zone)) "absolute")
-    (set! (.-top (.-style zone)) "0px")
-    (set! (.-right (.-style zone)) "0px")
-    (.appendChild body zone)
-    (.addEventListener zone "dragover" handle-drag-over false)
-    (.addEventListener zone "drop" handle-file-select false)))
+(defn setup-drop-zone
+  [id]
+  (let [dz (first (sel id))]
+    (dom/listen! dz :dragover handle-drag-over)
+    (dom/listen! dz :drop     handle-file-select)))
 
 (defn open-window
   [url & {:as options}]
@@ -109,15 +142,16 @@
                              {:label "Quit" :click nw/quit}
                              ])}))
 
+(defn init-view
+  []
+  (let [body (first (sel "#main-content"))
+        elem (dt/node (drop-view))]
+    (dom/replace! body elem)))
+
 (defn init []
   (let [argv (nw/argv)]
-    (log "args: " argv)
+    ; (log "args: " argv)
     (repl/connect "http://localhost:9000/repl")
-
-    ;(log "platform: " (.platform os))
-    ;(log "clipboard: " (read-clipboard))
-    ;(log-obj (nw/window))
-    ;(log "cwd: " (.cwd js/process))
     )
 
   (nw/menu [{:label "Testing..."}
@@ -136,11 +170,13 @@
   ;    (jq/css {:background "blue"})
   ;    (jq/inner "Loading…")))
 
+  (init-view)
+
   ; Write out a text file using the node.js fs namespace...
   ;(.writeFile fs "foo.txt" "This is a test...")
   (js/setTimeout (fn [] (.focus js/window)) 1000)
 
-  (setup-drop-zone "drop-spot")
+  (setup-drop-zone :#drop-spot)
 
   (.show (nw/window))
   (.focus (nw/window))

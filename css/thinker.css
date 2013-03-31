@@ -1,12 +1,8 @@
-#container {
-    font-family: monospace;
-}
-
 #drop-spot {
     border: 10px dashed #ccc;
     width: 300px;
     height: 300px;
-    margin: 20px auto;
+    /*margin: 20px auto;*/
 }
 
 #drop-spot.hover {
