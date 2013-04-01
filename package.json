@@ -1,7 +1,8 @@
 {
-  "main": "index.html",
+  "main": "http://localhost:3000/index.html",
   "name": "Thinker",
   "version": "0.1.0",
+
   "window": {
       "title": "Thinker",
       "width": 1200,
@@ -12,11 +13,15 @@
       "resizable": true,
       "icon": "thinker.png"
   },
+
+  "node-remote":  "<local>",
+
   "dependencies": {
       "pouchdb": "*"
   },
   "devDependencies": {
       "nw-gyp"  :  "*",
+      "connect" : "*"
   }
 }
 

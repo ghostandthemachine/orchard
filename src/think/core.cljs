@@ -52,6 +52,13 @@
                  (println "drop testing...")
                  (doseq [file (.-files (.-dataTransfer e))]
                    (log "File path: " (.-path file)))
+                   (js/alert "path: " (.-path file))
+                 (try
+                   (.Shell.showItemInFolder gui (.-path file))
+                   (catch js/Error e
+                     (log "Got an error: " e))
+                   (catch js/global.Error e
+                     (log "Got a global error: " e)))
                  false))
 
       ))
@@ -83,11 +90,13 @@
   (.preventDefault evt)
   (set! (.-dropEffect (.-dataTransfer evt)) "copy"))
 
+
 (defn setup-drop-zone
   [id]
   (let [dz (first (sel id))]
     (dom/listen! dz :dragover handle-drag-over)
     (dom/listen! dz :drop     handle-file-select)))
+
 
 (defn open-window
   [url & {:as options}]
@@ -112,9 +121,11 @@
                              {:label "Quit" :click nw/quit}
                              ])}))
 
+
 (defn generate-id-from-name
   [n end]
   (str (string/lower-case (string/replace n #" " "-")) end))
+
 
 (defn wrap
   ([parent elem]
@@ -124,6 +135,7 @@
     (fn [p n] (conj p n))
     (conj parent elem)
     elements)))
+
 
 (defn with-layout
   ([elem]
@@ -177,7 +189,7 @@
 (defn init []
   (let [argv (nw/argv)]
     ; (log "args: " argv)
-    (repl/connect "http://localhost:9000/repl")
+    (repl/connect "http://127.0.0.1:9000/repl")
     )
 
   (nw/menu [{:label "Testing..."}
@@ -207,6 +219,7 @@
 
   (.show (nw/window))
   ; (.focus (nw/window))
+  (log "Location: " (.-location js/window))
 )
 
 (jq/document-ready init)

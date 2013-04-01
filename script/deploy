@@ -1,0 +1,9 @@
+#!/bin/bash
+
+APP_NAME="thinker.zip"
+
+APP_SOURCES="package.json index.html js css"
+
+
+zip -r ${APP_NAME} ${APP_SOURCES}
+
