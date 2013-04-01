@@ -199,7 +199,7 @@
             {:label "Foobar"}])
 
 
-  (setup-tray)
+  ;(setup-tray)
   ;(file-drop "drop-spot" nil)
 
   ; Quit on window close
