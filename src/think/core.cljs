@@ -18,6 +18,9 @@
 (def APP "Thinker")
 
 
+(defn refresh []
+  (js/window.location.reload true))
+
 (defn log [v & text]
   (let [vs (if (string? v)
              (apply str v text)
@@ -220,7 +223,7 @@
   (.show (nw/window))
   ; (.focus (nw/window))
   (log "Location: " (.-location js/window))
-  (js/alert "asdf")
-)
+  (js/alert "and now this here"))
+
 
 (jq/document-ready init)

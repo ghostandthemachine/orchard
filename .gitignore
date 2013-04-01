@@ -12,7 +12,7 @@ pom.xml
 .lein-cljsbuild-*
 *.iml
 
-/js/application.js
+public/js/thinker.js
 /*.app
 
 .DS_Store
