@@ -10,7 +10,7 @@
 
   :cljsbuild {:builds [{:source-paths ["src"]
                         :incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
-                        :compiler {:output-to     "js/thinker.js"
+                        :compiler {:output-to     "public/js/thinker.js"
                                    :optimizations :whitespace
                                    :warnings true
                                    :pretty-print true}}]})

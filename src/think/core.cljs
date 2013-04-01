@@ -17,8 +17,6 @@
 
 (def APP "Thinker")
 
-; (defn log [& args]
-;   (.log js/console (apply pr-str args)))
 
 (defn log [v & text]
   (let [vs (if (string? v)
@@ -26,8 +24,10 @@
              v)]
     (. js/console (log vs))))
 
+
 (defn log-obj [obj]
   (.log js/console obj))
+
 
 (defn clipboard [] (.get js/Clipboard))
 (defn read-clipboard [] (.get (clipboard)))
@@ -220,6 +220,7 @@
   (.show (nw/window))
   ; (.focus (nw/window))
   (log "Location: " (.-location js/window))
+  (js/alert "asdf")
 )
 
 (jq/document-ready init)
