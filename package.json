@@ -9,7 +9,7 @@
       "height": 800,
       "show":   true,
       "frame":  true,
-      "toolbar": true,
+      "toolbar": false,
       "resizable": true,
       "icon": "thinker.png"
   },

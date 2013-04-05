@@ -15,11 +15,11 @@ def kill_node
 end
 
 def start_node
-  run_node = `node app.js &`
+  system "node app.js &"
 end
 
 def start_app
-  run = `#{node_webkit_path} #{Dir.pwd} $@`
+  system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
 task :kill_node do

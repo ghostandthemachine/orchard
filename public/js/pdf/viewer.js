@@ -28,7 +28,7 @@ var SCROLLBAR_PADDING = 40;
 var VERTICAL_PADDING = 5;
 var MIN_SCALE = 0.25;
 var MAX_SCALE = 4.0;
-var IMAGE_DIR = './images/';
+var IMAGE_DIR = '/css/images/';
 var SETTINGS_MEMORY = 20;
 var ANNOT_MIN_SIZE = 10;
 var RenderingStates = {
@@ -44,7 +44,7 @@ var FindStates = {
   FIND_PENDING: 3
 };
 
-  PDFJS.workerSrc = '../build/pdf.js';
+  PDFJS.workerSrc = 'js/pdf.js';
 
 var mozL10n = document.mozL10n || document.webL10n;
 
@@ -3223,7 +3223,7 @@ window.addEventListener('scalechange', function scalechange(evt) {
     customScaleOption.textContent = Math.round(evt.scale * 10000) / 100 + '%';
     customScaleOption.selected = true;
   }
-  
+
   document.getElementById('zoom_out').disabled = (evt.scale === MIN_SCALE);
   document.getElementById('zoom_in').disabled = (evt.scale === MAX_SCALE);
 
