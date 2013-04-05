@@ -1,5 +1,5 @@
 {
-  "main": "http://localhost:3000/index.html",
+  "main": "http://localhost:3000/pdfviewer.html",
   "name": "Thinker",
   "version": "0.1.0",
 
@@ -7,9 +7,9 @@
       "title": "Thinker",
       "width": 1200,
       "height": 800,
-      "show":   false,
+      "show":   true,
       "frame":  true,
-      "toolbar": false,
+      "toolbar": true,
       "resizable": true,
       "icon": "thinker.png"
   },
@@ -20,7 +20,7 @@
       "pouchdb": "*"
   },
   "devDependencies": {
-      "nw-gyp"  :  "*",
+      "nw-gyp"  : "*",
       "connect" : "*"
   }
 }
