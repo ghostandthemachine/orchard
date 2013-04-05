@@ -1,6 +1,6 @@
 (ns think.pdf
   (:use [think.util :only [log]])
-  (:use-macros [dommy.core-compile :only [sel]])
+  (:use-macros [dommy.macros :only [sel]])
   (:require [think.view-helpers :as view]
             [dommy.core :as dom]))
 
