@@ -13,7 +13,8 @@
 ;                  ]
 
   :cljsbuild {:builds [{:source-paths ["src"]
-                        :incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
+                        :notify-command ["growlnotify" "-m"]
+                        ;:incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
                         :compiler {:output-to     "public/js/thinker.js"
                                    :optimizations :whitespace
                                    :warnings true
