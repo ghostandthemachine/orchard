@@ -1,16 +1,14 @@
 (ns think.wiki-scrapper
-  (:use-macros [jayq.macros :only [let-ajax]]
-               [dommy.macros :only [sel]])
-  (:require [goog.net.XhrIo :as xhr]
-            [clojure.string :as string]
-            [goog.events :as events]
-            [jayq.core :as jq]
-            [goog.Uri.QueryData :as query-data]
-            [goog.structs :as structs]
-            [dommy.core :as dom]
+  (:use-macros [dommy.macros :only [sel]]
+               [redlobster.macros :only [promise]])
+  (:require [dommy.core :as dom]
             [dommy.template :as dt]
             [think.util :refer [log]]
-            [think.model :as model]))
+            [think.model :as model]
+            [think.xhr :refer [xhr xhr-promise]]
+            [redlobster.promise :as p]))
+
+(defn wiki-url [term] (str "http://en.wikipedia.org/wiki/" term))
 
 ; (defn load-page-citations
 ;   [search-term]
@@ -29,8 +27,23 @@
 ;           (log child)
 ;           (model/create-edge parent-node child
 ;             {:name (.-data (.-firstChild c))})))
-;       content)))
+;       citations)))
+
+
+(defn get-page-promise
+  [search-term]
+  (xhr-promise (wiki-url search-term) {}))
+
+
+(comment
+
+  (def page-promise (get-page-promise "directed_graph"))
+
+  (p/on-realised page-promise
+    #(println "Succeeded" %)
+    #(println "Error"))
 
 
 
 
+  )

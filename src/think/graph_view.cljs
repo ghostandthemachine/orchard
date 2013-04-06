@@ -5,7 +5,7 @@
         [think.renderers :only [circle-renderer rect-renderer image-renderer]]
         [think.canvas :only [text line rect oval clear]])
   (:require [think.dispatch :as dispatch]
-            [think.model :as model]))
+            [think.graph-model :as model]))
 
 
 (def ^{:private true} state (atom {}))
