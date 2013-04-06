@@ -11,7 +11,7 @@ pom.xml
 .idea
 .lein-cljsbuild-*
 *.iml
-
+node_modules
 public/js/thinker.js
 /*.app
 
