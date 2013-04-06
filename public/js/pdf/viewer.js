@@ -1829,8 +1829,7 @@ var PDFView = {
   }
 };
 
-var PageView = function pageView(container, id, scale,
-                                 navigateTo, defaultViewport) {
+var PageView = function pageView(container, id, scale, navigateTo, defaultViewport) {
   this.id = id;
 
   this.rotation = 0;

@@ -1,5 +1,5 @@
 {
-  "main": "http://localhost:3000/index.html",
+  "main": "http://localhost:3000/pdfviewer.html",
   "name": "Thinker",
   "version": "0.1.0",
 

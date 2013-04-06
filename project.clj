@@ -4,7 +4,7 @@
 
   :dependencies [[jayq "2.3.0"] ; just for example
                  [node-webkit-cljs "0.1.4"]
-                 [prismatic/dommy "0.1.1-SNAPSHOT"]]
+                 [prismatic/dommy "0.1.0"]]
 
   :plugins [[lein-cljsbuild "0.3.0"]]
 

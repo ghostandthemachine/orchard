@@ -22,18 +22,21 @@ def start_app
   system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
+def start_cljsbuild
+  system "lein cljsbuild auto &"
+end
+
 task :kill_node do
   kill_node
 end
 
 task :run do
-  if node_running?
-    puts "starting app"
-    start_app
-  else
+  unless node_running?
     puts "starting node server"
     start_node
-    puts "starting app"
-    start_app
   end
+  puts "starting cljsbuild"
+  start_cljsbuild
+  puts "starting app"
+  start_app
 end
