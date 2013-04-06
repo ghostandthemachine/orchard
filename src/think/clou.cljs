@@ -1,5 +1,5 @@
 (ns think.clou
-  (:use-macros [dommy.core-compile :only [sel]])
+  (:use-macros [dommy.macros :only [sel]])
   (:require [clojure.browser.repl :as repl]
             [dommy.template :as dommy-template]
             [clojure.string :as string]

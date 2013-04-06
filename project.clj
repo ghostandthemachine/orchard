@@ -1,12 +1,16 @@
-(defproject example "0.1.0-SNAPSHOT"
-  :description "node-webkit-cljs example project"
+(defproject thinker "0.1.0-SNAPSHOT"
+  :description "Organize your thoughts."
   :min-lein-version "2.0.0"
 
-  :dependencies [[jayq "2.0.0"] ; just for example
+  :dependencies [[jayq "2.0.0"]
                  [node-webkit-cljs "0.1.4"]
-                 [prismatic/dommy "0.0.2"]]
+                 [prismatic/dommy "0.1.0"]
+                 [org.clojure/data.json "0.2.1"]]
 
   :plugins [[lein-cljsbuild "0.3.0"]]
+;  :source-paths ["compiler/clojurescript/src/clj"
+;                  "compiler/clojurescript/src/cljs"
+;                  ]
 
   :cljsbuild {:builds [{:source-paths ["src"]
                         :incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
