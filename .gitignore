@@ -18,3 +18,5 @@ public/js/thinker.js
 .DS_Store
 /out
 /repl
+
+*.sublime-project
