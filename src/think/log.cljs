@@ -15,3 +15,9 @@
   "Print a JS object to the console."
   [obj]
   (.log js/console obj))
+
+; (defn log [& m]
+;   (.log js/console (apply str m)))
+
+(defn jslog [& m]
+  (log (apply js->clj m)))

@@ -21,3 +21,10 @@ public/js/thinker.js
 
 *.sublime-project
 *.sublime-workspace
+/node_modules
+
+*.db
+
+/build
+
+/public/math.pdf
