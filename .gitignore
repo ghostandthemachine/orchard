@@ -20,3 +20,4 @@ public/js/thinker.js
 /repl
 
 *.sublime-project
+*.sublime-workspace
