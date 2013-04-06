@@ -9,72 +9,27 @@
             [goog.structs :as structs]
             [dommy.core :as dom]
             [dommy.template :as dt]
-            [think.util :refer [log]]))
+            [think.util :refer [log]]
+            [think.model :as model]))
 
-(def test-route "http://en.wikipedia.org/wiki/Directed_graph")
-
-(defn ->method [m]
-  (string/upper-case (name m)))
-
-(defn parse-route [route]
-  (cond
-    (string? route) ["GET" route]
-    (vector? route) (let [[m u] route]
-                      [(->method m) u])
-    :else ["GET" route]))
-
-(defn ->data [d]
-  (let [cur (clj->js d)
-        query (query-data/createFromMap (structs/Map. cur))]
-    (str query)))
-
-(defn ->callback [callback]
-  (when callback
-    (fn [req]
-      (let [data (. req (getResponseText))]
-        (callback data)))))
-
-(defn xhr [route content callback & [opts]]
-  (let [req (new goog.net.XhrIo)
-        [method uri] (parse-route route)
-        data (->data content)
-        callback (->callback callback)]
-    ; (when callback
-    ;   (events/listen req goog.net.EventType/COMPLETE #(callback req)))
-    ; (. req (send uri method data (when opts (clj->js opts))))
-    (.send req uri callback)
-    ))
-
-
-
-(def nodes (atom nil))
-
-(defn grab-page
-  []
-  (let-ajax [html {:url test-route
+(defn load-page-citations
+  [search-term]
+  (let-ajax [html {:url (str "http://en.wikipedia.org/wiki/" search-term)
                    :dataType :text}]
-    (reset! nodes (dt/html->nodes html))))
-
-(defn get-content
-  [elements]
-  (first
-    (filter
-      #(= (.-id %) "content")
-      elements)))
-
-(defn get-ciatitions
-  [content]
-  (sel content :.citation))
-
-
-(grab-page)
-
-(def citations (get-ciatitions (get-content @nodes)))
-
-(doseq [c citations] (println (.-data (.-firstChild c))))
-
-
-  (println (sel (get-content @nodes) :.citation))
+    (let [html-nodes  (dt/html->nodes html)
+          citations (->
+                      (first
+                        (filter
+                          #(= (.-id %) "content")
+                          html-nodes))
+                      (sel :.citations))
+          parent-node (model/create-node {:name search-term :color :green})]
+      (doseq [c citations]
+        (let [child (model/create-node {:name (.-data (.-firstChild c))})]
+          (log child)
+          (model/create-edge parent-node child
+            {:name (.-data (.-firstChild c))})))
+      content)))
 
 
 

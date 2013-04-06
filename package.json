@@ -1,5 +1,5 @@
 {
-  "main": "http://localhost:3000/pdfviewer.html",
+  "main": "http://localhost:3000/index.html",
   "name": "Thinker",
   "version": "0.1.0",
 
@@ -9,7 +9,7 @@
       "height": 800,
       "show":   true,
       "frame":  true,
-      "toolbar": false,
+      "toolbar": true,
       "resizable": true,
       "icon": "thinker.png"
   },
