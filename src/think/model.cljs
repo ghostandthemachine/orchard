@@ -1,4 +1,5 @@
 (ns think.model
+  (:use [think.log :only (log log-obj)])
   (:require [think.util :as util]))
 
 

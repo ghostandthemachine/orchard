@@ -1,18 +1,16 @@
-(ns think.db)
-(comment
-;  (:use     [think.log  :only (log log-obj)])
-;  (:require [think.util :as util]))
-
+(ns think.db
+  (:use [think.log :only (log log-obj)])
+  (:require-macros [think.macros :as mac]))
 
 (def ^:private pouch   (js/require "pouchdb"))
-
+(def db* (atom nil))
 
 (defn handle-error
   [err]
   (log-obj err))
 
 
-(def db-open
+(defn db-open
   [path]
   (pouch (str "leveldb://" path) (cljs.core/clj->js {})
        (fn [err res]
@@ -20,7 +18,7 @@
            (log "ERROR: ", err)
            (do
              (reset! db* res)
-             (log "DB: ", res)))))
+             (log "DB: ", res))))))
 
 
 (defn db-get
@@ -83,27 +81,20 @@
 
 
 
-(defmacro with-instance
-  [db-name & body]
-  `(pouch ~db-name (cljs.core/clj->js {})
-          (fn [err# db#]
-            (-> db# ~@body))))
-
-
-(defn insert
+(defn db-insert
   [db doc]
-  (with-instance db
+  (mac/with-instance db
     (db-put doc)))
 
 
 (defn db-update
   [db id f]
-  (with-db db
+  (mac/with-instance db
     (db-get id f)))
 
 
 (defn db-delete
   [db id]
-  (perform-on-doc db id db-remove))
+  (db-update db id db-remove))
 
 
