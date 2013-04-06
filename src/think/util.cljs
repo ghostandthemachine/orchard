@@ -140,16 +140,16 @@
 
       (.ondrop (fn [e]
                  (.preventDefault e)
-                 (println "drop testing...")
+                 ; (println "drop testing...")
                  (doseq [file (.-files (.-dataTransfer e))]
                    (log "File path: " (.-path file))
                    (js/alert "path: " (.-path file)))
-                 (try
-                   (.Shell.showItemInFolder gui (.-path file))
-                   (catch js/Error e
-                     (log "Got an error: " e))
-                   (catch js/global.Error e
-                     (log "Got a global error: " e)))
+                 ; (try
+                 ;   (.Shell.showItemInFolder gui (.-path file))
+                 ;   (catch js/Error e
+                 ;     (log "Got an error: " e))
+                 ;   (catch js/global.Error e
+                 ;     (log "Got a global error: " e)))
                  false))))
 
 

@@ -35,6 +35,16 @@ task :run do
     puts "starting node server"
     start_node
   end
+  puts "starting app"
+  start_app
+end
+
+
+task :run_and_build do
+  unless node_running?
+    puts "starting node server"
+    start_node
+  end
   puts "starting cljsbuild"
   start_cljsbuild
   puts "starting app"

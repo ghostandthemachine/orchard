@@ -1,6 +1,8 @@
 (ns think.model
+  (:refer-clojure :exclude [create-node])
   (:use [think.log :only (log log-obj)])
-  (:require [think.util :as util]))
+  (:require [think.util :as util]
+            [think.dispatch :as dispatch]))
 
 
 (def think-db* (atom nil))
@@ -51,9 +53,6 @@
          (fn [err resp]
            (log "post err: " err)
            (log "post resp: " resp))))
-  (:refer-clojure :exclude [create-node])
-  (:use [think.util :only [uuid log jslog dissoc-in]])
-  (:require [think.dispatch :as dispatch]))
 
 ;=================================================================
 ; nodes and edges
@@ -84,7 +83,7 @@
 
 (defn create-edge
   [src target data]
-  (let [id (uuid)]
+  (let [id (util/uuid)]
     (swap! edges assoc id data)
     (swap! nodes (fn [nds] (update-in nds [src :edges] #(conj % id))))
     (swap! nodes (fn [nds] (update-in nds [target :edges] #(conj % id))))
@@ -93,7 +92,7 @@
 
 (defn create-node
   [data]
-  (let [node-id (uuid)]
+  (let [node-id (util/uuid)]
     (swap! nodes assoc node-id (merge default-node-data data))
     (when-let [new-data (node-id @nodes)]
       ;; remove the parent as it is stored in an edge
@@ -151,7 +150,7 @@
 
 
 (defn create-module [node-id data]
-  (let [module-id (uuid)]
+  (let [module-id (util/uuid)]
     (swap! modules assoc module-id (merge data {:parent node-id :module-id module-id}))
     (when-let [new-data (module-id @modules)]
       (dispatch/fire :module-created {:id module-id :data new-data}))
