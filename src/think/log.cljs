@@ -21,3 +21,7 @@
 
 (defn jslog [& m]
   (log (apply js->clj m)))
+
+(defn log-err
+  [v & [text]]
+  (log v text))
