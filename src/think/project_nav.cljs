@@ -19,7 +19,7 @@
 
 (defn add-item
   [tree text handler & [opts]]
-  (let [child-element (dt/node (create-tree-element tree-id text opts))]
+  (let [child-element (dt/node (create-tree-element tree text opts))]
     (dom/append! tree child-element)
     (dom/listen! child-element :click handler)
     child-element))

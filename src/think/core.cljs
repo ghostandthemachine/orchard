@@ -24,9 +24,6 @@
 (defn r! []
   (refresh))
 
-(defn log-obj [obj]
-  (.log js/console obj))
-
 (defn clipboard [] (.get js/Clipboard))
 (defn read-clipboard [] (.get (clipboard)))
 
@@ -124,7 +121,7 @@
             {:label "Foobar"}])
 
 
-  (setup-tray)
+  ; (setup-tray)
 
   ; Quit on window close
   (.on (nw/window) "close" nw/quit)
