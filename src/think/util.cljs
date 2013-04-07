@@ -131,72 +131,6 @@
        (cons (.item l n)
          (itemized-seq l (inc n)))))))
 
-;(extend-type js/FileList
-;   ISeqable
-;   (-seq [this] (itemized-seq this))
-;
-;   ICounted
-;   (-count [this] (.-length this))
-;
-;   IIndexed
-;   (-nth [this n]
-;        (.item this n))
-;   (-nth [this n not-found]
-;            (or (.item this n) not-found)))
-;
-
-;(extend-type js/HTMLCollection
-;   ISeqable
-;   (-seq [this] (itemized-seq this))
-;
-;   ICounted
-;   (-count [this] (.-length this))
-;
-;   IIndexed
-;   (-nth [this n]
-;        (.item this n))
-;   (-nth [this n not-found]
-;            (or (.item this n) not-found)))
-;
-
-;(extend-type js/NodeList
-;  ISeqable
-;  (-seq [this] (itemized-seq this))
-;
-;  ICounted
-;  (-count [this] (.-length this))
-;
-;  IIndexed
-;  (-nth [this n]
-;    (.item this n))
-;  (-nth [this n not-found]
-;        (or (.item this n) not-found)))
-
-(defn foo
-  ([] (foo 1))
-  ([n] (log n)))
-
-;(defn itemized-seq
-;  ([l] (itemized-seq l 0))
-;  ([l n] (log "foo")))
-;(when (< n (.-length l))
-;            (lazy-seq
-;             (cons (.item l n)
-;                (itemized-seq l (inc n)))))))
-;
-;(extend-type js/FileList
-;  ISeqable
-;  (-seq [this] (itemized-seq this))
-;
-;  ICounted
-;  (-count [this] (.-length this))
-;
-;  IIndexed
-;  (-nth [this n]
-;    (.item this n))
-;  (-nth [this n not-found]
-;        (or (.item this n) not-found)))
-;
 (defn file-drop
   [elem handler]
   (set! (.-ondragover js/window) (fn [e] (.preventDefault e) false))
@@ -288,6 +222,81 @@
 ;  (.writeFile fs path string))
 
 
-
 ;(defn on-ready [func]
 ;  (on js/document :DOMContentLoaded func))
+(defn data
+  ([elem attr]
+    (.getAttribute elem attr))
+  ([elem attr value]
+    (.setAttribute elem attr value)))
+
+; element.addEventListener('webkitAnimationEnd', function(){
+;     this.style.webkitAnimationName = '';
+; }, false);
+
+; document.getElementById('button').onclick = function(){
+;     element.style.webkitAnimationName = 'shake';
+;     // you'll probably want to preventDefault here.
+; };
+
+; (defn create-style-html
+;   [n styles]
+;   (reduce
+;     (fn [ihtml [k v]]
+;       (str ithml (str (name k) ":" v ";")))
+;     (str n " {")
+;     (into [] styles)))
+
+
+; (defn create-style-html
+;   [n styles]
+;   (clojure.string/join ";"
+;     (reduce
+;       (fn [ihtml [k v]]
+;         (conj ithml (str (name k) ":" v ";")))
+;       [(str n " {")]
+;       (into [] styles))))
+
+
+; (defn style
+;   [n & opts]
+;   (let [s (.createElement js/document "style")
+;         inner-html
+;                     ; (doseq [[k v] (partition 2 opts)]
+;                     ;   (aset s (name k) v))
+;     s))
+
+
+; (defn add-animation
+;   [elem animation-name]
+;   (dom/set-style! elem {:webkitAnimationName animation-name}))
+
+; (defn clear-animation
+;   [elem]
+;   (dom/set-style! elem {:webkitAnimationName ""}))
+
+; (defn do-animation
+;   [elem animation]
+;   (dom/set-style! elem animation)
+;   (dom/listen! elem :webkitAnimationEnd
+
+
+(defn- itemized-seq
+  ([l] (itemized-seq l 0))
+  ([l n] (when (< n (.-length l))
+            (lazy-seq
+             (cons (.item l n)
+                (itemized-seq l (inc n)))))))
+
+(extend-type js/FileList
+  ISeqable
+  (-seq [this] (itemized-seq this))
+
+  ICounted
+  (-count [this] (.-length this))
+
+  IIndexed
+  (-nth [this n]
+    (.item this n))
+  (-nth [this n not-found]
+        (or (.item this n) not-found)))
