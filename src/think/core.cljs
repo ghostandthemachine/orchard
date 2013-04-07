@@ -1,5 +1,5 @@
 (ns think.core
-  (:use [think.util :only [log]])
+  (:use [think.util :only [log log-obj]])
   (:use-macros [dommy.macros :only [sel]])
   (:require [clojure.browser.repl :as repl]
             [clojure.string :as string]
@@ -12,7 +12,8 @@
             [think.view-helpers :as view]
             [think.graph-view :as graph]))
 
-(def ^:private process (js/require "process"))
+
+(def ^:private os      (js/require "os"))
 
 (def APP "Thinker")
 
@@ -123,10 +124,11 @@
             {:label "Foobar"}])
 
 
+  (setup-tray)
+
   ; Quit on window close
   (.on (nw/window) "close" nw/quit)
   ;(test-db db)
-
 
   (init-view)
   (clou/init-code-mirror)
@@ -137,9 +139,6 @@
   (util/setup-drop-zone :#drop-spot)
 
   (.show (nw/window))
-  ; (.focus (nw/window))
+  (.focus (nw/window))
   (log "Location: " (.-location js/window)))
-
-
-(jq/document-ready init)
 

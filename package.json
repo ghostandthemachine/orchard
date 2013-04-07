@@ -1,20 +1,21 @@
 {
-  "main": "http://localhost:3000/pdfviewer.html",
-  "name": "Thinker",
-  "version": "0.1.0",
+    //"main": "public/index.html",
+    "main": "http://localhost:3000/index.html",
+    "name": "Thinker",
+    "version": "0.1.0",
 
-  "window": {
-      "title": "Thinker",
-      "width": 1200,
-      "height": 800,
-      "show":   true,
-      "frame":  true,
-      "toolbar": true,
-      "resizable": true,
-      "icon": "thinker.png"
-  },
+    "window": {
+        "title": "Thinker",
+        "width": 1200,
+        "height": 800,
+        "show":   true,
+        "frame":  true,
+        "toolbar": true,
+        "resizable": true,
+        "icon": "thinker.png"
+    },
 
-  "node-remote":  "<local>",
+    "node-remote":  "<local>",
 
   "dependencies": {
       "pouchdb": "*"
