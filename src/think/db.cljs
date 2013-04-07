@@ -122,13 +122,14 @@
 
 
 (defn sql-query
-  [db]
+  [db query]
   (let [res-promise (p/promise)]
     (.transaction db
       (fn [tx]
         (.executeSql tx query (clj->js [])
           (fn [tx results]
-            (p/realise res-promise results)))))))
+            (p/realise res-promise results)))))
+    res-promise))
 
 
 (defn local-store-set
