@@ -3,7 +3,6 @@
   (:use-macros [dommy.macros :only [sel]])
   (:require [clojure.browser.repl :as repl]
             [clojure.string :as string]
-            [jayq.core :as jq]
             [node-webkit.core :as nw]
             [dommy.core :as dom]
             [dommy.template :as dt]
@@ -138,4 +137,5 @@
   (.show (nw/window))
   (.focus (nw/window))
   (log "Location: " (.-location js/window)))
+
 
