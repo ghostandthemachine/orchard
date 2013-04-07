@@ -10,7 +10,7 @@
   :plugins [[lein-cljsbuild "0.3.0"]]
 ;  :source-paths ["compiler/clojurescript/src/clj"
 ;                  "compiler/clojurescript/src/cljs"
-;                  ]
+;                 ]
 
   :cljsbuild {:builds [{:source-paths ["src"]
                         ;:notify-command ["growlnotify" "-m"]

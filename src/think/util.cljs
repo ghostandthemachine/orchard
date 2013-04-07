@@ -1,5 +1,5 @@
 (ns think.util
-  (:use-macros [dommy.macros :only (sel)])
+  (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.log :only (log log-obj)])
   (:require [dommy.core :as dom]))
 
@@ -123,34 +123,106 @@
   (js/window.location.reload true))
 
 
+(defn itemized-seq
+  ([l] (itemized-seq l 0))
+  ([l n]
+   (when (< n (.-length l))
+     (lazy-seq
+       (cons (.item l n)
+         (itemized-seq l (inc n)))))))
+
+;(extend-type js/FileList
+;   ISeqable
+;   (-seq [this] (itemized-seq this))
+;
+;   ICounted
+;   (-count [this] (.-length this))
+;
+;   IIndexed
+;   (-nth [this n]
+;        (.item this n))
+;   (-nth [this n not-found]
+;            (or (.item this n) not-found)))
+;
+
+;(extend-type js/HTMLCollection
+;   ISeqable
+;   (-seq [this] (itemized-seq this))
+;
+;   ICounted
+;   (-count [this] (.-length this))
+;
+;   IIndexed
+;   (-nth [this n]
+;        (.item this n))
+;   (-nth [this n not-found]
+;            (or (.item this n) not-found)))
+;
+
+;(extend-type js/NodeList
+;  ISeqable
+;  (-seq [this] (itemized-seq this))
+;
+;  ICounted
+;  (-count [this] (.-length this))
+;
+;  IIndexed
+;  (-nth [this n]
+;    (.item this n))
+;  (-nth [this n not-found]
+;        (or (.item this n) not-found)))
+
+(defn foo
+  ([] (foo 1))
+  ([n] (log n)))
+
+;(defn itemized-seq
+;  ([l] (itemized-seq l 0))
+;  ([l n] (log "foo")))
+;(when (< n (.-length l))
+;            (lazy-seq
+;             (cons (.item l n)
+;                (itemized-seq l (inc n)))))))
+;
+;(extend-type js/FileList
+;  ISeqable
+;  (-seq [this] (itemized-seq this))
+;
+;  ICounted
+;  (-count [this] (.-length this))
+;
+;  IIndexed
+;  (-nth [this n]
+;    (.item this n))
+;  (-nth [this n not-found]
+;        (or (.item this n) not-found)))
+;
 (defn file-drop
   [elem handler]
   (set! (.-ondragover js/window) (fn [e] (.preventDefault e) false))
   (set! (.-ondrop js/window) (fn [e] (.preventDefault e) false))
 
-  (-> (jq/$ elem)
-      (.ondragover (fn []
-                     (this-as spot
-                              (set! (.-className spot) "hover"))
-                     false))
+  (let [elem (sel1 elem)]
+    (set! (.-ondragover elem)
+          (fn []
+            (this-as spot
+                     (set! (.-className spot) "hover"))
+            false))
 
-      (.ondragend (fn []
-                    (this-as spot
-                             (set! (.-className spot) ""))))
+    (set! (.-ondragend elem)
+          (fn []
+            (this-as spot
+                     (set! (.-className spot) ""))))
 
-      (.ondrop (fn [e]
-                 (.preventDefault e)
-                 (println "drop testing...")
-                 (doseq [file (.-files (.-dataTransfer e))]
-                   (log "File path: " (.-path file))
-                   (js/alert "path: " (.-path file)))
-                 (try
-                   (.Shell.showItemInFolder gui (.-path file))
-                   (catch js/Error e
-                     (log "Got an error: " e))
-                   (catch js/global.Error e
-                     (log "Got a global error: " e)))
-                 false))))
+    (set! (.-ondrop elem)
+          (fn [e]
+            (.preventDefault e)
+
+            (let [fl (.-files (.-dataTransfer e))
+                  file-list (map #(.item fl %) (range (.-length fl)))]
+              (when handler
+                (handler (doall file-list))))
+            false))))
 
 
 (defn handle-file-select [evt]
@@ -216,3 +288,5 @@
 ;  (.writeFile fs path string))
 ;
 ;
+;(defn on-ready [func]
+;  (on js/document :DOMContentLoaded func))

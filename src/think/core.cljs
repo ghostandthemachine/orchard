@@ -3,7 +3,6 @@
   (:use-macros [dommy.macros       :only (sel)])
   (:require [clojure.browser.repl  :as repl]
             [clojure.string        :as string]
-            [jayq.core             :as jq]
             [node-webkit.core      :as nw]
             [dommy.core            :as dom]
             [dommy.template        :as dt]
@@ -101,17 +100,10 @@
 
 
   ;(setup-tray)
-  ;(file-drop "drop-spot" nil)
-
+ 
   ; Quit on window close
   (.on (nw/window) "close" nw/quit)
   ;(test-db db)
-
-  ;(jq/append (jq/$ :#container) "Ready!")
-
-  ;(-> (jq/$ :#interface)
-  ;    (jq/css {:background "blue"})
-  ;    (jq/inner "Loading…")))
 
   (init-view)
   (clou/init-code-mirror)
@@ -121,9 +113,6 @@
   (util/setup-drop-zone :#drop-spot)
 
   (.show (nw/window))
-  ; (.focus (nw/window))
+  (.focus (nw/window))
   (log "Location: " (.-location js/window)))
-
-
-(jq/document-ready init)
 
