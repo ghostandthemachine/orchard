@@ -8,14 +8,20 @@
 
 (defn uglify-id
   [m]
-  (let [id (:id m)]
-    (-> m
-      (dissoc :id)
-      (assoc "_id" id))))
+  (if (or
+        (contains? m :id)
+        (contains? m "id"))
+    (let [id-key (if (contains? m :id)
+                  :id
+                  "id")
+          id     (id-key m)
+          less-id (dissoc m id-key)]
+      (assoc less-id "_id" id))
+    m))
 
 (defn pretify-id
   [m]
-  (let [id ("_id" m)]
+  (let [id (or ("_id" m) (:_id m))]
     (-> m
       (dissoc "_id")
       (assoc :id id))))
@@ -25,71 +31,45 @@
   (log-obj err))
 
 (defn handle-realised
-  [p err resp]
+  [p err data]
   (if err
-    (log "Error ")
-    (p/realise p resp)))
+    (log "Error " err)
+    (p/realise p (pretify-id data))))
 
 (defn db-open
   [path]
   (let [pouch-promise (p/promise)]
     (pouch (str "leveldb://" path) (cljs.core/clj->js {})
-      (fn [err resp]
+      (fn [err data]
         (when-not err
-          (p/realise pouch-promise resp))))
+          (p/realise pouch-promise data))))
     pouch-promise))
 
-
-
-(comment
-(do
-  (def db* (atom nil))
-
-
-  (def db-promise (db-open "dev.db"))
-
-  (reset! db* @db-promise)
-
-  (log "db id is: " (.id @db*))
-
-  (def put-promise
-    (db-put @db* {:id "woz" :title "boner"}))
-
-  (p/on-realised put-promise
-    #(log "err " %)
-    #(log "success " %))
-
-
-
-  (db-get @db* "woz" #(log "success " %) #(log "err " %))
-
-  (log "all docs" (.allDocs @db*))
-
-  (log "owng")
-
-  (reset! db* nil)
-)
-)
-
-
 (defn db-get
-  [db id]
+  [db id & opts]
   (let [get-promise (p/promise)]
-    (.get db (name id) (partial handle-realised get-promise))
+    (.get db (name id) (clj->js (merge {} opts)) (partial handle-realised get-promise))
     get-promise))
+
+(defn db-all-docs
+  [db & opts]
+  (let [all-docs-promise (p/promise)]
+    (.allDocs db (clj->js (merge {} opts)) (partial handle-realised all-docs-promise))
+    all-docs-promise))
 
 (defn db-put
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
-  (let [put-promise (p/promise)]
-    (.put db (clj->js doc) (partial handle-realised put-promise))
+  (let [put-promise (p/promise)
+        udoc (uglify-id doc)]
+    (.put db (clj->js udoc) (partial handle-realised put-promise))
     put-promise))
 
 (defn db-post
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
   (let [post-promise (p/promise)]
-    (.post db doc (partial handle-realised post-promise))
+    (.post db (clj->js doc) (partial handle-realised post-promise))
     post-promise))
 
 (defn db-remove
@@ -111,3 +91,27 @@
   (let [replicate-promise (p/promise)]
     (.replicate js/Pouch src tgt (clj->js {}) (partial handle-realised replicate-promise))
     replicate-promise))
+
+
+(comment
+  (def db* (atom nil))
+  (def db-promise (db-open "test.db"))
+
+  (reset! db* @db-promise)
+  (log "db id is: " (.id @db*))
+
+  (def put-promise
+    (db-put @db* {:id "1" :title "gwgwgr"}))
+
+  (log @put-promise)
+
+  (def get-promise
+    (db-get @db* "we"))
+
+  (log @get-promise)
+
+  (def all-docs-promise
+    (db-all-docs @db*))
+
+  (log @all-docs-promise)
+)
