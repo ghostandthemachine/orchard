@@ -93,6 +93,36 @@
     replicate-promise))
 
 
+(def DEFAULT-SQL-DB-SIZE (* 1024 1024))
+
+(defn sql-db
+  ([db-name] (sql-db db-name "1.0" db-name DEFAULT-SQL-DB-SIZE))
+  ([db-name version description size]
+   (js/openDatabase db-name version description size)))
+
+
+(defn sql-query
+  [db query]
+  (let [res-promise (p/promise)]
+    (.transaction db
+      (fn [tx]
+        (.executeSql tx query (clj->js [])
+          (fn [tx results]
+            (p/realise res-promise results)))))
+    res-promise))
+
+
+(defn local-store-set
+  [k v]
+  (aset js/localStorage k v)
+  v)
+
+
+(defn local-store-get
+  [k]
+  (aget js/localStorage k))
+
+
 (comment
   (def db* (atom nil))
   (def db-promise (db-open "test.db"))
