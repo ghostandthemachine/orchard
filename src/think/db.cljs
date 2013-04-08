@@ -19,12 +19,11 @@
       (assoc less-id "_id" id))
     m))
 
-(defn pretify-id
+(defn prettify-id
   [m]
-  (let [id (or ("_id" m) (:_id m))]
-    (-> m
-      (dissoc "_id")
-      (assoc :id id))))
+  (let [id (:_id m)
+        less-val (dissoc :_id)]
+    (assoc less-val :id id)))
 
 (defn handle-error
   [err]
@@ -34,7 +33,7 @@
   [p err data]
   (if err
     (log "Error " err)
-    (p/realise p (pretify-id data))))
+    (p/realise p data)))
 
 (defn db-open
   [path]
@@ -123,20 +122,25 @@
   (aget js/localStorage k))
 
 
-(comment
-  (def db* (atom nil))
-  (def db-promise (db-open "foo.db"))
+(def db* (atom nil))
 
-  (reset! db* @db-promise)
+(comment
+  (def db-promise (db-open "bar.db"))
+
+  (when-realised [db-promise]
+    (let [put-promise (db-put @db* {:id "2" :title "gwgwgr"})]
+      (when-realised [put-promise]
+        (log @put-promise))))
+
   (log "db id is: " (.id @db*))
 
   (def put-promise
-    (db-put @db* {:id "11" :title "gwgwgr"}))
+    (db-put @db* {:id "2" :title "gwgwgr"}))
 
   (log @put-promise)
 
   (def get-promise
-    (db-get @db* "we"))
+    (db-get @db* "1"))
 
   (log @get-promise)
 
