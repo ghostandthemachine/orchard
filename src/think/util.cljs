@@ -300,3 +300,31 @@
     (.item this n))
   (-nth [this n not-found]
         (or (.item this n) not-found)))
+
+
+(defn refresh []
+  (js/window.location.reload true))
+
+(defn r! []
+  (refresh))
+
+(defn clipboard [] (.get js/Clipboard))
+(defn read-clipboard [] (.get (clipboard)))
+
+(defn open-window
+  [url & {:as options}]
+  (let [o (merge {:x 0 :y 0 :width 400 :height 600} options)
+        opt-str (format "screenX=%d,screenY=%d,width=%d,height=%d"
+                        (:x o) (:y o) (:width o) (:height o))]
+    (.open js/window url nil opt-str)))
+
+
+(defn editor-window
+  []
+  (util/open-window "editor.html"))
+
+
+(defn load-js
+  [file-name]
+  (dom/append! (first (sel :header))
+    (dt/node [:script {:src file-name}])))

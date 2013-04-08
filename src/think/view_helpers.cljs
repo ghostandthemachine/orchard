@@ -5,7 +5,6 @@
   [n end]
   (str (string/lower-case (string/replace n #" " "-")) end))
 
-
 (defn wrap
   ([parent elem]
     (conj parent elem))
@@ -14,7 +13,6 @@
     (fn [p n] (conj p n))
     (conj parent elem)
     elements)))
-
 
 (defn with-layout
   ([elem]
@@ -44,3 +42,15 @@
           element])
       (for [[label content] (rest elements)]
         [:div.tab-pane {:id (generate-id-from-name label "-tab-content")} content])]])
+
+(defn drop-zone-view
+  []
+  (with-layout
+    [:div.row-fluid
+      [:h2.unselectable "Thinker"]]
+    [:div.row-fluid
+      [:div#interface]]
+    [:div.unselectable.row-fluid
+      [:div#drop-spot
+        "Drop file here"]]))
+

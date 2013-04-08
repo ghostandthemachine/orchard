@@ -125,22 +125,23 @@
 (def db* (atom nil))
 
 (comment
-  (def db-promise (db-open "bar.db"))
+  (def db-promise (db-open "db/foo.db"))
 
   (when-realised [db-promise]
-    (let [put-promise (db-put @db* {:id "2" :title "gwgwgr"})]
+    (let [put-promise (db-put @db* {:_id "4" :title "gwgwgr"})]
       (when-realised [put-promise]
-        (log @put-promise))))
+        (let [get-promise (db-get @db* "4")]
+          (log @get-promise)))))
 
   (log "db id is: " (.id @db*))
 
   (def put-promise
-    (db-put @db* {:id "2" :title "gwgwgr"}))
+    (db-put @db* {"_id" "999" :title "gwgwgr"}))
 
   (log @put-promise)
 
   (def get-promise
-    (db-get @db* "1"))
+    (db-get @db* "2"))
 
   (log @get-promise)
 
