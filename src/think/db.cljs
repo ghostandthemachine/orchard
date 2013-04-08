@@ -95,13 +95,13 @@
 
 (comment
   (def db* (atom nil))
-  (def db-promise (db-open "test.db"))
+  (def db-promise (db-open "foo.db"))
 
   (reset! db* @db-promise)
   (log "db id is: " (.id @db*))
 
   (def put-promise
-    (db-put @db* {:id "1" :title "gwgwgr"}))
+    (db-put @db* {:id "11" :title "gwgwgr"}))
 
   (log @put-promise)
 
@@ -114,4 +114,6 @@
     (db-all-docs @db*))
 
   (log @all-docs-promise)
+
+  clojure.browser.repl.connect("http://localhost:9000/repl")
 )
