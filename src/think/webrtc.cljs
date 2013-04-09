@@ -4,6 +4,23 @@
             [dommy.template :as dt]
             [think.log :refer [log load-js]]))
 
+; (def client-id* (atom 0))
+
+; (defn gen-client-id
+;   []
+;   (swap! client-id* inc))
+
+; (def peer-connections* (atom []))
+
+; (defn create-rtc-peer-connection
+;   []
+;   )
+
+
+(defn create-object-url
+  [stream]
+  (.createObjectURL js/webkitURL stream))
+
 (defn view
   []
   [:div.container
@@ -25,32 +42,32 @@
     (.webkitGetUserMedia js/navigator
       (clj->js {:video true})
       (fn [stream]
-        (let [stream-url (.createObjectURL js/webkitURL stream)]
+        (let [stream-url (.create-object-url stream)]
           (reset! stream* stream)
           (log stream-url)
           (set! (.-src video)
             stream-url)))
       #())))
 
-(defn format-trace-msg
-  [text]
-  (str (/ (.now js/performance) 1000) ": " text))
+; (defn format-trace-msg
+;   [text]
+;   (str (/ (.now js/performance) 1000) ": " text))
 
-(defn trace
-  [text]
-  (if (= (last text) \n)
-    (let [msg (apply str (butlast text))]
-      (.log js/console (format-trace-msg msg)))
-    (.log js/console (format-trace-msg text))))
+; (defn trace
+;   [text]
+;   (if (= (last text) \n)
+;     (let [msg (apply str (butlast text))]
+;       (.log js/console (format-trace-msg msg)))
+;     (.log js/console (format-trace-msg text))))
 
 
-(def local-stream* (atom nil))
+; (def local-stream* (atom nil))
 
-(defn got-stream
-  [stream]
-  (trace "Recieved local steam")
-  (js/atta)
-  )
+; (defn got-stream
+;   [stream]
+;   (trace "Recieved local steam")
+;   (js/attachMedaStream vid1 stream)
+;   )
 
 ; (defn hangup
 ;   [pc1 pc2])
@@ -88,8 +105,16 @@
 ; }
 
 
+; (defn got-remote-stream
+;   [vid ev]
+;   (set! (.-src (create-object-url (.-stream ev))))
+;   (trace "Received remote stream"))
 
-
+; (defn ice-callback
+;   [pc ev]
+;   (when (.-candidate ev)
+;     (.addIceCandidate pc (new js/RTCIceCandidate (.-candidate ev)))
+;     (trace (str "Remote ICE candidate: \n " (.-candidate (.-candidate ev))))))
 
 
 
@@ -126,8 +151,9 @@
 (defn init
   []
   (load-js "js/adapter.js")
-  (init-handler)
-  (log "Loaded webrtc ns"))
+  ; (init-handler)
+  (log "Loaded webrtc ns")
+  (repl/connect "http://127.0.0.1:9000/repl"))
 
 
 
