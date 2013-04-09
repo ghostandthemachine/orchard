@@ -1,7 +1,9 @@
 (ns think.util
   (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.log :only (log log-obj)])
-  (:require [dommy.core :as dom]))
+  (:require [redlobster.promise :as p]
+            [dommy.core :as dom]
+            [goog.i18n.DateTimeFormat :as date-format]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
@@ -64,39 +66,39 @@
   (.exit node/process status))
 
 
-;(def DATE-FORMATS
-;  (let [f goog.i18n.DateTimeFormat.Format]
-;    {:full-date       (.-FULL_DATE f)
-;     :full-datetime   (.-FULL_DATETIME f)
-;     :full-time       (.-FULL_TIME f)
-;     :long-date       (.-LONG_DATE f)
-;     :long-datetime   (.-LONG_DATETIME f)
-;     :long-time       (.-LONG_TIME f)
-;     :medium-date     (.-MEDIUM_DATE f)
-;     :medium-datetime (.-MEDIUM_DATETIME f)
-;     :medium-time     (.-MEDIUM_TIME f)
-;     :short-date      (.-SHORT_DATE f)
-;     :short-datetime  (.-SHORT_DATETIME f)
-;     :short-time      (.-SHORT_TIME f)}))
-;
-;
-;(defn format-date
-;  "Returns a date using either a named format or a custom
-;  formatting string like \"dd MMMM yyyy\"."
-;  [date fmt]
-;  (.format (goog.i18n.DateTimeFormat.
-;             (or (get DATE-FORMATS fmt) fmt))
-;           (js/Date. date)))
-;
-;
-;(defn date-str
-;  []
-;  (format-date (js/Date.) :long-date))
-;
-;
-;(defn date-json
-;  []
-;  (clj->json (date-str)))
+(def DATE-FORMATS
+  (let [f date-format/Format]
+    {:full-date       (.-FULL_DATE f)
+     :full-datetime   (.-FULL_DATETIME f)
+     :full-time       (.-FULL_TIME f)
+     :long-date       (.-LONG_DATE f)
+     :long-datetime   (.-LONG_DATETIME f)
+     :long-time       (.-LONG_TIME f)
+     :medium-date     (.-MEDIUM_DATE f)
+     :medium-datetime (.-MEDIUM_DATETIME f)
+     :medium-time     (.-MEDIUM_TIME f)
+     :short-date      (.-SHORT_DATE f)
+     :short-datetime  (.-SHORT_DATETIME f)
+     :short-time      (.-SHORT_TIME f)}))
+
+
+(defn format-date
+  "Returns a date using either a named format or a custom
+  formatting string like \"dd MMMM yyyy\"."
+  [date fmt]
+  (.format (goog.i18n.DateTimeFormat.
+             (or (get DATE-FORMATS fmt) fmt))
+           (js/Date. date)))
+
+
+(defn date-str
+  []
+  (format-date (js/Date.) :long-date))
+
+
+(defn date-json
+  []
+  (clj->json (js/Date.)))
 
 
 (defn uuid
@@ -121,6 +123,11 @@
 
 (defn refresh-window []
   (js/window.location.reload true))
+
+
+(defn promise-logger
+  [prom]
+  (p/on-realised prom log-obj log-obj))
 
 
 (defn itemized-seq
@@ -329,11 +336,14 @@
   (dom/append! (first (sel :head))
     (dt/node [:script {:src file-name}])))
 
+
 (defn on [elem ev cb]
   (.addEventListener elem (str (name ev)) cb))
 
+
 (defn off [elem ev cb]
   (.removeEventListener elem (str (name ev)) cb))
+
 
 (defn ready [func]
   (on js/document :DOMContentLoaded func))
