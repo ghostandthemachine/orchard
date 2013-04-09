@@ -26,6 +26,17 @@
 ; (pdf/setup-pdf-drop-zone :#main-pdf-viewer)
 
 
+(def ns-table
+  {"webrtc" think.webrtc/init})
+
+(defn location-init-fn
+  []
+  (let [abs      (.-href (.-location js/document))
+        relative (re-find #"/\w+.html" abs)
+        ns-str   (apply str (rest (first (clojure.string/split relative ".html"))))]
+    (ns-str ns-table)))
+
+
 (defn init
   []
 
@@ -34,17 +45,13 @@
   ; (setup-tray)
   ; Quit on window close
   (.on (nw/window) "close" nw/quit)
-
-  (init-view (webrtc/view))
-  ; (webrtc/init)
-  ; (init-view (pdf/view))          ;; not implemented, just for example
-  ; (pdf/init)
-  ; (init-view (audio/view))        ;; not implemented, just for example
-  ; (audio/init)
-  (js/setTimeout (fn [] (.focus js/window)) 1000)
   (.show (nw/window))
   (.focus (nw/window))
-  (repl/connect "http://127.0.0.1:9000/repl"))
+  (repl/connect "http://127.0.0.1:9000/repl")
+  (js/setTimeout (fn [] (.focus js/window)) 1000)
+
+  (init-view (webrtc/view))
+  (webrtc/init))
 
 
 (ready init)
