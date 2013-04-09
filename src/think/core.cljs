@@ -1,5 +1,5 @@
 (ns think.core
-  (:use [think.util :only [log log-obj refresh r! clipboard read-clipboard open-window editor-window]])
+  (:use [think.util :only [ready log log-obj refresh r! clipboard read-clipboard open-window editor-window]])
   (:use-macros [dommy.macros :only [sel]])
   (:require [clojure.browser.repl :as repl]
             [clojure.string :as string]
@@ -28,25 +28,23 @@
 
 (defn init
   []
-  (repl/connect "http://127.0.0.1:9000/repl")
 
   ; (nw/menu [{:label "Testing..."}
             ; {:label "Foobar"}])
   ; (setup-tray)
-
   ; Quit on window close
   (.on (nw/window) "close" nw/quit)
 
   (init-view (webrtc/view))
-  (webrtc/init)
+  ; (webrtc/init)
   ; (init-view (pdf/view))          ;; not implemented, just for example
   ; (pdf/init)
   ; (init-view (audio/view))        ;; not implemented, just for example
   ; (audio/init)
-
   (js/setTimeout (fn [] (.focus js/window)) 1000)
-
   (.show (nw/window))
-  (.focus (nw/window)))
+  (.focus (nw/window))
+  (repl/connect "http://127.0.0.1:9000/repl"))
 
 
+(ready init)

@@ -333,5 +333,17 @@
 
 (defn load-js
   [file-name]
-  (dom/append! (first (sel :header))
+  (dom/append! (first (sel :head))
     (dt/node [:script {:src file-name}])))
+
+
+(defn on [elem ev cb]
+  (.addEventListener elem (str (name ev)) cb))
+
+
+(defn off [elem ev cb]
+  (.removeEventListener elem (str (name ev)) cb))
+
+
+(defn ready [func]
+  (on js/document :DOMContentLoaded func))
