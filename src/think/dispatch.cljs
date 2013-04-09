@@ -1,4 +1,3 @@
-
 (ns ^{:doc "Event dispatching.
 
   Provides a way for code to react to events. Terminology:
