@@ -1,10 +1,11 @@
 (ns think.db
-  (:use [think.log :only (log log-obj log-err)])
   (:use-macros [redlobster.macros :only [promise when-realised]])
   (:require-macros [think.macros :as mac])
-  (:require [redlobster.promise :as p]))
+  (:require [redlobster.promise :as p]
+            [think.log :refer (log log-obj log-err)]))
 
 (def ^:private pouch (js/require "pouchdb"))
+
 
 (defn uglify-id
   [m]
@@ -19,29 +20,20 @@
       (assoc less-id "_id" id))
     m))
 
+
 (defn prettify-id
   [m]
   (let [id (:_id m)
         less-val (dissoc :_id)]
     (assoc less-val :id id)))
 
-(defn handle-error
-  [err]
-  (log-obj err))
-
-(defn handle-realised
-  [p err data]
-  (if err
-    (log "Error " err)
-    (p/realise p data)))
-
 
 (defn promise-callback
   [p]
   (fn [err res]
     (if err
-      (p/realise-error p err)
-      (p/realise p res))))
+      (p/realise-error p (js->clj err))
+      (p/realise p (js->clj res)))))
 
 
 ;; Document Database API
@@ -67,6 +59,14 @@
   (let [post-promise (p/promise)]
     (.post db (clj->js doc) (promise-callback post-promise))
     post-promise))
+
+
+(defn put-doc
+  "Insert a document with a given key."
+  [db k doc]
+  (let [put-promise (p/promise)]
+    (.put db (clj->js (assoc doc :_id k)) (promise-callback put-promise))
+    put-promise))
 
 
 (defn delete-doc
@@ -110,7 +110,6 @@
     (.replicate js/Pouch src tgt (clj->js {}) (promise-callback replicate-promise))
     replicate-promise))
 
-
 ;; SQL Database API
 
 (def DEFAULT-SQL-DB-SIZE (* 1024 1024))
@@ -120,7 +119,6 @@
   ([db-name] (sql-store db-name "1.0" db-name DEFAULT-SQL-DB-SIZE))
   ([db-name version description size]
    (js/openDatabase db-name version description size)))
-
 
 (defn sql-exec
   "Execute a SQL statement on the db."
@@ -147,33 +145,3 @@
   "Get a value in the persistent local storage by key."
   [k]
   (aget js/localStorage k))
-
-
-(comment
-  (def db-promise (db-open "db/foo.db"))
-
-  (when-realised [db-promise]
-    (let [put-promise (db-put @db* {:_id "4" :title "gwgwgr"})]
-      (when-realised [put-promise]
-        (let [get-promise (db-get @db* "4")]
-          (log @get-promise)))))
-
-  (log "db id is: " (.id @db*))
-
-  (def put-promise
-    (db-put @db* {"_id" "999" :title "gwgwgr"}))
-
-  (log @put-promise)
-
-  (def get-promise
-    (db-get @db* "2"))
-
-  (log @get-promise)
-
-  (def all-docs-promise
-    (db-all-docs @db*))
-
-  (log @all-docs-promise)
-
-  clojure.browser.repl.connect("http://localhost:9000/repl")
-)

@@ -1,35 +1,30 @@
 (ns think.clou
-  (:use-macros [dommy.macros :only [sel]])
+  (:use-macros [dommy.macros :only [sel sel1]])
   (:require [clojure.browser.repl :as repl]
             [dommy.template :as dommy-template]
             [clojure.string :as string]
-            [dommy.core :as dommy]))
-
-(defn clou-view
-  []
-    [:h1 "Clou"])
-
-
-(defn log [v & text]
-  (let [vs (if (string? v)
-             (apply str v text)
-             v)]
-    (. js/console (log vs))))
+            [dommy.core :as dommy]
+            [think.dispatch :as dispatch]
+            [think.view-helpers :as view]
+            [think.log :refer [log]]
+            [think.util :refer [start-repl-server]]))
 
 (def default-opts
   (clj->js
     {:mode "markdown"
      :theme "default"
      :lineNumbers true
-     :tabMode "indent"}))
+     :tabMode "indent"
+     :autofocus true
+     :linewrapping true}))
 
 (defn get-editor
   []
-  (first (sel :#text-input)))
+  (sel1 :#text-input))
 
 (defn get-preview
   []
-  (first (sel :#text-output)))
+  (sel1 :#text-output))
 
 (def update-delay 300)
 
@@ -54,14 +49,8 @@
   (js/clearTimeout update-delay)
   (js/setTimeout handle-update update-delay))
 
-(defn init-code-mirror
-  []
-  (let [text-area (get-editor)
-        editor (CodeMirror/fromTextArea text-area default-opts)]
-    (.on editor "change" (partial handle-update editor))
-    (js/setTimeout handle-update update-delay)))
+(def editor* (atom nil))
 
-(defn start-repl-server [] (repl/connect "http://localhost:9000/repl"))
 
 (defn generate-id-from-name
   [n]
@@ -89,12 +78,54 @@
         [:li
           (dropdown-element "Edit" ["New" "Open" "Save" "Close"])]]]])
 
-(defn view
+(defn editor-view
   []
-  [:div.container-fluid {:id "content"}
-    [:div.row-fluid
-      [:div.span6 {:id "left-text"}
-        [:form
-          [:textarea {:id "text-input"} "Type some markdown here"]]]
-      [:div.span6 {:id "right-text"}
-        [:div {:id "text-output"}]]]])
+  [:div.container
+    [:div.span12 {:id "edtior-container"}
+      [:br]
+      [:button.btn {:id "editor-save-btn" :style {:margin "10px"}} "Save"]
+      [:br]
+      [:form
+        [:textarea {:id "text-input"}]]]])
+
+(defn init-view
+  []
+  (dommy/replace! (sel1 :body)
+    [:body (editor-view)]))
+
+(defn update-editor-text
+  "Takes a map which should contain a :content associated text value
+  and displays it in the current editor."
+  ([page]
+    (update-editor-text @editor* page))
+  ([editor page]
+  (.setValue editor (:content page))))
+
+
+(defn get-current-editor-text
+  []
+  (.getValue @editor*))
+
+(defn init-code-mirror
+  []
+  (let [text-area (get-editor)
+        editor (CodeMirror/fromTextArea text-area default-opts)]
+      (reset! editor* editor)
+    (dommy/listen!
+      [(sel1 :body) :#editor-save-btn]
+      :click
+      #(dispatch/fire :save-editor-text (get-current-editor-text))
+      )
+    ; (.on editor "change" (partial handle-update editor))
+    ; (js/setTimeout handle-update update-delay)
+    ))
+
+(defn init
+  []
+  (start-repl-server)
+  (init-view)
+  (init-code-mirror))
+
+
+
+(dispatch/react-to #{:save-editor-text} (fn [ev & [data]] (log data)))

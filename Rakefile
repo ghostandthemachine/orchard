@@ -15,10 +15,12 @@ def kill_node
 end
 
 def start_node
+  # system "say -v Victoria \"starting node server\""
   system "node app.js &"
 end
 
 def start_app
+  # system "say -v Victoria \"initializing application\""
   system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 

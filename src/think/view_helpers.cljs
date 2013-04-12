@@ -1,5 +1,8 @@
 (ns think.view-helpers
-  (:require [clojure.string :as string]))
+  (:use-macros [dommy.macros :only [sel]])
+  (:require [clojure.string :as string]
+            [dommy.core :as dom]
+            [dommy.template :as dt]))
 
 (defn generate-id-from-name
   [n end]
@@ -54,3 +57,8 @@
       [:div#drop-spot
         "Drop file here"]]))
 
+(defn append-body
+  "Takes a dommy (Hiccup) type vector of html  elements then appends them to body."
+  [dommy-structure]
+  (let [body (first (sel "body"))]
+    (dom/append! body (dt/node dommy-structure))))
