@@ -18,39 +18,6 @@
      :autofocus true
      :linewrapping true}))
 
-(defn get-editor
-  []
-  (sel1 :#text-input))
-
-(defn get-preview
-  []
-  (sel1 :#text-output))
-
-(def update-delay 300)
-
-(defn handle-update
-  [editor instance change]
-  (when editor
-    (let [preview (get-preview)
-          editor-value (.getValue editor)
-          value (if (> (count editor-value) 0)
-                  editor-value
-                  " ")
-          rendered-elements (dommy-template/html->nodes
-                          (js/markdown.toHTML value))
-          preview-panel (dommy-template/node
-                              [:div {:id "text-output"}])]
-      (reduce #(dommy/append! %1 (dommy-template/node %2)) preview-panel rendered-elements)
-      (dommy/replace! preview
-        preview-panel))))
-
-(defn handle-timeout
-  []
-  (js/clearTimeout update-delay)
-  (js/setTimeout handle-update update-delay))
-
-(def editor* (atom nil))
-
 
 (defn generate-id-from-name
   [n]
@@ -70,23 +37,98 @@
 
 (defn navbar
   []
-  [:div.navbar
-    [:div.navbar-inner
-      [:ul.nav
-        [:li
-          (dropdown-element "File" ["New" "Open" "Save" "Close"])]
-        [:li
-          (dropdown-element "Edit" ["New" "Open" "Save" "Close"])]]]])
+  [:div.btn-group.editor-btn-nav
+    [:button.btn.btn-small.active {:id "editor-view-toggle"} "Editor"]
+    [:button.btn.btn-small        {:id "preview-toggle"} "Preview"]
+    [:button.btn.btn-small        {:id "live-preview-toggle"} "Live Preview"]
+    [:button.btn.btn-small        {:id "editor-save-btn"} "Save"]])
+
+(defn feature-nav
+  []
+  [:div.btn-group.pull-right.editor-btn-nav
+    [:button.btn.btn-small.split-pos-btn.active {:id "editor-view-toggle"} "1:1"]
+    [:button.btn.btn-small.split-pos-btn        {:id "live-preview-toggle"} "3:1"]
+    [:button.btn.btn-small.split-pos-btn        {:id "editor-save-btn"} "1:3"]])
+
+
+(defn editor-component
+  []
+  [:form
+    [:textarea {:id "text-input"}]])
 
 (defn editor-view
   []
-  [:div.container
-    [:div.span12 {:id "edtior-container"}
-      [:br]
-      [:button.btn {:id "editor-save-btn" :style {:margin "10px"}} "Save"]
-      [:br]
-      [:form
-        [:textarea {:id "text-input"}]]]])
+  [:div.container-fluid {:id "edtior-container"}
+    [:div.row-fluid.button-bar
+      (navbar)
+      (feature-nav)]
+    [:div.row-fluid {:id "editor-row"}
+      [:div.span12 {:id "editor-pane"}
+        (editor-component)]]])
+
+(defn preview-component
+  [size & content]
+  [:div {:class (str "span" size) :id "preview-pane"}
+    content])
+
+(def current-split-pos* (atom 6))
+
+(defn set-split-pos
+  [pos]
+  (reset! current-split-pos* pos))
+
+(defn current-split-pos [] @current-split-pos)
+
+(defn get-editor
+  []
+  (sel1 :#text-input))
+
+(defn get-preview
+  []
+  (sel1 :#text-output))
+
+(def update-delay 300)
+
+(defn handle-update
+  [editor preview _ _]
+  (when editor
+    (let [editor-value (.getValue editor)
+          value (if (> (count editor-value) 0)
+                  editor-value
+                  " ")
+          rendered-elements (dommy-template/html->nodes
+                          (js/markdown.toHTML value))
+          preview-panel (dommy-template/node
+                          (preview-component (- 12 (current-split-pos))))]
+      (reduce #(dommy/append! %1 (dommy-template/node %2)) preview-panel rendered-elements)
+      (dommy/replace! preview
+        preview-panel))))
+
+(defn handle-timeout
+  []
+  (js/clearTimeout update-delay)
+  (js/setTimeout handle-update update-delay))
+
+(def editor* (atom nil))
+
+
+(defn remove-preview-pane
+  []
+  (let [preview-pane (sel1 :#preview-pane)
+        editor-pane (sel1 :#editor-pane)]
+    (dommy/remove! preview-pane)
+    (aset editor-pane "className" "span12")))
+
+(defn add-preview-pane
+  [init-span-size]
+  (let [preview-pane (dommy.template/node (preview-component init-span-size))
+        editor-pane  (sel1 :#editor-pane)
+        editor-row   (sel1 :#editor-row)
+        editor       @editor*]
+    (aset editor-pane "className" (str "span" (- 12 init-span-size)))
+    (dommy/append! editor-row preview-pane)
+    (.on editor "change" (partial handle-update editor preview-pane))
+    (js/setTimeout handle-update update-delay)))
 
 (defn init-view
   []
@@ -114,17 +156,55 @@
     (dommy/listen!
       [(sel1 :body) :#editor-save-btn]
       :click
-      #(dispatch/fire :save-editor-text (get-current-editor-text))
-      )
-    ; (.on editor "change" (partial handle-update editor))
-    ; (js/setTimeout handle-update update-delay)
-    ))
+      #(dispatch/fire :save-editor-text (get-current-editor-text)))))
+
+(def editor-state* (atom {}))
+
+(defn toggle-split-btns
+  [bool]
+  (for [btn (sel :.split-pos-btn)]
+    (dommy/set-attr! btn :disabled bool)))
+
+(defn show-editor
+  []
+  (aset (sel1 :#editor-pane) "className" "span12")
+  (when (sel1 :#preview-pane)
+    (dommy/remove! (sel1 :#preview-pane)))
+  (toggle-split-btns false))
+
+(defn show-live-preview
+  []
+  (aset (sel1 :#editor-pane) "className" "span12")
+  (when (sel1 :#preview-pane)
+    (dommy/remove! (sel1 :#preview-pane)))
+  (toggle-split-btns true))
+
+(defn update-editor
+  [state]
+  (case (:current state)
+    :editor show-editor
+    :live-prview show-live-preview))
+
+(defn show-editor-handler
+  [_]
+  (log "Show editor")
+  (when-not (= (:current @editor-state*) :editor)
+    (update-editor
+      (swap! editor-state* merge
+        {:current :editor
+         :split-pos 12}))))
+
+
+(defn init-nav-btn-handlers
+  []
+  (dommy/listen! (sel1 :#editor-view-toggle) :click show-editor-handler))
 
 (defn init
   []
   (start-repl-server)
   (init-view)
-  (init-code-mirror))
+  (init-code-mirror)
+  (init-nav-btn-handlers))
 
 
 
