@@ -1,5 +1,5 @@
 (ns think.db
-  (:use-macros [redlobster.macros :only [promise when-realised]])
+  (:use-macros [redlobster.macros :only [when-realised defer-node]])
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.log :refer (log log-obj log-err)]))
@@ -38,10 +38,12 @@
 
 ;; Document Database API
 
+(def DB-STORAGE "leveldb://") ; currently the only one supported
+
 (defn open
   [path]
   (let [pouch-promise (p/promise)]
-    (pouch (str "leveldb://" path) (cljs.core/clj->js {}) (promise-callback pouch-promise))
+    (pouch (str DB-STORAGE path) (cljs.core/clj->js {}) (promise-callback pouch-promise))
     pouch-promise))
 
 
@@ -80,17 +82,17 @@
 (defn all-docs
   "Get all documents in the DB."
   [db & opts]
-  (let [all-docs-promise (p/promise)]
-    (.allDocs db (clj->js (merge {} opts)) (promise-callback all-docs-promise))
-    all-docs-promise))
+  ; (let [all-docs-promise (p/promise)]
+  ;   (.allDocs db (clj->js (merge {} opts)) (promise-callback all-docs-promise))
+  ;   all-docs-promise)
+  (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj)
+  )
 
 
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
-  (let [get-promise (p/promise)]
-    (.get db (name id) (clj->js (merge {} opts)) (promise-callback get-promise))
-    get-promise))
+  (defer-node (.get db (name id) (clj->js (merge {} opts))) js->clj))
 
 
 (defn update-doc

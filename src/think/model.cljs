@@ -1,6 +1,7 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
   (:use [think.log :only    (log log-obj)])
+  (:use-macros [redlobster.macros :only [let-realised]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
@@ -77,6 +78,38 @@
   (db/delete-doc @project-db* (clj->js proj)))
 
 
+(defn await
+  "Replaces redlobster await. The original version took & promises which didn't support a seq of promises.
+  This version expects a seq. In addition, the original one simply returned :redlobster.promise/realised,
+  this version returns a map of the original promises which await wrapped. Since all promises have been
+  realised by the time this function returns, it also maps deref and js->clj on the promise resulting in a
+  seq of resolved objects which were the initial promise targets. Bam!"
+  [promises]
+  (let [await-all (= (first promises) :all)
+        promises (if await-all (rest promises) promises)
+        p (p/promise)
+        total (count promises)
+        count (atom 0)
+        done (atom false)]
+    (doseq [subp promises]
+      (let [succ (fn [_]
+                   (when (not @done)
+                     (swap! count inc)
+                     (when (= total @count)
+                       (reset! done true)
+                       (p/realise p (map #(js->clj (deref %)) promises)))))
+            fail (if await-all succ
+                     (fn [err]
+                       (when (not @done)
+                         (reset! done true)
+                         (p/realise-error p err))))]
+        (p/on-realised subp succ fail)))
+    p))
+
+
+
 (defn all-projects
   []
-  (db/all-docs @project-db*))
+  (let-realised [docs (db/all-docs @project-db*)]
+    (await (map #(db/get-doc @project-db* (.-id %)) (.-rows @docs)))))
+

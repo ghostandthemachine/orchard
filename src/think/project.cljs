@@ -1,8 +1,8 @@
 (ns think.project
-  (:use-macros [redlobster.macros :only [promise when-realised]]
+  (:use-macros [redlobster.macros :only [when-realised let-realised]]
                [dommy.macros :only [sel sel1]]
                [think.macros :only [defview]])
-  (:require [redlobster.promise :refer [on-realised]]
+  (:require [redlobster.promise :refer [promise on-realised]]
             [think.dispatch :refer [fire react-to]]
             [think.model :as model]
             [think.log :refer [log log-obj log-err]]
@@ -51,7 +51,7 @@
   [:form
    [:input#new-project-input {:type "text" :name "project-name"}]
    [:input#new-project-btn {:type "submit" :value "+"}]]
-  :submit #(log (str "New Project: " (.-value (sel1 :#new-project-input)))))
+  :submit #(model/create-project (.-value (sel1 :#new-project-input))))
 
 
 (defview project-list-item
@@ -71,14 +71,12 @@
 (defn init
   []
   (model/init-project-db)
-  (react-to #{:db-ready}
-            (fn [_ _]
-              ; (on-realised (model/all-projects)
-              ;  (fn [res]
-              ;    (log-obj (.-rows res))
-              ;    (.appendChild (sel1 :body)
-              ;                 (project-menu (map :doc (get res "rows")))))
-              ;  log-obj)
-              )
-            ))
-  ;(dom/append! (sel1 :body) (project-menu (vals test-projects))))
+  ; (react-to #{:db-ready}
+    ; (fn [_ _]
+      ; (let-realised [projects (model/all-projects)]
+        ; (let [projects (js->clj (.-rows @projects) :keywordize-keys true)]
+           ; (log-obj @projects)
+           ; (dom/append! (sel1 :body)
+           ;               (project-menu (map :doc projects)))
+           ; )))
+)
