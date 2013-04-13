@@ -58,35 +58,25 @@
 (defn create-doc
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
-  (let [post-promise (p/promise)]
-    (.post db (clj->js doc) (promise-callback post-promise))
-    post-promise))
+  (defer-node (.post db (clj->js doc)) js->clj))
 
 
 (defn put-doc
   "Insert a document with a given key."
   [db k doc]
-  (let [put-promise (p/promise)]
-    (.put db (clj->js (assoc doc :_id k)) (promise-callback put-promise))
-    put-promise))
+  (defer-node (.put db (clj->js (assoc doc :_id k))) js->clj))
 
 
 (defn delete-doc
   "Delete a document."
   [db doc]
-  (let [remove-promise (p/promise)]
-    (.remove db (clj->js doc) (promise-callback remove-promise))
-    remove-promise))
+  (defer-node (.remove db (clj->js doc)) js->clj))
 
 
 (defn all-docs
   "Get all documents in the DB."
   [db & opts]
-  ; (let [all-docs-promise (p/promise)]
-  ;   (.allDocs db (clj->js (merge {} opts)) (promise-callback all-docs-promise))
-  ;   all-docs-promise)
-  (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj)
-  )
+  (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj))
 
 
 (defn get-doc
@@ -98,19 +88,14 @@
 (defn update-doc
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
-  (let [put-promise (p/promise)
-        udoc (uglify-id doc)]
-    (.put db (clj->js udoc) (promise-callback put-promise))
-    put-promise))
+  (defer-node (.put db (clj->js doc)) js->clj))
 
 
 (defn replicate-docs
   "Replicate source to target. Source and target can be either local DB names
   or remote locations, i.e. URLs."
   [src tgt]
-  (let [replicate-promise (p/promise)]
-    (.replicate js/Pouch src tgt (clj->js {}) (promise-callback replicate-promise))
-    replicate-promise))
+  (defer-node (.replicate js/Pouch src tgt (clj->js {})) js->clj))
 
 ;; SQL Database API
 

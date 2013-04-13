@@ -12,17 +12,8 @@
 /*
   Don't allow text etc. to be select/highlighteable
  */
-*.unselectable {
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
+.unselectable {
    -webkit-user-select: none;
-
-   /*
-     Introduced in IE 10.
-     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-   */
-   -ms-user-select: none;
-   user-select: none;
 }
 
 #left-text {
@@ -101,4 +92,15 @@ video {
 #new-project-btn {
     margin: 5px;
     margin-bottom: 1.2em;
+}
+
+.main-container {
+  padding: 5px;
+  padding-right: 15px;
+  width: 98%;
+}
+
+#project-nav {
+  /*width: 20%;*/
+  /*display: none;*/
 }

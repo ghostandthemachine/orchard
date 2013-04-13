@@ -5,7 +5,7 @@
             [node-webkit.core :as nw]
             [dommy.core :as dom]
             [dommy.template :as dt]
-            [think.clou :as clou]
+            [think.editor :as editor]
             [think.pdf :as pdf]
             [think.view-helpers :refer [with-layout with-tabs drop-zone-view wrap generate-id-from-name]]
             [think.graph-view :as graph]

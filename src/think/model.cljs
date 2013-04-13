@@ -77,6 +77,9 @@
   [proj]
   (db/delete-doc @project-db* (clj->js proj)))
 
+(defn update-project
+  [doc]
+  (db/update-doc @project-db* (clj->js doc)))
 
 (defn all-projects
   []

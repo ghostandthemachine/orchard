@@ -1,4 +1,4 @@
-(ns think.clou
+(ns think.editor
   (:use-macros [dommy.macros :only [sel sel1]])
   (:require [clojure.browser.repl :as repl]
             [dommy.template :as tpl]
@@ -8,6 +8,7 @@
             [think.dispatch :as dispatch]
             [think.view-helpers :as view]
             [think.log :refer [log]]
+            [think.project :as project]
             [think.util :refer [start-repl-server]]))
 
 (def default-opts
@@ -23,6 +24,10 @@
                           :split-pos 6}))
 
 (def editor* (atom nil))
+
+(defn side-bar
+  []
+  )
 
 (defn generate-id-from-name
   [n]
@@ -42,39 +47,54 @@
 
 (defn navbar
   []
-  [:div.btn-group.editor-btn-nav
-    [:button.btn.btn-small.view-btn-group.active {:id "editor-view-toggle"} "Editor"]
-    [:button.btn.btn-small.view-btn-group        {:id "preview-toggle"} "Preview"]
-    [:button.btn.btn-small.view-btn-group        {:id "live-preview-toggle"} "Live Preview"]
-    [:button.btn.btn-small.view-btn-group        {:id "editor-save-btn"} "Save"]])
+  [:div.btn-group.editor-btn-nav {:data-toggle "buttons-radio" :id "editor-tab"}
+    [:a.btn.btn-small.view-btn-group          {:data-toggle "tab"
+                                               :href "#present-tab"} "Present"]
+    [:a.btn.btn-small.view-btn-group.active   {:data-toggle "tab"
+                                               :href "#editor-input-tab"} "Edit"]
+    [:a.btn.btn-small.view-btn-group          {:data-toggle "tab"
+                                               :href "#live-preview-tab"} "Live Preview"]])
 
 (defn feature-nav
   []
-  [:div.btn-group.pull-right.editor-btn-nav
-    [:button.btn.btn-small.split-pos-btn.active {:id "editor-view-toggle"} "1:1"]
-    [:button.btn.btn-small.split-pos-btn        {:id "live-preview-toggle"} "3:1"]
-    [:button.btn.btn-small.split-pos-btn        {:id "editor-save-btn"} "1:3"]])
-
+  [:div.btn-group.pull-right.editor-btn-nav {:data-toggle "buttons-radio" :id "editor-tab"}
+    [:a.btn.btn-small.split-pos-btn.active {:data-toggle "tab"
+                                            :data-target "1:1"} "1:1"]
+    [:a.btn.btn-small.split-pos-btn        {:data-toggle "tab"
+                                            :data-target "3:1"} "3:1"]
+    [:a.btn.btn-small.split-pos-btn        {:data-toggle "tab"
+                                            :data-target "1:3"} "1:3"]])
 
 (defn editor-component
   []
   [:form
     [:textarea {:id "text-input"}]])
 
-(defn editor-view
-  []
-  [:div.container-fluid {:id "edtior-container"}
-    [:div.row-fluid.button-bar
-      (navbar)
-      (feature-nav)]
-    [:div.row-fluid {:id "editor-row"}
-      [:div.span12 {:id "editor-pane"}
-        (editor-component)]]])
-
 (defn preview-component
   [size & content]
   [:div {:class (str "span" size) :id "preview-pane"}
     content])
+
+(defn tab-container-view
+  []
+  [:div.tab-content
+    [:div.tab-pane {:id "present-tab"}
+      (preview-component 12)]
+    [:div.tab-pane.active {:id "editor-input-tab"}
+        (editor-component)]
+    [:div.tab-pane {:id "live-preview-tab"}]])
+
+(defn editor-view
+  []
+
+  [:div.main-container {:id "edtior-container"}
+    [:div.row-fluid.button-bar
+      (navbar)
+      [:a.btn.btn-small.view-btn-group {:id "editor-save-btn"} "Save"]
+      [:a.btn.btn-small.view-btn-group {:id "project-nav-btn"} "Projects"]
+      (feature-nav)]
+    [:div.row-fluid {:id "editor-row"}
+      (tab-container-view)]])
 
 (defn current-split-pos [] (:split-pos @editor-state*))
 
@@ -100,7 +120,6 @@
                           (js/markdown.toHTML value))
           preview-panel (tpl/node
                           (preview-component (- 12 (current-split-pos))))]
-      (log "should be rendering preview")
       (reduce #(dom/append! %1 (tpl/node %2)) preview-panel rendered-elements)
       (dom/replace! preview
         preview-panel))))
@@ -124,15 +143,14 @@
         editor-row   (sel1 :#editor-row)
         editor       @editor*]
     (aset editor-pane "className" (str "span" (- 12 init-span-size)))
-    (log "should append preview")
     (dom/append! editor-row preview-pane)
-    (.on editor "change" (partial handle-update editor preview-pane))
+    ; (.on editor "change" (partial handle-update editor preview-pane))
     (js/setTimeout handle-update update-delay)))
 
 (defn init-view
   []
   (dom/replace! (sel1 :body)
-    [:body (editor-view)]))
+    [:body.unselectable (editor-view)]))
 
 (defn update-editor-text
   "Takes a map which should contain a :content associated text value
@@ -152,92 +170,60 @@
   (let [text-area (get-editor)
         editor (CodeMirror/fromTextArea text-area default-opts)]
       (reset! editor* editor)
+    (.on editor "change" (partial handle-update editor (sel1 :#preview-pane)))
     (dom/listen!
       [(sel1 :body) :#editor-save-btn]
       :click
       #(dispatch/fire :save-editor-text (get-current-editor-text)))))
 
+(def show-project-nav* (atom false))
 
-(defn toggle-split-btns
-  [bool]
-  (for [btn (sel :.split-pos-btn)]
-    (dom/set-attr! btn :disabled bool)))
-
-(defn show-editor
+(defn toggle-project-nav!
   []
-  (aset (sel1 :#editor-pane) "className" "span12")
-  (when (sel1 :#preview-pane)
-    (dom/remove! (sel1 :#preview-pane)))
-  (toggle-split-btns false))
+  (reset! show-project-nav* (not @show-project-nav*)))
 
-(defn show-preview
+
+(defn open-nav
+  [nav main-container]
+  (log "open nav")
+  (dom/set-style! nav :display "show")
+  (dom/set-style! main-container :width "78%"))
+
+(defn close-nav
+  [nav main-container]
+  (log "close nav")
+  (dom/set-style! nav :display "none")
+  (dom/set-style! main-container :width "98%"))
+
+
+(defn project-nav-handler
+  [nav main-container]
+  (if (toggle-project-nav!)
+    (open-nav nav main-container)
+    (close-nav nav main-container)))
+
+(defn get-nav
   []
-  (dom/toggle! (sel1 :#editor-pane) false)
-  (add-preview-pane (:split-pos @editor-state*))
-  (toggle-split-btns false))
-
-(defn show-live-preview
-  []
-  (aset (sel1 :#editor-pane) "className" "span12")
-  (add-preview-pane (:split-pos @editor-state*))
-  (toggle-split-btns true))
-
-(defn update-editor
-  [state]
-  (case (:current state)
-    :editor      show-editor
-    :preview     show-preview
-    :live-preview show-live-preview
-    show-editor))
-
-(defn set-active-btn
-  [target-id]
-  (for [btn (sel :.view-btn-group)]
-    (dom/remove-class! btn "active"))
-  (dom/add-class! (sel1 target-id) "active"))
-
-(defn show-live-preview-handler
-  [_]
-  (log "Show live preview")
-    (set-active-btn :#live-preview-toggle)
-    (update-editor
-      (swap! editor-state* merge
-        {:current :live-preview})))
-
-
-(defn show-preview-handler
-  [_]
-  (log "Show Preview")
-    (set-active-btn :#preview-toggle)
-    (update-editor
-      (swap! editor-state* merge
-        {:current :preview
-         :split-pos 0})))
-
-
-(defn show-editor-handler
-  [_]
-  (log "Show editor")
-    (set-active-btn :#editor-view-toggle)
-    (update-editor
-      (swap! editor-state* merge
-        {:current :editor
-         :split-pos 12})))
-
+  (sel1 :#project-nav))
 
 (defn init-nav-btn-handlers
   []
-  (dom/listen! (sel1 :#editor-view-toggle)  :click show-editor-handler)
-  (dom/listen! (sel1 :#preview-toggle)      :click show-preview-handler)
-  (dom/listen! (sel1 :#live-preview-toggle) :click show-live-preview-handler))
+  (dom/listen! (sel1 :#project-nav-btn)  :click (partial project-nav-handler (get-nav) (sel1 :.main-container)))
+  (dom/listen! (sel1 :#present-toggle)   :click (partial handle-update (get-editor) (sel1 :#preview-pane)))
+  ; (dom/listen! (sel1 :#live-preview-toggle) :click show-live-preview-handler)
+  )
 
 (defn init
   []
   (start-repl-server)
   (init-view)
   (init-code-mirror)
+  (project/init)
   (init-nav-btn-handlers))
 
 
 
-; (dispatch/react-to #{:save-editor-text} (fn [ev & [data]] (log data)))
+(dispatch/react-to #{:load-project}
+  (fn [ev & [data]]
+    (let [editor (get-editor)]
+      (.setValue @editor* (or data "empty content")))))
