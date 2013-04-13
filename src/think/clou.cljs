@@ -1,9 +1,10 @@
 (ns think.clou
   (:use-macros [dommy.macros :only [sel sel1]])
   (:require [clojure.browser.repl :as repl]
-            [dommy.template :as dommy-template]
+            [dommy.template :as tpl]
             [clojure.string :as string]
             [dommy.core :as dommy]
+            [dommy.attrs :as attrs]
             [think.dispatch :as dispatch]
             [think.view-helpers :as view]
             [think.log :refer [log]]
@@ -18,6 +19,10 @@
      :autofocus true
      :linewrapping true}))
 
+(def editor-state* (atom {:current :editor
+                          :split-pos 6}))
+
+(def editor* (atom nil))
 
 (defn generate-id-from-name
   [n]
@@ -38,10 +43,10 @@
 (defn navbar
   []
   [:div.btn-group.editor-btn-nav
-    [:button.btn.btn-small.active {:id "editor-view-toggle"} "Editor"]
-    [:button.btn.btn-small        {:id "preview-toggle"} "Preview"]
-    [:button.btn.btn-small        {:id "live-preview-toggle"} "Live Preview"]
-    [:button.btn.btn-small        {:id "editor-save-btn"} "Save"]])
+    [:button.btn.btn-small.view-btn-group.active {:id "editor-view-toggle"} "Editor"]
+    [:button.btn.btn-small.view-btn-group        {:id "preview-toggle"} "Preview"]
+    [:button.btn.btn-small.view-btn-group        {:id "live-preview-toggle"} "Live Preview"]
+    [:button.btn.btn-small.view-btn-group        {:id "editor-save-btn"} "Save"]])
 
 (defn feature-nav
   []
@@ -71,13 +76,7 @@
   [:div {:class (str "span" size) :id "preview-pane"}
     content])
 
-(def current-split-pos* (atom 6))
-
-(defn set-split-pos
-  [pos]
-  (reset! current-split-pos* pos))
-
-(defn current-split-pos [] @current-split-pos)
+(defn current-split-pos [] (:split-pos @editor-state*))
 
 (defn get-editor
   []
@@ -90,18 +89,20 @@
 (def update-delay 300)
 
 (defn handle-update
-  [editor preview _ _]
+  [editor _ _]
   (when editor
-    (let [editor-value (.getValue editor)
+    (let [preview (sel1 :#preview-pane)
+          editor-value (.getValue editor)
           value (if (> (count editor-value) 0)
                   editor-value
                   " ")
-          rendered-elements (dommy-template/html->nodes
+          rendered-elements (tpl/html->nodes
                           (js/markdown.toHTML value))
-          preview-panel (dommy-template/node
+          preview-panel (tpl/node
                           (preview-component (- 12 (current-split-pos))))]
-      (reduce #(dommy/append! %1 (dommy-template/node %2)) preview-panel rendered-elements)
-      (dommy/replace! preview
+      (log "should be rendering preview")
+      (reduce #(dom/append! %1 (tpl/node %2)) preview-panel rendered-elements)
+      (dom/replace! preview
         preview-panel))))
 
 (defn handle-timeout
@@ -109,14 +110,11 @@
   (js/clearTimeout update-delay)
   (js/setTimeout handle-update update-delay))
 
-(def editor* (atom nil))
-
-
 (defn remove-preview-pane
   []
   (let [preview-pane (sel1 :#preview-pane)
         editor-pane (sel1 :#editor-pane)]
-    (dommy/remove! preview-pane)
+    (dom/remove! preview-pane)
     (aset editor-pane "className" "span12")))
 
 (defn add-preview-pane
@@ -126,13 +124,14 @@
         editor-row   (sel1 :#editor-row)
         editor       @editor*]
     (aset editor-pane "className" (str "span" (- 12 init-span-size)))
-    (dommy/append! editor-row preview-pane)
+    (log "should append preview")
+    (dom/append! editor-row preview-pane)
     (.on editor "change" (partial handle-update editor preview-pane))
     (js/setTimeout handle-update update-delay)))
 
 (defn init-view
   []
-  (dommy/replace! (sel1 :body)
+  (dom/replace! (sel1 :body)
     [:body (editor-view)]))
 
 (defn update-editor-text
@@ -153,51 +152,84 @@
   (let [text-area (get-editor)
         editor (CodeMirror/fromTextArea text-area default-opts)]
       (reset! editor* editor)
-    (dommy/listen!
+    (dom/listen!
       [(sel1 :body) :#editor-save-btn]
       :click
       #(dispatch/fire :save-editor-text (get-current-editor-text)))))
 
-(def editor-state* (atom {}))
 
 (defn toggle-split-btns
   [bool]
   (for [btn (sel :.split-pos-btn)]
-    (dommy/set-attr! btn :disabled bool)))
+    (dom/set-attr! btn :disabled bool)))
 
 (defn show-editor
   []
   (aset (sel1 :#editor-pane) "className" "span12")
   (when (sel1 :#preview-pane)
-    (dommy/remove! (sel1 :#preview-pane)))
+    (dom/remove! (sel1 :#preview-pane)))
+  (toggle-split-btns false))
+
+(defn show-preview
+  []
+  (dom/toggle! (sel1 :#editor-pane) false)
+  (add-preview-pane (:split-pos @editor-state*))
   (toggle-split-btns false))
 
 (defn show-live-preview
   []
   (aset (sel1 :#editor-pane) "className" "span12")
-  (when (sel1 :#preview-pane)
-    (dommy/remove! (sel1 :#preview-pane)))
+  (add-preview-pane (:split-pos @editor-state*))
   (toggle-split-btns true))
 
 (defn update-editor
   [state]
   (case (:current state)
-    :editor show-editor
-    :live-prview show-live-preview))
+    :editor      show-editor
+    :preview     show-preview
+    :live-preview show-live-preview
+    show-editor))
+
+(defn set-active-btn
+  [target-id]
+  (for [btn (sel :.view-btn-group)]
+    (dom/remove-class! btn "active"))
+  (dom/add-class! (sel1 target-id) "active"))
+
+(defn show-live-preview-handler
+  [_]
+  (log "Show live preview")
+    (set-active-btn :#live-preview-toggle)
+    (update-editor
+      (swap! editor-state* merge
+        {:current :live-preview})))
+
+
+(defn show-preview-handler
+  [_]
+  (log "Show Preview")
+    (set-active-btn :#preview-toggle)
+    (update-editor
+      (swap! editor-state* merge
+        {:current :preview
+         :split-pos 0})))
+
 
 (defn show-editor-handler
   [_]
   (log "Show editor")
-  (when-not (= (:current @editor-state*) :editor)
+    (set-active-btn :#editor-view-toggle)
     (update-editor
       (swap! editor-state* merge
         {:current :editor
-         :split-pos 12}))))
+         :split-pos 12})))
 
 
 (defn init-nav-btn-handlers
   []
-  (dommy/listen! (sel1 :#editor-view-toggle) :click show-editor-handler))
+  (dom/listen! (sel1 :#editor-view-toggle)  :click show-editor-handler)
+  (dom/listen! (sel1 :#preview-toggle)      :click show-preview-handler)
+  (dom/listen! (sel1 :#live-preview-toggle) :click show-live-preview-handler))
 
 (defn init
   []
@@ -208,4 +240,4 @@
 
 
 
-(dispatch/react-to #{:save-editor-text} (fn [ev & [data]] (log data)))
+; (dispatch/react-to #{:save-editor-text} (fn [ev & [data]] (log data)))
