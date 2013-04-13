@@ -152,7 +152,7 @@
   []
   (let [text-area (get-editor)
         editor (CodeMirror/fromTextArea text-area default-opts)]
-      (reset! editor* editor)
+    (reset! editor* editor)
     (dommy/listen!
       [(sel1 :body) :#editor-save-btn]
       :click

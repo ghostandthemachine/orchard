@@ -1,6 +1,7 @@
 APP_NAME    = "thinker"
 APP_SOURCES = "package.json public/index.html js css"
 
+VOICE_RATE = 280
 
 def node_webkit_path
     return "/Applications/node-webkit.app/Contents/MacOS/node-webkit"
@@ -20,13 +21,13 @@ end
 
 def start_node
     puts "starting node server"
-    # system "say -v Victoria \"starting node server\""
+    system "say -r #{VOICE_RATE} -v Victoria \"starting node server\""
     system "node app.js &"
 end
 
 def start_app
     puts "starting app"
-    system "say -v Victoria \"initializing application\""
+    system "say -r #{VOICE_RATE} -v Victoria \"initializing application\""
     system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
@@ -39,8 +40,12 @@ def clean
     system "lein cljsbuild clean"
 end
 
-def repl
-    system "lein trampoline cljsbuild repl-listen"
+def start_repl
+    system %{rlwrap -r -m '\"' -b "(){}[],^%3@\";:'" lein trampoline cljsbuild repl-listen}
+end
+
+task :repl do
+    start_repl
 end
 
 
@@ -57,7 +62,7 @@ task :run do
 end
 
 
-task :run_and_build do
+task :dev do
     unless node_running?
         start_node
     end
@@ -73,3 +78,7 @@ task :deploy do
 end
 
 
+#task :default do
+#    Rake.application.options.show_task_pattern = //
+#    Rake.application.display_tasks_and_comments()
+#end
