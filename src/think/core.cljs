@@ -41,8 +41,7 @@
   (.on (nw/window) "close" nw/quit)
   (.show (nw/window))
   (.focus (nw/window))
-  (start-repl-server)
-  (js/setTimeout (fn [] (.focus js/window)) 1000))
+  (start-repl-server))
 
 (ready init)
 

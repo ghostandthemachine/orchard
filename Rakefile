@@ -1,54 +1,84 @@
+APP_NAME    = "thinker"
+APP_SOURCES = "package.json public/index.html js css"
+
+VOICE_RATE = 280
+
 def node_webkit_path
-  return "/Applications/node-webkit.app/Contents/MacOS/node-webkit"
+    return "/Applications/node-webkit.app/Contents/MacOS/node-webkit"
 end
 
 def node_running?
-  return `pgrep node`.split("\n").size > 1
+    return `pgrep node`.split("\n").size > 1
 end
 
 def node_pid
-  return `pgrep node`.split("\n").first.to_i
+    return `pgrep node`.split("\n").first.to_i
 end
 
 def kill_node
-  Process.kill('INT', node_pid()) if node_running?
+    Process.kill('INT', node_pid()) if node_running?
 end
 
 def start_node
-  # system "say -v Victoria \"starting node server\""
-  system "node app.js &"
+    puts "starting node server"
+    system "say -r #{VOICE_RATE} -v Victoria \"starting node server\""
+    system "node app.js &"
 end
 
 def start_app
-  # system "say -v Victoria \"initializing application\""
-  system "#{node_webkit_path} #{Dir.pwd} $@"
+    puts "starting app"
+    system "say -r #{VOICE_RATE} -v Victoria \"initializing application\""
+    system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
 def start_cljsbuild
-  system "lein cljsbuild auto &"
+    puts "starting cljsbuild"
+    system "lein cljsbuild auto &"
 end
+
+def clean
+    system "lein cljsbuild clean"
+end
+
+def start_repl
+    system %{rlwrap -r -m '\"' -b "(){}[],^%3@\";:'" lein trampoline cljsbuild repl-listen}
+end
+
+task :repl do
+    start_repl
+end
+
 
 task :kill_node do
-  kill_node
+    kill_node
 end
+
 
 task :run do
-  unless node_running?
-    puts "starting node server"
-    start_node
-  end
-  puts "starting app"
-  start_app
+    unless node_running?
+        start_node
+    end
+    start_app
 end
 
 
-task :run_and_build do
-  unless node_running?
-    puts "starting node server"
-    start_node
-  end
-  puts "starting cljsbuild"
-  start_cljsbuild
-  puts "starting app"
-  start_app
+task :dev do
+    unless node_running?
+        start_node
+    end
+
+    clean
+    start_cljsbuild
+    start_app
 end
+
+
+task :deploy do
+    system "zip -r #{APP_NAME} #{APP_SOURCES}"
+end
+
+
+#task :default do
+#    Rake.application.options.show_task_pattern = //
+#    Rake.application.display_tasks_and_comments()
+#end

@@ -97,3 +97,8 @@ video {
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
+#new-project-btn {
+    margin: 5px;
+    margin-bottom: 1.2em;
+}

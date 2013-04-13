@@ -2,11 +2,11 @@
   (:use-macros [redlobster.macros :only [promise when-realised]]
                [dommy.macros :only [sel sel1]]
                [think.macros :only [defview]])
-  (:require [think.db :as db]
+  (:require [think.model :as model]
             [think.log :refer [log log-obj log-err]]
-            [think.util :refer [uuid ready log log-obj refresh r! clipboard read-clipboard open-window editor-window]]
+            [think.util :refer [uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
-            [dommy.template :as dt]
+            [dommy.template :as tpl]
             [dommy.core :as dom]))
 
 (defn create
@@ -43,56 +43,33 @@
         :pages pages}})
 
 
+(defview new-project-form
+  []
+  [:form
+   [:input#new-project-input {:type "text" :name "project-name"}]
+   [:input#new-project-btn {:type "submit" :value "+"}]]
+  :submit #(log (str "New Project: " (.-value (sel1 :#new-project-input)))))
 
 
+(defview project-list-item
+  [p]
+  [:li (:title p)]
+  :click #(log (str "Select project " (:title p))))
 
 
-
-(defn handler
-  [e]
-  (log "handling " e))
-
-(defview nav-element
-  [m]
-  [:li ]
-  :click handler)
-
+(defview project-menu
+  [projects]
+  [:div
+   [:h3 "Projects"]
+   (new-project-form)
+   [:ul (map project-list-item (vals projects))]])
 
 
 (defn init
   []
-  )
+  (dom/append! (sel1 :body) (project-menu (vals projects))))
 
-
-
-(defn watch-node
-  [prop handler]
-  )
-
-(defn watch
-  []
-  )
-
-; (dispatch/react-to #{:edge-selected} #(log "edge selected "))
-; (dispatch/fire :edge-removed [edge-id edge-map])
-
-; (defn watch-property-handler
-;   [property handler]
-;   (this-is this
-;     (let [oldval (aset this "oldval" (aget this property))
-;           thisewval (aset this "newval" oldval)
-;           getter (fn [] (aget this "newval"))
-;           setter (fn [val]
-;                     (log "updateing " val)
-;                     (aset this "oldval" (aget this "newval"))
-;                     (aset this "newval" (handler this property (aget this "oldval") val)))])))
-
-; (def watch-prototype
-;   {:enumerable   false
-;    :configurable true
-;    :writable     false
-;    :value nil})
-
-; (defn make-watchable
-;   []
-;   (set! (.. js/Object -prototype -watch) watch-property-handler))
+;  (on-realised (model/all-projects)
+;               #(.appendChild (sel1 :body)
+;                              (project-menu %))))
+;
