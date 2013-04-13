@@ -2,7 +2,9 @@
   (:use-macros [redlobster.macros :only [promise when-realised]]
                [dommy.macros :only [sel sel1]]
                [think.macros :only [defview]])
-  (:require [think.model :as model]
+  (:require [redlobster.promise :refer [on-realised]]
+            [think.dispatch :refer [fire react-to]]
+            [think.model :as model]
             [think.log :refer [log log-obj log-err]]
             [think.util :refer [uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
@@ -42,6 +44,7 @@
         :team "dev"}
         :pages pages}})
 
+
 (defview new-project-form
   []
   [:form
@@ -49,23 +52,32 @@
    [:input#new-project-btn {:type "submit" :value "+"}]]
   :submit #(log (str "New Project: " (.-value (sel1 :#new-project-input)))))
 
+
 (defview project-list-item
   [p]
   [:li (:title p)]
   :click #(log (str "Select project " (:title p))))
+
 
 (defview project-menu
   [projects]
   [:div
    [:h3 "Projects"]
    (new-project-form)
-   [:ul (map project-list-item (vals test-projects))]])
+   [:ul (map project-list-item projects)]])
+
 
 (defn init
   []
-  (dom/append! (sel1 :body) (project-menu (vals test-projects))))
+  (model/init-project-db)
+  (react-to #{:db-ready}
+            (fn [_ _]
+              (on-realised (model/all-projects)
+               (fn [res]
+                 (log-obj (.-rows res))
+                 (.appendChild (sel1 :body)
+                              (project-menu (map :doc (get res "rows")))))
+               log-obj))))
+  ;(dom/append! (sel1 :body) (project-menu (vals test-projects))))
 
-;  (on-realised (model/all-projects)
-;               #(.appendChild (sel1 :body)
-;                              (project-menu %))))
-;
+
