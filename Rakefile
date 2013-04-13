@@ -1,3 +1,7 @@
+APP_NAME    = "thinker"
+APP_SOURCES = "package.json public/index.html js css"
+
+
 def node_webkit_path
   return "/Applications/node-webkit.app/Contents/MacOS/node-webkit"
 end
@@ -19,23 +23,34 @@ def start_node
 end
 
 def start_app
+  puts "starting app"
   system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
 def start_cljsbuild
+  puts "starting cljsbuild"
   system "lein cljsbuild auto &"
 end
+
+def clean
+   system "lein cljsbuild clean"
+end
+
+def repl
+    system "lein trampoline cljsbuild repl-listen"
+end
+
 
 task :kill_node do
   kill_node
 end
+
 
 task :run do
   unless node_running?
     puts "starting node server"
     start_node
   end
-  puts "starting app"
   start_app
 end
 
@@ -45,8 +60,15 @@ task :run_and_build do
     puts "starting node server"
     start_node
   end
-  puts "starting cljsbuild"
+
+  clean
   start_cljsbuild
-  puts "starting app"
   start_app
 end
+
+
+task :deploy
+  system "zip -r #{APP_NAME} #{APP_SOURCES}"
+end
+
+
