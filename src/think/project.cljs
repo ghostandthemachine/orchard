@@ -2,7 +2,9 @@
   (:use-macros [redlobster.macros :only [promise when-realised]]
                [dommy.macros :only [sel sel1]]
                [think.macros :only [defview]])
-  (:require [think.model :as model]
+  (:require [redlobster.promise :refer [on-realised]]
+            [think.dispatch :refer [fire react-to]]
+            [think.model :as model]
             [think.log :refer [log log-obj log-err]]
             [think.util :refer [uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
@@ -43,6 +45,7 @@
         :team "dev"}
         :pages pages}})
 
+
 (defview new-project-form
   []
   [:form
@@ -68,7 +71,14 @@
 (defn init
   []
   (model/init-project-db)
-  (p/on-realised (model/all-projects)
-              #(dom/append! (sel1 :body)
-                             (project-menu %))
-              #(log "error")))
+  (react-to #{:db-ready}
+            (fn [_ _]
+              ; (on-realised (model/all-projects)
+              ;  (fn [res]
+              ;    (log-obj (.-rows res))
+              ;    (.appendChild (sel1 :body)
+              ;                 (project-menu (map :doc (get res "rows")))))
+              ;  log-obj)
+              )
+            ))
+  ;(dom/append! (sel1 :body) (project-menu (vals test-projects))))

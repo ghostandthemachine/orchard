@@ -33,7 +33,7 @@
   (fn [err res]
     (if err
       (p/realise-error p (js->clj err))
-      (p/realise p (js->clj res)))))
+      (p/realise p res))))
 
 
 ;; Document Database API

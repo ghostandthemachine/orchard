@@ -309,18 +309,18 @@
   (-nth [this n not-found]
         (or (.item this n) not-found)))
 
-(extend-type js/Array
-  ISeqable
-  (-seq [this] (itemized-seq this))
+; (extend-type js/Array
+;   ISeqable
+;   (-seq [this] (itemized-seq this))
 
-  ICounted
-  (-count [this] (.-length this))
+;   ICounted
+;   (-count [this] (.-length this))
 
-  IIndexed
-  (-nth [this n]
-    (.item this n))
-  (-nth [this n not-found]
-        (or (.item this n) not-found)))
+;   IIndexed
+;   (-nth [this n]
+;     (.item this n))
+;   (-nth [this n not-found]
+;         (or (.item this n) not-found)))
 
 (defn refresh []
   (js/window.location.reload true))

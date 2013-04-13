@@ -2,7 +2,7 @@
   (:refer-clojure  :exclude [create-node])
   (:use [think.log :only    (log log-obj)])
   (:require [think.util         :as util]
-            [think.dispatch     :as dispatch]
+            [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
             [redlobster.promise :as p]))
 
@@ -58,7 +58,9 @@
   (when (nil? @project-db*)
     (let [db-promise (db/open DB-PATH)]
       (p/on-realised db-promise
-        #(reset! project-db* %)
+        #(do
+           (reset! project-db* %)
+           (fire :db-ready @project-db*))
         (fn [err]
           (log "Error opening DB!")
           (log-obj err))))))
@@ -78,8 +80,3 @@
 (defn all-projects
   []
   (db/all-docs @project-db*))
-
-
-
-
-

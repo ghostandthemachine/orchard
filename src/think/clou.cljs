@@ -3,7 +3,7 @@
   (:require [clojure.browser.repl :as repl]
             [dommy.template :as tpl]
             [clojure.string :as string]
-            [dommy.core :as dommy]
+            [dommy.core :as dom]
             [dommy.attrs :as attrs]
             [think.dispatch :as dispatch]
             [think.view-helpers :as view]
