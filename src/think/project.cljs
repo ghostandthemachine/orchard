@@ -7,7 +7,8 @@
             [think.util :refer [uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
             [dommy.template :as tpl]
-            [dommy.core :as dom]))
+            [dommy.core :as dom]
+            [redlobster.promise :as p]))
 
 (defn create
   [elem-type]
@@ -25,7 +26,7 @@
     {:id 5
      :content "msfmnrsyjrjt;kjgnw;gn ngkjwngwk;jgnw"}})
 
-(def test-projects
+(def projects
   {1 {:title "Something Interesting"
       :meta
        {:author "Joe Smith"
@@ -49,23 +50,25 @@
    [:input#new-project-btn {:type "submit" :value "+"}]]
   :submit #(log (str "New Project: " (.-value (sel1 :#new-project-input)))))
 
+
 (defview project-list-item
   [p]
   [:li (:title p)]
   :click #(log (str "Select project " (:title p))))
+
 
 (defview project-menu
   [projects]
   [:div
    [:h3 "Projects"]
    (new-project-form)
-   [:ul (map project-list-item (vals test-projects))]])
+   [:ul (map project-list-item projects)]])
+
 
 (defn init
   []
-  (dom/append! (sel1 :body) (project-menu (vals test-projects))))
-
-;  (on-realised (model/all-projects)
-;               #(.appendChild (sel1 :body)
-;                              (project-menu %))))
-;
+  (model/init-project-db)
+  (p/on-realised (model/all-projects)
+              #(dom/append! (sel1 :body)
+                             (project-menu %))
+              #(log "error")))

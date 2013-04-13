@@ -21,13 +21,13 @@ end
 
 def start_node
     puts "starting node server"
-    system "say -r #{VOICE_RATE} -v Victoria \"starting node server\""
+    # system "say -r #{VOICE_RATE} -v Victoria \"starting node server\""
     system "node app.js &"
 end
 
 def start_app
     puts "starting app"
-    system "say -r #{VOICE_RATE} -v Victoria \"initializing application\""
+    # system "say -r #{VOICE_RATE} -v Victoria \"initializing application\""
     system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
