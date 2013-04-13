@@ -2,6 +2,7 @@
   (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.log :only (log log-obj)])
   (:require [redlobster.promise :as p]
+            [clojure.browser.repl :as repl]
             [dommy.core :as dom]
             [goog.i18n.DateTimeFormat :as date-format]))
 
@@ -347,3 +348,7 @@
 
 (defn ready [func]
   (on js/document :DOMContentLoaded func))
+
+(defn start-repl-server
+  []
+  (repl/connect "http://127.0.0.1:9000/repl"))

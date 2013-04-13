@@ -62,7 +62,7 @@
   the reactor."
   ([event-id]
      (fire event-id nil))
-  ([event-id & [event-data]]
+  ([event-id event-data]
      (let [matching-reactions (filter (fn [[{event-pred :event-pred} run-count]]
                                         (event-pred event-id))
                                       @reactions)]

@@ -2,7 +2,8 @@
   (:use-macros [dommy.macros :only [sel]])
   (:require [dommy.core :as dom]
             [dommy.template :as dt]
-            [think.log :refer [log load-js]]))
+            [think.log :refer [log load-js]]
+            [think.view-helpers :as view]))
 
 ; (def client-id* (atom 0))
 
@@ -37,12 +38,13 @@
 
 (defn start-video
   [btn e]
+  (log "start video")
   (let [video (first (sel :#vid))]
     (set! (.-disabled btn) true)
     (.webkitGetUserMedia js/navigator
       (clj->js {:video true})
       (fn [stream]
-        (let [stream-url (.create-object-url stream)]
+        (let [stream-url (create-object-url stream)]
           (reset! stream* stream)
           (log stream-url)
           (set! (.-src video)
@@ -122,27 +124,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 (defn init-handler
   []
   (let [btn (first (sel :#start-btn))]
@@ -150,10 +131,8 @@
 
 (defn init
   []
-  (load-js "js/adapter.js")
-  ; (init-handler)
-  (log "Loaded webrtc ns")
-  (repl/connect "http://127.0.0.1:9000/repl"))
+  (view/append-body (view))
+  (init-handler))
 
 
 
