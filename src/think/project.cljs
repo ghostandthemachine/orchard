@@ -56,8 +56,8 @@
 
 (defview project-list-item
   [p]
-  [:li (:title p)]
-  :click #(log (str "Select project " (:title p))))
+  [:li (.-title p)]
+  :click #(log (str "Select project " (.-title p))))
 
 
 (defview project-menu
@@ -71,12 +71,9 @@
 (defn init
   []
   (model/init-project-db)
-  ; (react-to #{:db-ready}
-    ; (fn [_ _]
-      ; (let-realised [projects (model/all-projects)]
-        ; (let [projects (js->clj (.-rows @projects) :keywordize-keys true)]
-           ; (log-obj @projects)
-           ; (dom/append! (sel1 :body)
-           ;               (project-menu (map :doc projects)))
-           ; )))
-)
+  (react-to #{:db-ready}
+    (fn [_ _]
+      (let [all-projects-promise (model/all-projects)]
+        (when-realised [all-projects-promise]
+           (dom/append! (sel1 :body)
+                         (project-menu @all-projects-promise)))))))

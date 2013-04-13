@@ -385,7 +385,7 @@
                      (swap! count inc)
                      (when (= total @count)
                        (reset! done true)
-                       (p/realise p (map #(js->clj (deref %)) promises)))))
+                       (p/realise p (doall (map #(js->clj (deref %)) promises))))))
             fail (if await-all succ
                      (fn [err]
                        (when (not @done)
