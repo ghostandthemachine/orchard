@@ -38,10 +38,12 @@
 
 ;; Document Database API
 
+(def DB-STORAGE "leveldb://") ; currently the only one supported
+
 (defn open
   [path]
   (let [pouch-promise (p/promise)]
-    (pouch (str "leveldb://" path) (cljs.core/clj->js {}) (promise-callback pouch-promise))
+    (pouch (str DB-STORAGE path) (cljs.core/clj->js {}) (promise-callback pouch-promise))
     pouch-promise))
 
 

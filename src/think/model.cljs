@@ -1,6 +1,7 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
   (:use [think.log :only    (log log-obj)])
+  (:use-macros [redlobster.macros :only [let-realised]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
@@ -79,5 +80,6 @@
 
 (defn all-projects
   []
-  (db/all-docs @project-db*))
+  (let-realised [docs (db/all-docs @project-db*)]
+    (p/await (doall (map #(db/get-doc @project-db* (:id %)) (:rows @docs))))))
 
