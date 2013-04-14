@@ -86,3 +86,7 @@
   (let-realised [docs (db/all-docs @project-db*)]
     (util/await (map #(db/get-doc @project-db* (.-id %)) (.-rows @docs)))))
 
+(defn docs-of-type
+  [doc-type]
+  (db/query {:select "*" :where (str "type=" doc-type)}))
+

@@ -91,6 +91,14 @@
   (defer-node (.put db (clj->js doc)) js->clj))
 
 
+(defn doc-view
+  "Generate a DB view using a mapping function, and optionally a reduce function."
+  [map-fn & [reduce-fn]]
+  (if reduce-fn
+    (defer-node (.query db {:map map-fn} {:reduce reduce-fn}) js->clj)
+    (defer-node (.query db {:map map-fn}) js->clj)))
+
+
 (defn replicate-docs
   "Replicate source to target. Source and target can be either local DB names
   or remote locations, i.e. URLs."
