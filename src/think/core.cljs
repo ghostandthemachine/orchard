@@ -10,6 +10,7 @@
             [think.view-helpers :refer [with-layout with-tabs drop-zone-view wrap generate-id-from-name]]
             [think.graph-view :as graph]
             [think.webrtc :as webrtc]
+            [think.app :as app]
             [think.project :as project]))
 
 

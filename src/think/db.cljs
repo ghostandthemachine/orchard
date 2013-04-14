@@ -9,14 +9,9 @@
 
 (defn uglify-id
   [m]
-  (if (or
-        (contains? m :id)
-        (contains? m "id"))
-    (let [id-key (if (contains? m :id)
-                  :id
-                  "id")
-          id     (id-key m)
-          less-id (dissoc m id-key)]
+  (if (contains? m :id)
+    (let [id (:id m)
+          less-id (dissoc m :id)]
       (assoc less-id "_id" id))
     m))
 
@@ -58,19 +53,19 @@
 (defn create-doc
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
-  (defer-node (.post db (clj->js doc)) js->clj))
+  (defer-node (.post db (clj->js (uglify-id doc))) js->clj))
 
 
 (defn put-doc
   "Insert a document with a given key."
-  [db k doc]
-  (defer-node (.put db (clj->js (assoc doc :_id k))) js->clj))
+  [db doc]
+  (defer-node (.put db (clj->js (uglify-id doc))) js->clj))
 
 
 (defn delete-doc
   "Delete a document."
   [db doc]
-  (defer-node (.remove db (clj->js doc)) js->clj))
+  (defer-node (.remove db (clj->js (uglify-id doc))) js->clj))
 
 
 (defn all-docs
@@ -82,13 +77,13 @@
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
-  (defer-node (.get db (name id) (clj->js (merge {} opts))) js->clj))
+  (defer-node (.get db (name id) (clj->js (merge {} opts))) (comp prettify-id js->clj)))
 
 
 (defn update-doc
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
-  (defer-node (.put db (clj->js doc)) js->clj))
+  (defer-node (.put db (clj->js (uglify-id doc))) js->clj))
 
 
 (defn doc-view

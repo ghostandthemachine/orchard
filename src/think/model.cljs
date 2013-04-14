@@ -1,92 +1,80 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
   (:use [think.log :only    (log log-obj)])
-  (:use-macros [redlobster.macros :only [let-realised]])
+  (:use-macros [redlobster.macros :only [let-realised defer-node]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
             [redlobster.promise :as p]))
 
 
-(defn project
-  [title]
-  {:type ::project
-   :id      (util/uuid)
-   :title   title
-   :updated (util/date-json)})
+(def DB-PATH "data/document.db")
+
+(def document-db* (atom nil))
+
+(defmulti doc->record     :type
+  "Convert a pouchDB document to a think document record.")
+
+(defmulti create-document :type
+  "Create a document given a map.")
 
 
-(defn wiki-page
-  [project]
-  {:type ::wiki-page
-   :id      (util/uuid)
-   :project project
-   :modules []
-   :updated (util/date-json)
-   })
-
-
-(defn wiki-module
+(defn init-document-db
   []
-  {:type ::wiki-module
-   :id    (util/uuid)
-   :title "title"
-   :body  "body"
-   })
-
-
-(defn document
-  []
-  {:type ::document
-   :id          (util/uuid)
-   :title       "title"
-   :authors     []
-   :path        "path"
-   :filename    "filename.pdf"
-   :notes       []
-   :annotations []
-   :cites       []
-   :tags        []
-   })
-
-
-(def DB-PATH "data/project.db")
-
-(def project-db* (atom nil))
-
-(defn init-project-db
-  []
-  (when (nil? @project-db*)
+  (when (nil? @document-db*)
     (let [db-promise (db/open DB-PATH)]
       (p/on-realised db-promise
         #(do
-           (reset! project-db* %)
-           (fire :db-ready @project-db*))
+           (reset! document-db* %)
+           (fire :db-ready @document-db*))
         (fn [err]
           (log "Error opening DB!")
           (log-obj err))))))
 
 
-(defn create-project
-  [title]
-  (let [proj (project title)]
-    (db/create-doc @project-db* (clj->js proj))))
+(defrecord PDFDocument
+  [type id rev created-at updated-at
+   title authors path filename notes annotations cites tags])
+
+(defrecord WikiDocument
+  [id rev created-at updated-at
+   template title modules])
+
+(defmethod doc->record ::wiki-document
+  [{:keys [id rev template title modules created-at updated-at]}]
+  (WikiDocument. id rev template title modules created-at updated-at))
+
+(defmethod create-document ::wiki-document
+  [{:keys [template title]}]
+  (WikiDocument. (util/uuid) nil template title [nil] (util/date-json) (util/date-json)))
 
 
-(defn delete-project
-  [proj]
-  (db/delete-doc @project-db* (clj->js proj)))
+(defrecord SingleColumnTemplate [modules])
 
-(defn update-project
+(defrecord MarkdownModule [text])
+(defrecord FormModule     [fields])
+(defrecord QueryModule    [query template])
+
+
+(defn delete-document
   [doc]
-  (db/update-doc @project-db* (clj->js doc)))
+  (db/delete-doc @document-db* (clj->js doc)))
 
-(defn all-projects
-  []
-  (let-realised [docs (db/all-docs @project-db*)]
-    (util/await (map #(db/get-doc @project-db* (.-id %)) (.-rows @docs)))))
+(defn save-document
+  [doc]
+  (db/update-doc @document-db* (clj->js doc)))
 
 (defn docs-of-type
   [doc-type]
   (db/query {:select "*" :where (str "type=" doc-type)}))
 
+(defn get-document
+  [id]
+  (defer-node
+    (db/get-doc @document-db* id)
+    doc->record))
+
+(defn all-documents
+  []
+  (let-realised [docs (db/all-docs @document-db*)]
+    (util/await (map #(db/get-doc @document-db* (.-id %)) (.-rows @docs)))))
