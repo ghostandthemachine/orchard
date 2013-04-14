@@ -49,9 +49,10 @@
   (react-to #{:db-ready}
     (fn [_ _]
       (let [all-projects-promise (model/all-projects)]
-        (when-realised [all-projects-promise]
-           (dom/prepend! (sel1 :body)
-                         (project-menu @all-projects-promise)))))))
+        ; (when-realised [all-projects-promise]
+        ;    (dom/prepend! (sel1 :body)
+        ;                  (project-menu @all-projects-promise)))
+        ))))
 
 (react-to #{:save-editor-text}
   (fn [ev & [data]]
