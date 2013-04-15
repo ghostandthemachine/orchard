@@ -1,4 +1,5 @@
 (ns think.util
+  (:refer-clojure :exclude [js->clj])
   (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.log :only (log log-obj)])
   (:require [redlobster.promise :as p]
@@ -11,6 +12,40 @@
 (def ^:private fs      (js/require "fs"))
 (def ^:private url     (js/require "url"))
 
+
+(defn js->clj
+  "Recursively transforms JavaScript arrays into ClojureScript
+  vectors, and JavaScript objects into ClojureScript maps.  With
+  option ':keywordize-keys true' will convert object fields from
+  strings to keywords."
+  [x & options]
+  (let [{:keys [keywordize-keys force-obj]} options
+        keyfn (if keywordize-keys keyword str)
+        f (fn thisfn [x]
+            (cond
+              (seq? x) (doall (map thisfn x))
+              (coll? x) (into (empty x) (map thisfn x))
+              (goog.isArray x) (vec (map thisfn x))
+              (or force-obj
+                  (identical? (type x) js/Object)
+                  (identical? (type x) js/global.Object)) (into {} (for [k (js-keys x)]
+                                                                     [(keyfn k)
+                                                                      (thisfn (aget x k))]))
+              :else x))]
+    (f x)))
+
+(defn clj->js
+  "Recursively transforms ClojureScript maps into Javascript objects,
+   other ClojureScript colls into JavaScript arrays, and ClojureScript
+   keywords into JavaScript strings."
+  [x]
+  (cond
+    (string? x) x
+    (keyword? x) (name x)
+    (map? x) (.-strobj (reduce (fn [m [k v]]
+               (assoc m (clj->js k) (clj->js v))) {} x))
+    (coll? x) (apply array (map clj->js x))
+    :else x))
 
 (defn clj->json
   "Returns a JSON string from ClojureScript data."
@@ -367,7 +402,7 @@
 
 
 (defn await
-  "Takes a seq of promises and produces a promise that will resolve to a seq of 
+  "Takes a seq of promises and produces a promise that will resolve to a seq of
   their values."
   [promises]
   (let [await-all (= (first promises) :all)

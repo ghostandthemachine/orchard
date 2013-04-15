@@ -114,7 +114,7 @@ video {
 
 .module {
     border-color: transparent;
-    border-width: 2px;
+    border-width: 1px;
     border-style: solid;
     border-radius: 5px;
     padding: 10px;
@@ -128,11 +128,11 @@ video {
 
 .module .module-btn {
     position: relative;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 10px;
     background-color: transparent;
-    right: -5px;
+    right: -6px;
     float:right;
     top: -7px;
     -webkit-transition:.4s;
@@ -141,11 +141,10 @@ video {
 
 .module:hover .module-btn {
     background-color: blue;
+    -webkit-transition:.1s;
+    transition: background-color .1s ease-out;
 }
 
 .module .module-btn:hover {
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(150,150,150);
-    top: -8px;
+    background-color: rgb(100, 200, 255);
 }
