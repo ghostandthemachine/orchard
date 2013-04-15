@@ -7,20 +7,22 @@
 (def ^:private pouch (js/require "pouchdb"))
 
 
-(defn uglify-id
-  [m]
-  (if (contains? m :id)
-    (let [id (:id m)
-          less-id (dissoc m :id)]
-      (assoc less-id "_id" id))
-    m))
+(defn uglify
+  [x]
+  (let [id  (:id x)
+        rev (:rev x)
+        x   (dissoc x :id :rev)]
+      (if (and id rev)
+        (assoc x "_id" id "_rev" rev)
+        (assoc x "_id" id))))
 
 
-(defn prettify-id
-  [m]
-  (let [id (:_id m)
-        less-val (dissoc :_id)]
-    (assoc less-val :id id)))
+(defn prettify
+  [x]
+  (let [id  (:_id x)
+        rev (:_rev x)
+        x   (dissoc x :_id :_rev)]
+    (assoc x :id id :rev rev)))
 
 
 (defn promise-callback
@@ -53,19 +55,19 @@
 (defn create-doc
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
-  (defer-node (.post db (clj->js (uglify-id doc))) js->clj))
+  (defer-node (.post db (clj->js (uglify doc))) js->clj))
 
 
 (defn put-doc
   "Insert a document with a given key."
   [db doc]
-  (defer-node (.put db (clj->js (uglify-id doc))) js->clj))
+  (defer-node (.put db (clj->js (uglify doc))) js->clj))
 
 
 (defn delete-doc
   "Delete a document."
   [db doc]
-  (defer-node (.remove db (clj->js (uglify-id doc))) js->clj))
+  (defer-node (.remove db (clj->js (uglify doc))) js->clj))
 
 
 (defn all-docs
@@ -74,22 +76,46 @@
   (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj))
 
 
+(defn -doc->clj
+  [doc]
+  (let [f (fn thisfn [x]
+            (cond
+              (nil? x)  nil
+              (seq? x)  (doall (map thisfn x))
+              (coll? x) (into (empty x) (map thisfn x))
+              (goog.isArray x) (vec (map thisfn x))
+              (or (identical? (type x) js/Object)
+                 (and (not (nil? (.-hasOwnProperty x)))
+                      (.hasOwnProperty x "_id")
+                      (.hasOwnProperty x "_rev")))
+              (into {} (for [k (js-keys x)]
+                         (if (= k "type")
+                           [(keyword k) (keyword (aget x k))]
+                           [(keyword k)
+                            (thisfn (aget x k))])))
+              :else x))]
+    (f doc)))
+
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
-  (defer-node (.get db id (clj->js {})) js->clj))
-
-;  (let [id-str (if (keyword? id)
-;                 (name id)
-;                 (str id))]
-;  (defer-node (.get db id-str (clj->js (merge {} opts)))
-;    (comp prettify-id js->clj))))
+  (let [id-str (if (keyword? id)
+                 (name id)
+                 (str id))]
+    (defer-node (.get db id-str (clj->js (merge {} opts)))
+      (fn [doc]
+        (log "HERE!")
+        (log-obj doc)
+        (if (and (= (.-status doc) 404)
+                 (= (.-error doc) "not_found"))
+          nil
+          (-> -doc->clj prettify))))))
 
 
 (defn update-doc
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
-  (defer-node (.put db (clj->js (uglify-id doc))) js->clj))
+  (defer-node (.put db (clj->js (uglify doc))) js->clj))
 
 
 (defn view

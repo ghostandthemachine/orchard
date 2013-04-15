@@ -14,7 +14,8 @@
 (defn log-obj
   "Print a JS object to the console."
   [obj]
-  (.log js/console obj))
+  (.log js/console obj)
+  obj)
 
 ; (defn log [& m]
 ;   (.log js/console (apply str m)))

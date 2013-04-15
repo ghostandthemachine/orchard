@@ -35,11 +35,14 @@
 
 (defn delete-document
   [doc]
-  (db/delete-doc @document-db* (clj->js doc)))
+  (db/delete-doc @document-db* doc))
 
 (defn save-document
   [doc]
-  (db/update-doc @document-db* doc))
+  (db/update-doc @document-db*
+                 (if (and (contains? doc :rev) (nil? (:rev doc)))
+                   (dissoc doc :rev)
+                   doc)))
 
 (defn docs-of-type
   [doc-type]
@@ -47,19 +50,9 @@
 
 (defn get-document
   [id]
-  (defer-node
-    (.get @document-db* (if (keyword? id)
-                  (name id)
-                  (str id))
-          (clj->js {}))
-    (fn [doc]
-      (log-obj doc)
-      (doc->record doc))))
-
-;          (fn [err res] (log-obj res))))
-;    (db/get-doc @document-db*
-;                )
-;    doc->record))
+  (let-realised [doc (db/get-doc @document-db* id)]
+    (if @doc
+      (doc->record @doc))))
 
 (defn all-documents
   []
@@ -78,7 +71,8 @@
   [{:keys [type id rev template title modules created-at updated-at]}]
   (let [mods (map doc->record modules)
         tpl  (doc->record {:type (keyword template) :modules mods})]
-    (WikiDocument. type id rev tpl title mods created-at updated-at)))
+    (map->WikiDocument. {:type type :id id :rev rev :created-at created-at :updated-at updated-at
+                         :template tpl :title title :modules mods})))
 
 (defmethod create-document :wiki-document
   [{:keys [type id template title]}]
