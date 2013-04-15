@@ -45,9 +45,28 @@
                                                  :href "#present-tab"} "Home"]]
     [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
+(defview module-btn
+  [this]
+  [:div.module-btn]
+  :click (fn [e] (fire :toggle-module this)))
+
+(defview module
+  [this content & handlers]
+  [:div.module
+    (module-btn this)
+    [:div.module-content]
+      content]
+  handlers)
+
+
 (defn test-module
   []
-  [:div.module {:id "test-module"}])
+  (module
+    nil
+    [:div.container
+      [:h2 "Look at me, a module!"]]))
+
+(react-to #{:toggle-module} (fn [ev data] (js/alert "you clicked a module editor toggle")))
 
 (defn home-view
   [& content]
@@ -58,7 +77,7 @@
   []
   [:div.main-container {:id "app-container"}
     (main-toolbar)
-    (home-view)])
+    (home-view (test-module))])
 
 
 (defn render-doc

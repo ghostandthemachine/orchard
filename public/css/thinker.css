@@ -116,33 +116,36 @@ video {
     border-color: transparent;
     border-width: 2px;
     border-style: solid;
-    border-top-width: 18px;
     border-radius: 5px;
     padding: 10px;
-
-
-    transition: border-color .2s ease-out;
+    -webkit-transition:.4s;
+    transition: border-color .4s ease-out;
 }
 
 .module:hover {
     border-color: rgb(225, 225, 225);
 }
 
-.module .module-tray-btn {
+.module .module-btn {
     position: relative;
     width: 12px;
     height: 12px;
     border-radius: 10px;
     background-color: transparent;
-    right: 0px;
+    right: -5px;
     float:right;
-/*
-    text-align:centeO
-*/
-    transition: background-color .2s ease-out;
+    top: -7px;
+    -webkit-transition:.4s;
+    transition: background-color .4s ease-out;
 }
 
-.module:hover .module-tray .module-tray-btn {
-    background-color: red;
+.module:hover .module-btn {
+    background-color: blue;
 }
 
+.module .module-btn:hover {
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(150,150,150);
+    top: -8px;
+}
