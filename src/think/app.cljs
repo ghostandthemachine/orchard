@@ -45,6 +45,9 @@
                                                  :href "#present-tab"} "Home"]]
     [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
+(defn test-module
+  []
+  [:div.module {:id "test-module"}])
 
 (defn home-view
   [& content]
@@ -85,4 +88,5 @@
   (init-view)
   (react-to #{:document-db-ready}
     (fn [_ _]
-      (init-content))))
+      (init-content)))
+  )

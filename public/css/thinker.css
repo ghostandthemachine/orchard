@@ -104,3 +104,45 @@ video {
   /*width: 20%;*/
   /*display: none;*/
 }
+
+@-webkit-keyframes greenPulse {
+    from { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
+    50% { background-color: #91bd09; -webkit-box-shadow: 0 0 6px #91bd09; }
+    to { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
+}
+
+
+.module {
+    border-color: transparent;
+    border-width: 2px;
+    border-style: solid;
+    border-top-width: 18px;
+    border-radius: 5px;
+    padding: 10px;
+
+
+    transition: border-color .2s ease-out;
+}
+
+.module:hover {
+    border-color: rgb(225, 225, 225);
+}
+
+.module .module-tray-btn {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+    background-color: transparent;
+    right: 0px;
+    float:right;
+/*
+    text-align:centeO
+*/
+    transition: background-color .2s ease-out;
+}
+
+.module:hover .module-tray .module-tray-btn {
+    background-color: red;
+}
+
