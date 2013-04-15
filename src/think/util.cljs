@@ -367,11 +367,8 @@
 
 
 (defn await
-  "Replaces redlobster await. The original version took & promises which didn't support a seq of promises.
-  This version expects a seq. In addition, the original one simply returned :redlobster.promise/realised,
-  this version returns a map of the original promises which await wrapped. Since all promises have been
-  realised by the time this function returns, it also maps deref and js->clj on the promise resulting in a
-  seq of resolved objects which were the initial promise targets. Bam!"
+  "Takes a seq of promises and produces a promise that will resolve to a seq of 
+  their values."
   [promises]
   (let [await-all (= (first promises) :all)
         promises (if await-all (rest promises) promises)
@@ -393,3 +390,4 @@
                          (p/realise-error p err))))]
         (p/on-realised subp succ fail)))
     p))
+

@@ -12,34 +12,30 @@
             [dommy.core :as dom]
             [redlobster.promise :as p]))
 
+
 (defprotocol IRenderable
   (render [this] "Returns a hiccup form."))
 
-(extend-type think.model.MarkdownModule
+(extend-type model/MarkdownModule
   IRenderable
   (render [this]
     [:div.module.markdown-module
       (tpl/html->nodes (js/markdown.toHTML (:text this)))]))
 
 
-(extend-type think.model.SingleColumnTemplate
+(extend-type model/SingleColumnTemplate
   IRenderable
   (render [this]
     [:div.template.single-column-template
       (map render (:modules this))]))
 
 
-(extend-type think.model.Document
+(extend-type model/WikiDocument
   IRenderable
   (render [this]
     [:div.document
       (render (:template this))]))
 
-
-(defn get-document
-  [kw]
-  (let [doc-name (name kw)]
-    ))
 
 (defn main-toolbar
   []
@@ -78,18 +74,15 @@
 
 (defn init-view
   []
-  (dom/replace
-    (sel1 :body)
-    [:body
-      (app-view)]))
+  (dom/replace!  (sel1 :body)
+    [:body (app-view)]))
+
 
 (defn init
   []
   (start-repl-server)
+  (model/init-document-db)
   (init-view)
-  (init-content))
-
-
-
-
-
+  (react-to #{:document-db-ready}
+    (fn [_ _]
+      (init-content))))

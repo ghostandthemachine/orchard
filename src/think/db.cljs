@@ -77,7 +77,13 @@
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
-  (defer-node (.get db (name id) (clj->js (merge {} opts))) (comp prettify-id js->clj)))
+  (defer-node (.get db id (clj->js {})) js->clj))
+
+;  (let [id-str (if (keyword? id)
+;                 (name id)
+;                 (str id))]
+;  (defer-node (.get db id-str (clj->js (merge {} opts)))
+;    (comp prettify-id js->clj))))
 
 
 (defn update-doc
@@ -86,13 +92,17 @@
   (defer-node (.put db (clj->js (uglify-id doc))) js->clj))
 
 
-(defn doc-view
+(defn view
   "Generate a DB view using a mapping function, and optionally a reduce function."
-  [map-fn & [reduce-fn]]
+  [db map-fn & [reduce-fn]]
   (if reduce-fn
     (defer-node (.query db {:map map-fn} {:reduce reduce-fn}) js->clj)
     (defer-node (.query db {:map map-fn}) js->clj)))
 
+(defn query
+  "Run a GQL query against the database."
+  [db q]
+  (defer-node (.gql db (clj->js q))))
 
 (defn replicate-docs
   "Replicate source to target. Source and target can be either local DB names
