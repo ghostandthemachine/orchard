@@ -13,28 +13,24 @@
             [redlobster.promise :as p]))
 
 
-(defprotocol IRenderable
-  (render [this] "Returns a hiccup form."))
+(extend-protocol tpl/PElement
+  js/Array
+  (-elem [this] (seq this))
 
-(extend-type model/MarkdownModule
-  IRenderable
-  (render [this]
+  model/MarkdownModule
+  (-elem [this]
     [:div.module.markdown-module
-      (tpl/html->nodes (js/markdown.toHTML (:text this)))]))
+      (second (js/markdown.toHTMLTree (:text this)))])
 
-
-(extend-type model/SingleColumnTemplate
-  IRenderable
-  (render [this]
+  model/SingleColumnTemplate
+  (-elem [this]
     [:div.template.single-column-template
-      (map render (:modules this))]))
+      (map tpl/-elem (:modules this))])
 
-
-(extend-type model/WikiDocument
-  IRenderable
-  (render [this]
+  model/WikiDocument
+  (-elem [this]
     [:div.document
-      (render (:template this))]))
+      (tpl/-elem (:template this))]))
 
 
 (defn main-toolbar
@@ -67,6 +63,7 @@
 
 (react-to #{:toggle-module} (fn [ev data] (js/alert "you clicked a module editor toggle")))
 
+
 (defn home-view
   [& content]
   [:div.row-fluid {:id "home-row"} content])
@@ -81,10 +78,8 @@
 
 (defn render-doc
   [tgt doc]
-  (let [target (sel1 tgt)]
-    (dom/replace! target
-      (home-view
-        (render doc)))))
+  (dom/replace! (sel1 tgt)
+    (tpl/node (home-view doc))))
 
 
 (defn init-content
@@ -95,9 +90,10 @@
 
 (defn init-view
   []
-  (dom/replace!  (sel1 :body)
+  (dom/replace! (sel1 :body)
     [:body (app-view)]))
 
+(def home* (atom nil))
 
 (defn init
   []
@@ -106,5 +102,5 @@
   (init-view)
   (react-to #{:document-db-ready}
     (fn [_ _]
-      (init-content)))
-  )
+      (let-realised [doc (model/get-document :home)]
+        (reset! home* @doc)))))

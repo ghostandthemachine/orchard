@@ -15,10 +15,12 @@
 (defmulti doc->record     :type)
 (defmulti create-document :type)
 
+
 (defmethod doc->record :default
   [doc]
-  (log "doc->record - Missing or unsupported doc type:")
-  (log-obj doc))
+  (log "doc->record - Missing or unsupported doc type:" (str (type (:type doc))))
+  (log-obj (clj->js doc)))
+
 
 (defn init-document-db
   []
@@ -37,6 +39,7 @@
   [doc]
   (db/delete-doc @document-db* doc))
 
+
 (defn save-document
   [doc]
   (db/update-doc @document-db*
@@ -44,51 +47,71 @@
                    (dissoc doc :rev)
                    doc)))
 
+
 (defn docs-of-type
   [doc-type]
   (db/query @document-db* {:select "*" :where (str "type=" doc-type)}))
 
+
 (defn get-document
   [id]
-  (let-realised [doc (db/get-doc @document-db* id)]
-    (if @doc
-      (doc->record @doc))))
+  (let [res-promise (p/promise)
+        doc-promise (db/get-doc @document-db* id)]
+    (p/on-realised doc-promise
+      (fn success [doc]
+        (log-obj doc)
+        (p/realise res-promise (doc->record doc)))
+
+      (fn error [err]
+        (if (and (= (.-status err) 404)
+                 (= (.-error err) "not_found"))
+          (p/realise res-promise nil)
+          (p/realise-error res-promise err))))
+    res-promise))
+
 
 (defn all-documents
   []
   (let-realised [docs (db/all-docs @document-db*)]
     (util/await (map #(db/get-doc @document-db* (.-id %)) (.-rows @docs)))))
 
+
 (defrecord PDFDocument
   [type id rev created-at updated-at
    title authors path filename notes annotations cites tags])
 
+
 (defrecord WikiDocument
   [type id rev created-at updated-at
-   template title modules])
+   title
+   template])
+
 
 (defmethod doc->record :wiki-document
-  [{:keys [type id rev template title modules created-at updated-at]}]
-  (let [mods (map doc->record modules)
-        tpl  (doc->record {:type (keyword template) :modules mods})]
+  [{:keys [type id rev template title created-at updated-at]}]
+  (let [tpl (doc->record template)]
     (map->WikiDocument. {:type type :id id :rev rev :created-at created-at :updated-at updated-at
-                         :template tpl :title title :modules mods})))
+                         :title title
+                         :template tpl})))
+
 
 (defmethod create-document :wiki-document
-  [{:keys [type id template title]}]
+  [{:keys [type id template title modules]}]
   (map->WikiDocument {:id         (or id (util/uuid))
                       :type       type
-                      :template   template
-                      :title      title
-                      :modules    []
                       :created-at (util/date-json)
-                      :updated-at (util/date-json)}))
+                      :updated-at (util/date-json)
+                      :title      title
+                      :template   template}))
 
-(defrecord SingleColumnTemplate [modules])
+
+(defrecord SingleColumnTemplate [type modules])
 
 (defmethod doc->record :single-column-template
   [{:keys [modules]}]
-  (SingleColumnTemplate. modules))
+  (map->SingleColumnTemplate.
+    {:type :single-column-template
+     :modules (map doc->record modules)}))
 
 
 (defrecord MarkdownModule [text])
@@ -100,5 +123,22 @@
 
 (defrecord FormModule     [fields])
 (defrecord QueryModule    [query template])
+
+
+(defn home-doc
+  []
+  (create-document
+    {:type :wiki-document
+     :id :home
+     :template {:type :single-column-template
+                :modules [{:type ::markdown-module
+                           :text "## Test markdown\n\n  * foo\n  * bar\n"}]}
+     :title "thinker app"}))
+
+(defn reset-home
+  []
+  (let-realised [doc (get-document :home)]
+    (delete-document @doc))
+  (save-document (home-doc)))
 
 
