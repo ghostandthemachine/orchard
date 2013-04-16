@@ -118,11 +118,19 @@
      :modules (map doc->record modules)}))
 
 
+(defn markdown->node
+  [text]
+  )
+
 (defrecord MarkdownModule [text]
   dommy.template/PElement
   (-elem [this]
-    [:div.module.markdown-module
-     (js/markdown.toHTML (:text this))]))
+    (reduce
+      conj
+      [:div.module.markdown-module]
+      (tpl/html->nodes
+        (js/markdown.toHTML text)))))
+
 
 (defmethod doc->record :markdown-module
   [module]
