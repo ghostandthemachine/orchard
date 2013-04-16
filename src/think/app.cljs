@@ -71,25 +71,14 @@
 (defn app-view
   []
   [:div.main-container {:id "app-container"}
-    (main-toolbar)])
-
-
-(defn home-view
-  [& content]
-  [:div.row-fluid {:id "home-row"}
-    (tpl/node [content])])
+    (main-toolbar)
+   [:div.row-fluid {:id "app-content"}]])
 
 
 (defn render-doc
   [tgt doc]
-  (dom/replace! (sel1 tgt)
-    (tpl/node (home-view doc))))
-
-
-(defn init-content
-  []
-  (let-realised [doc (model/get-document :home)]
-    (render-doc :#home-row @doc)))
+  (dom/append! (sel1 tgt)
+    (tpl/node doc)))
 
 
 (defn init-view
@@ -97,7 +86,6 @@
   (dom/replace! (sel1 :body)
     [:body (app-view)]))
 
-(def home* (atom nil))
 
 (defn init
   []
@@ -107,5 +95,6 @@
   (react-to #{:document-db-ready}
     (fn [_ _]
       (let-realised [doc (model/get-document :home)]
-        (reset! home* @doc)
-        (render-doc :#home-row @home*)))))
+        (log "rendering home ...")
+        (log-obj @doc)
+        (render-doc :#app-content @doc)))))

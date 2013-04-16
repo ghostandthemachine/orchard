@@ -108,8 +108,8 @@
 (defrecord SingleColumnTemplate [type modules]
   dommy.template/PElement
   (-elem [this]
-    [:div.template.single-column-template
-      (map tpl/-elem (:modules this))]))
+    (vec (concat [:div.template.single-column-template]
+                 (map tpl/-elem (:modules this))))))
 
 (defmethod doc->record :single-column-template
   [{:keys [modules]}]
@@ -122,7 +122,7 @@
   dommy.template/PElement
   (-elem [this]
     [:div.module.markdown-module
-      (second (js/markdown.toHTMLTree (:text this)))]))
+     (js/markdown.toHTML (:text this))]))
 
 (defmethod doc->record :markdown-module
   [module]

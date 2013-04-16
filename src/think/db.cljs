@@ -86,9 +86,6 @@
                  (str id))]
     (defer-node (.get db id-str (clj->js (merge {} opts)))
       (fn [doc]
-        (log "get-doc")
-        ; (log (prettify doc))
-        (log (js->clj doc))
         (prettify (js->clj doc :keywordize-keys :forc-obj))))))
 
 
