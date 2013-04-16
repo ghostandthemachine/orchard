@@ -84,7 +84,7 @@
   dommy.template/PElement
   (-elem [this]
     [:div.document
-      (-elem (:template this))]))
+      (tpl/-elem (:template this))]))
 
 
 (defmethod doc->record :wiki-document
