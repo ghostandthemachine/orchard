@@ -1,5 +1,5 @@
 (ns think.util
-  (:refer-clojure :exclude [js->clj])
+  (:refer-clojure :exclude [js->clj clj->js])
   (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.log :only (log log-obj)])
   (:require [redlobster.promise :as p]

@@ -20,10 +20,11 @@
 
 (defn prettify
   [x]
-  (let [id  (:_id x)
-        rev (:_rev x)
-        x   (dissoc x :_id :_rev)]
-    (assoc x :id id :rev rev)))
+  (let [id   (:_id x)
+        rev  (:_rev x)
+        type (:type x)
+        x    (dissoc x :_id :_rev :type)]
+    (assoc x :id id :rev rev :type type)))
 
 
 (defn promise-callback
@@ -77,30 +78,6 @@
   (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj))
 
 
-(defn -doc->clj
-  "Recursively transforms JavaScript arrays into ClojureScript
-  vectors, and JavaScript objects into ClojureScript maps.  With
-  option ':keywordize-keys true' will convert object fields from
-  strings to keywords."
-  [x & options]
-  (let [{:keys [keywordize-keys force-obj]} options
-        keyfn (if keywordize-keys keyword str)
-        f (fn thisfn [x]
-            (cond
-              (seq? x)         (doall (map thisfn x))
-              (coll? x)        (into (empty x) (map thisfn x))
-              (goog.isArray x) (vec (map thisfn x))
-              (or force-obj
-                  (identical? (type x) js/Object)
-                  (identical? (type x) js/global.Object))
-              (into {} (for [k (js-keys x)]
-                         (if (= k "type")
-                           [(keyfn k) (keyword (aget x k))]
-                           [(keyfn k) (thisfn (aget x k))])))
-              :else x))]
-    (f x)))
-
-
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
@@ -109,9 +86,10 @@
                  (str id))]
     (defer-node (.get db id-str (clj->js (merge {} opts)))
       (fn [doc]
-        (log "get-doc: ")
-        (log-obj doc)
-        (prettify (-doc->clj doc :keywordize-keys :forc-obj))))))
+        (log "get-doc")
+        ; (log (prettify doc))
+        (log (js->clj doc))
+        (prettify (js->clj doc :keywordize-keys :forc-obj))))))
 
 
 (defn update-doc

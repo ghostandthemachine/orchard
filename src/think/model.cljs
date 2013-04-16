@@ -12,15 +12,14 @@
 
 (def document-db* (atom nil))
 
-(defmulti doc->record     :type)
-(defmulti create-document :type)
+(defmulti doc->record     #(keyword (:type %)))
+(defmulti create-document #(keyword (:type %)))
 
 
 (defmethod doc->record :default
   [doc]
-  (log "doc->record - Missing or unsupported doc type:" (str (type (:type doc))))
-  (log-obj (clj->js doc)))
-
+  (log "doc->record - Missing or unsupported doc type: " doc)
+  (log-obj doc))
 
 (defn init-document-db
   []
@@ -59,7 +58,6 @@
         doc-promise (db/get-doc @document-db* id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        (log-obj doc)
         (p/realise res-promise (doc->record doc)))
 
       (fn error [err]

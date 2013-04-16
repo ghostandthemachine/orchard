@@ -69,14 +69,14 @@
 
 (defn home-view
   [& content]
+  (log "replace home view with " content)
   [:div.row-fluid {:id "home-row"} content])
 
 
 (defn app-view
   []
   [:div.main-container {:id "app-container"}
-    (main-toolbar)
-    (home-view (test-module))])
+    (main-toolbar)])
 
 
 (defn render-doc
@@ -106,4 +106,5 @@
   (react-to #{:document-db-ready}
     (fn [_ _]
       (let-realised [doc (model/get-document :home)]
-        (reset! home* @doc)))))
+        (reset! home* @doc)
+        (render-doc :#home-row @home*)))))
