@@ -81,12 +81,7 @@
    title authors path filename notes annotations cites tags])
 
 (defrecord WikiDocument
-  [type id rev created-at updated-at title template]
-  dommy.template/PElement
-  (-elem [this]
-    [:div.document
-      (tpl/-elem (:template this))]))
-
+  [type id rev created-at updated-at title template])
 
 (defmethod doc->record :wiki-document
   [{:keys [type id rev template title created-at updated-at]}]
@@ -105,26 +100,7 @@
                       :title      title
                       :template   template}))
 
-
-(defview module-btn
-  [this]
-  [:div.module-btn]
-  :click (fn [e] (fire :toggle-module this)))
-
-(defview module
-  [this & handlers]
-  [:div.module
-    (module-btn this)
-    [:div.module-content]
-      this]
-  handlers)
-
-
-(defrecord SingleColumnTemplate [type modules]
-  dommy.template/PElement
-  (-elem [this]
-    (vec (concat [:div.template.single-column-template]
-                 (map tpl/-elem (:modules this))))))
+(defrecord SingleColumnTemplate [type modules])
 
 (defmethod doc->record :single-column-template
   [{:keys [modules]}]
@@ -132,28 +108,10 @@
     {:type :single-column-template
      :modules (map doc->record modules)}))
 
-
-(defn markdown->node
-  [text]
-  )
-
-(defrecord MarkdownModule [text]
-  dommy.template/PElement
-  (-elem [this]
-    (reduce
-      conj
-      [:div.module.markdown-module]
-      (tpl/html->nodes
-        (js/markdown.toHTML text)))))
+(defrecord MarkdownModule [text])
 
 
-(defrecord HTMLModule [text]
-  dommy.template/PElement
-  (-elem [this]
-    (module
-      (reduce conj
-        [:div.html-module]
-        (tpl/html->nodes text)))))
+(defrecord HTMLModule [text])
 
 
 (defmethod doc->record :markdown-module

@@ -15,26 +15,7 @@
 
 (extend-protocol tpl/PElement
   js/Array
-  (-elem [this] (seq this))
-
-  ; model/MarkdownModule
-  ; (-elem [this]
-  ;   (tpl/-elem
-  ;     [:div.module.markdown-module
-  ;      (second (js/markdown.toHTMLTree (:text this)))]))
-
-  ; model/SingleColumnTemplate
-  ; (-elem [this]
-  ;   (tpl/-elem
-  ;     [:div.template.single-column-template
-  ;      (map tpl/-elem (:modules this))]))
-
-  ; model/WikiDocument
-  ; (-elem [this]
-  ;   (tpl/-elem
-  ;     [:div.document
-  ;      (tpl/-elem (:template this))]))
-)
+  (-elem [this] (seq this)))
 
 
 (defn main-toolbar
@@ -45,9 +26,23 @@
                                                  :href "#present-tab"} "Home"]]
     [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
+(defview module-btn
+  [this]
+  [:div.module-btn]
+  :click (fn [e] (fire :toggle-module this)))
+
+(defview module
+  [this & handlers]
+  [:div.module
+    (module-btn this)
+    [:div.module-content]
+      this]
+  handlers)
+
 (defrecord PDFDocument
   [type id rev created-at updated-at
    title authors path filename notes annotations cites tags])
+
 
 (defrecord WikiDocument
   [type id rev created-at updated-at title template]
@@ -56,7 +51,44 @@
     [:div.document
       (tpl/-elem (:template this))]))
 
-(react-to #{:toggle-module} (fn [ev data] (js/alert "you clicked a module editor toggle")))
+(def foo (atom nil))
+
+(extend-type model/MarkdownModule
+  dommy.template/PElement
+  (-elem [this]
+    (module
+      (reduce
+        conj
+        [:div.markdown-module]
+        (tpl/html->nodes
+          (js/markdown.toHTML (:text this)))))))
+
+
+(extend-type model/HTMLModule
+  dommy.template/PElement
+  (-elem [this]
+    (reset! foo this)
+    (module
+      (reduce conj
+        [:div.html-module]
+        (tpl/html->nodes (:text this))))))
+
+(extend-type model/WikiDocument
+  dommy.template/PElement
+  (-elem [this]
+    [:div.document
+      (tpl/-elem (:template this))]))
+
+
+(extend-type model/SingleColumnTemplate
+  dommy.template/PElement
+  (-elem [this]
+    (vec (concat [:div.template.single-column-template]
+                 (map tpl/-elem (:modules this))))))
+
+(react-to
+  #{:toggle-module}
+  (fn [ev data] (js/alert "you clicked a module editor toggle")))
 
 
 (defn app-view
