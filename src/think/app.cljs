@@ -45,25 +45,16 @@
                                                  :href "#present-tab"} "Home"]]
     [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
-(defview module-btn
-  [this]
-  [:div.module-btn]
-  :click (fn [e] (fire :toggle-module this)))
+(defrecord PDFDocument
+  [type id rev created-at updated-at
+   title authors path filename notes annotations cites tags])
 
-(defview module
-  [this content & handlers]
-  [:div.module
-    (module-btn this)
-    [:div.module-content]
-      content]
-  handlers)
-
-(defn test-module
-  []
-  (module
-    nil
-    [:div.container
-      [:h2 "Look at me, a module!"]]))
+(defrecord WikiDocument
+  [type id rev created-at updated-at title template]
+  dommy.template/PElement
+  (-elem [this]
+    [:div.document
+      (tpl/-elem (:template this))]))
 
 (react-to #{:toggle-module} (fn [ev data] (js/alert "you clicked a module editor toggle")))
 
@@ -96,5 +87,5 @@
     (fn [_ _]
       (let-realised [doc (model/get-document :home)]
         (log "rendering home ...")
-        (log-obj @doc)
-        (render-doc :#app-content @doc)))))
+        (when-not (nil? @doc)
+          (render-doc :#app-content @doc))))))

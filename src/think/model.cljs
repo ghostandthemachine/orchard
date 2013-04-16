@@ -1,7 +1,8 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
   (:use [think.log :only    (log log-obj)])
-  (:use-macros [redlobster.macros :only [let-realised defer-node]])
+  (:use-macros [redlobster.macros :only [let-realised defer-node]]
+               [think.macros :only [defview]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
@@ -105,6 +106,20 @@
                       :template   template}))
 
 
+(defview module-btn
+  [this]
+  [:div.module-btn]
+  :click (fn [e] (fire :toggle-module this)))
+
+(defview module
+  [this & handlers]
+  [:div.module
+    (module-btn this)
+    [:div.module-content]
+      this]
+  handlers)
+
+
 (defrecord SingleColumnTemplate [type modules]
   dommy.template/PElement
   (-elem [this]
@@ -132,9 +147,22 @@
         (js/markdown.toHTML text)))))
 
 
+(defrecord HTMLModule [text]
+  dommy.template/PElement
+  (-elem [this]
+    (module
+      (reduce conj
+        [:div.html-module]
+        (tpl/html->nodes text)))))
+
+
 (defmethod doc->record :markdown-module
   [module]
   (map->MarkdownModule module))
+
+(defmethod doc->record :html-module
+  [module]
+  (map->HTMLModule module))
 
 
 (defrecord FormModule     [fields])
@@ -148,7 +176,9 @@
      :id :home
      :template {:type :single-column-template
                 :modules [{:type ::markdown-module
-                           :text "## Test markdown\n\n  * foo\n  * bar\n"}]}
+                           :text "## Now we can use markdown"}
+                          {:type ::html-module
+                           :text "<h1> Or raw HTML </h1>"}]}
      :title "thinker app"}))
 
 (defn reset-home
