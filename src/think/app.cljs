@@ -17,23 +17,24 @@
   js/Array
   (-elem [this] (seq this))
 
-  model/MarkdownModule
-  (-elem [this]
-    (tpl/-elem
-      [:div.module.markdown-module
-       (second (js/markdown.toHTMLTree (:text this)))]))
+  ; model/MarkdownModule
+  ; (-elem [this]
+  ;   (tpl/-elem
+  ;     [:div.module.markdown-module
+  ;      (second (js/markdown.toHTMLTree (:text this)))]))
 
-  model/SingleColumnTemplate
-  (-elem [this]
-    (tpl/-elem
-      [:div.template.single-column-template
-       (map tpl/-elem (:modules this))]))
+  ; model/SingleColumnTemplate
+  ; (-elem [this]
+  ;   (tpl/-elem
+  ;     [:div.template.single-column-template
+  ;      (map tpl/-elem (:modules this))]))
 
-  model/WikiDocument
-  (-elem [this]
-    (tpl/-elem
-      [:div.document
-       (tpl/-elem (:template this))])))
+  ; model/WikiDocument
+  ; (-elem [this]
+  ;   (tpl/-elem
+  ;     [:div.document
+  ;      (tpl/-elem (:template this))]))
+)
 
 
 (defn main-toolbar
@@ -67,16 +68,16 @@
 (react-to #{:toggle-module} (fn [ev data] (js/alert "you clicked a module editor toggle")))
 
 
-(defn home-view
-  [& content]
-  (log "replace home view with " content)
-  [:div.row-fluid {:id "home-row"} content])
-
-
 (defn app-view
   []
   [:div.main-container {:id "app-container"}
     (main-toolbar)])
+
+
+(defn home-view
+  [& content]
+  [:div.row-fluid {:id "home-row"}
+    (tpl/node [content])])
 
 
 (defn render-doc

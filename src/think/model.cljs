@@ -5,7 +5,8 @@
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
-            [redlobster.promise :as p]))
+            [redlobster.promise :as p]
+            [dommy.template :as tpl]))
 
 
 (def DB-PATH "data/document.db")
@@ -78,11 +79,12 @@
   [type id rev created-at updated-at
    title authors path filename notes annotations cites tags])
 
-
 (defrecord WikiDocument
-  [type id rev created-at updated-at
-   title
-   template])
+  [type id rev created-at updated-at title template]
+  dommy.template/PElement
+  (-elem [this]
+    [:div.document
+      (-elem (:template this))]))
 
 
 (defmethod doc->record :wiki-document
@@ -103,7 +105,11 @@
                       :template   template}))
 
 
-(defrecord SingleColumnTemplate [type modules])
+(defrecord SingleColumnTemplate [type modules]
+  dommy.template/PElement
+  (-elem [this]
+    [:div.template.single-column-template
+      (map tpl/-elem (:modules this))]))
 
 (defmethod doc->record :single-column-template
   [{:keys [modules]}]
@@ -112,7 +118,11 @@
      :modules (map doc->record modules)}))
 
 
-(defrecord MarkdownModule [text])
+(defrecord MarkdownModule [text]
+  dommy.template/PElement
+  (-elem [this]
+    [:div.module.markdown-module
+      (second (js/markdown.toHTMLTree (:text this)))]))
 
 (defmethod doc->record :markdown-module
   [module]
