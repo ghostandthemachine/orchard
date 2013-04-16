@@ -19,18 +19,21 @@
 
   model/MarkdownModule
   (-elem [this]
-    [:div.module.markdown-module
-      (second (js/markdown.toHTMLTree (:text this)))])
+    (tpl/-elem
+      [:div.module.markdown-module
+       (second (js/markdown.toHTMLTree (:text this)))]))
 
   model/SingleColumnTemplate
   (-elem [this]
-    [:div.template.single-column-template
-      (map tpl/-elem (:modules this))])
+    (tpl/-elem
+      [:div.template.single-column-template
+       (map tpl/-elem (:modules this))]))
 
   model/WikiDocument
   (-elem [this]
-    [:div.document
-      (tpl/-elem (:template this))]))
+    (tpl/-elem
+      [:div.document
+       (tpl/-elem (:template this))])))
 
 
 (defn main-toolbar
