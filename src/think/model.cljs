@@ -23,6 +23,7 @@
   (log "doc->record - Missing or unsupported doc type: " doc)
   (log-obj doc))
 
+
 (defn init-document-db
   []
   (when (nil? @document-db*)

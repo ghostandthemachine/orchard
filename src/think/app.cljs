@@ -20,11 +20,12 @@
 
 (defn main-toolbar
   []
-  [:div.row-fluid.button-bar {:id "main-toolbar-row"}
-    [:div.btn-group.editor-btn-nav {:data-toggle "buttons-radio" :id "editor-tab"}
-      [:a.btn.btn-small.view-btn-group          {:data-toggle "tab"
-                                                 :href "#present-tab"} "Home"]]
-    [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
+  [:div.row-fluid.button-bar          {:id "main-toolbar-row"}
+   [:div.btn-group.editor-btn-nav     {:data-toggle "buttons-radio" :id "editor-tab"}
+    [:a.btn.btn-small.view-btn-group  {:data-toggle "tab"
+                                       :href "#present-tab"} 
+                                      "Home"]]
+   [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
 (defview module-btn
   [this]
@@ -51,8 +52,6 @@
     [:div.document
       (tpl/-elem (:template this))]))
 
-(def foo (atom nil))
-
 (extend-type model/MarkdownModule
   dommy.template/PElement
   (-elem [this]
@@ -67,7 +66,6 @@
 (extend-type model/HTMLModule
   dommy.template/PElement
   (-elem [this]
-    (reset! foo this)
     (module
       (reduce conj
         [:div.html-module]
@@ -109,15 +107,17 @@
   (dom/replace! (sel1 :body)
     [:body (app-view)]))
 
+(defn go-home
+  []
+  (let-realised [doc (model/get-document :home)]
+    (log "going home ...")
+    (when-not (nil? @doc)
+      (render-doc :#app-content @doc))))
+
 
 (defn init
   []
   (start-repl-server)
   (model/init-document-db)
   (init-view)
-  (react-to #{:document-db-ready}
-    (fn [_ _]
-      (let-realised [doc (model/get-document :home)]
-        (log "rendering home ...")
-        (when-not (nil? @doc)
-          (render-doc :#app-content @doc))))))
+  (react-to #{:document-db-ready} go-home))
