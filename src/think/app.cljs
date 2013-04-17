@@ -187,7 +187,6 @@
 (react-to
   #{:toggle-module}
   (fn [ev record]
-    (log "Event type: " ev ", record: " record "  " @editors*)
     (if (nil? ((:id record) @editors*))
       (create-cm-module record)
       (save-and-swap record))))
