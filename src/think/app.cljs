@@ -17,7 +17,6 @@
   js/Array
   (-elem [this] (seq this)))
 
-
 (defn main-toolbar
   []
   [:div.row-fluid.button-bar          {:id "main-toolbar-row"}
@@ -28,17 +27,25 @@
    [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
 (defview module-btn
-  [this]
+  [id record]
   [:div.module-btn]
-  :click (fn [e] (fire :toggle-module this)))
+  :click (fn [e] (fire :toggle-module [id record])))
 
 (defview module
-  [this & handlers]
-  [:div.module
-    (module-btn this)
-    [:div.module-content]
-      this]
+  [content record & handlers]
+  (let [id (uuid)]
+    [:div.module {:id (:id id)}
+      (module-btn id record)
+      [:div.module-content]
+        content])
   handlers)
+
+(defn editor-component
+  [id record]
+  (module
+    [:form
+      [:textarea {:id (str "editor-" id)}]]
+    record))
 
 (defrecord PDFDocument
   [type id rev created-at updated-at
@@ -46,21 +53,27 @@
 
 
 (defrecord WikiDocument
-  [type id rev created-at updated-at title template]
+  [type id rev created-at updated-at title template])
+
+
+(extend-type WikiDocument
   dommy.template/PElement
   (-elem [this]
     [:div.document
       (tpl/-elem (:template this))]))
 
+
 (extend-type model/MarkdownModule
   dommy.template/PElement
   (-elem [this]
+    (log this)
     (module
       (reduce
         conj
         [:div.markdown-module]
         (tpl/html->nodes
-          (js/markdown.toHTML (:text this)))))))
+          (js/markdown.toHTML (:text this))))
+      this)))
 
 
 (extend-type model/HTMLModule
@@ -69,7 +82,8 @@
     (module
       (reduce conj
         [:div.html-module]
-        (tpl/html->nodes (:text this))))))
+        (tpl/html->nodes (:text this)))
+      this)))
 
 (extend-type model/WikiDocument
   dommy.template/PElement
@@ -86,7 +100,8 @@
 
 (react-to
   #{:toggle-module}
-  (fn [ev data] (js/alert "you clicked a module editor toggle")))
+  (fn [ev [id record]]
+    (log "Event type: " ev " id: " id " record: " record)))
 
 
 (defn app-view
@@ -114,6 +129,8 @@
     (when-not (nil? @doc)
       (render-doc :#app-content @doc))))
 
+
+(def bar (atom nil))
 
 (defn init
   []
