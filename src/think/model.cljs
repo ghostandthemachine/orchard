@@ -1,6 +1,6 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
-  (:use [think.log :only    (log log-obj)])
+  (:use [think.log :only    [log log-obj]])
   (:use-macros [redlobster.macros :only [let-realised defer-node]]
                [think.macros :only [defview]])
   (:require [think.util         :as util]
@@ -22,7 +22,6 @@
   [doc]
   (log "doc->record - Missing or unsupported doc type: " doc)
   (log-obj doc))
-
 
 (defn init-document-db
   []
@@ -135,9 +134,11 @@
      :id :home
      :template {:type :single-column-template
                 :modules [{:type ::markdown-module
-                           :text "## Now we can use markdown"}
+                           :text "## Now we can use markdown"
+                           :id   (util/uuid)}
                           {:type ::html-module
-                           :text "<h1> Or raw HTML </h1>"}]}
+                           :text "<h1> Or raw HTML </h1>"
+                           :id   (util/uuid)}]}
      :title "thinker app"}))
 
 (defn reset-home
