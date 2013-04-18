@@ -7,10 +7,9 @@
           (fn [err# db#]
             (-> db# ~@body))))
 
-
-(defmacro defview [sym params hiccup & events]
+(defmacro defui [sym params hiccup & events]
   `(defn ~sym ~params
-     (let [e# (dommy.template/node ~hiccup)]
+     (let [e# (crate.core/html ~hiccup)]
        (doseq [[ev# func#] (partition 2 ~(vec events))]
-         (dommy.core/listen! e# ev# func#))
+         (think.util.dom/on e# ev# func#))
        e#)))

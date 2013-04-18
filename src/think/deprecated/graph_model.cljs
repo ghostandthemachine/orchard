@@ -1,6 +1,6 @@
 (ns think.graph-model
   (:refer-clojure :exclude [create-node])
-  (:use [think.log :only (log log-obj)])
+  (:use [think.util.log :only (log log-obj)])
   (:require [think.util :as util]
             [think.dispatch :as dispatch]))
 

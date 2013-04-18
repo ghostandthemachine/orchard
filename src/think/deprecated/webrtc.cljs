@@ -2,7 +2,7 @@
   (:use-macros [dommy.macros :only [sel]])
   (:require [dommy.core :as dom]
             [dommy.template :as dt]
-            [think.log :refer [log load-js]]
+            [think.util.log :refer [log load-js]]
             [think.view-helpers :as view]))
 
 ; (def client-id* (atom 0))

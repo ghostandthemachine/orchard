@@ -1,4 +1,4 @@
-(ns think.log)
+(ns think.util.log)
 
 (defn log
   "Print a log message to the console."

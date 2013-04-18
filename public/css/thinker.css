@@ -106,46 +106,56 @@ video {
 }
 
 @-webkit-keyframes greenPulse {
-    from { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
-    50% { background-color: #91bd09; -webkit-box-shadow: 0 0 6px #91bd09; }
-    to { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
+  from { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
+  50% { background-color: #91bd09; -webkit-box-shadow: 0 0 6px #91bd09; }
+  to { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
 }
 
 
 .module {
-    border-color: transparent;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 5px;
-    -webkit-transition:.4s;
-    transition: border-color .4s ease-out;
+  border-color: transparent;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
+  -webkit-transition:.4s;
+  transition: border-color .4s ease-out;
 }
 
 .module:hover {
-    border-color: rgb(225, 225, 225);
+  border-color: rgb(225, 225, 225);
 }
 
 .module .module-btn {
-    position: relative;
-    width: 10px;
-    height: 10px;
-    border-radius: 10px;
-    background-color: transparent;
-    right: -6px;
-    float:right;
-    top: -7px;
-    -webkit-transition:.4s;
-    transition: background-color .4s ease-out;
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  background-color: transparent;
+  right: -6px;
+  float:right;
+  top: -7px;
+  -webkit-transition:.4s;
+  transition: background-color .4s ease-out;
 }
 
 .module:hover .module-btn {
-    background-color: blue;
+    background-image: -webkit-radial-gradient(center, circle closest-side, #1271FF 0%, #81DDEF 100%);
     -webkit-transition:.1s;
     transition: background-color .1s ease-out;
 }
 
 .module .module-btn:hover {
-    background-color: rgb(100, 200, 255);
+  background-color: rgb(100, 200, 255);
+}
+
+
+.module-content .module-editor {
+  border-color: rgb(225, 225, 225);
+  border-width: 1px;
+  border-style: solid;
+  /*margin: 10px;*/
+  padding: 10px;
+  border-radius: 5px;
 }

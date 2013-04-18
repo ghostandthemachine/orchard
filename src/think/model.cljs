@@ -1,8 +1,8 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
-  (:use [think.log :only    [log log-obj]])
+  (:use [think.util.log :only    [log log-obj]])
   (:use-macros [redlobster.macros :only [let-realised defer-node]]
-               [think.macros :only [defview]])
+               [think.macros :only [defui]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
@@ -144,7 +144,7 @@
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]
-    (delete-document @doc))
-  (save-document (home-doc)))
+    (delete-document @doc)
+    (save-document (home-doc))))
 
 

@@ -3,7 +3,7 @@
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.util :refer [js->clj]]
-            [think.log :refer (log log-obj log-err)]))
+            [think.util.log :refer (log log-obj log-err)]))
 
 (def ^:private pouch (js/require "pouchdb"))
 

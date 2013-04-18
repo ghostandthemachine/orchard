@@ -11,9 +11,11 @@
     <script src="js/markdown_parser.js" type="text/javascript"></script>
 
     <script src="js/jquery-1.9.0.js"> </script>
-    <script src="js/jquery-ui.js"> </script>
 
     <script src="bootstrap/js/bootstrap.js"></script>
+
+    <script src="js/throttle.js"></script>
+
     <script src="js/thinker.js"></script>
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,6 +23,11 @@
     <link href="css/thinker.css" rel="stylesheet">
 </head>
 <body>
-  <script>think.app.init();</script>
+  <div id="wrapper">
+  </div>
+  <script>$(document).ready(function() {
+
+              think.objects.app.init();
+            });</script>
 </body>
 </html>

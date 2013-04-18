@@ -1,7 +1,7 @@
 (ns think.util
   (:refer-clojure :exclude [js->clj clj->js])
   (:use-macros [dommy.macros :only (sel sel1)])
-  (:use [think.log :only (log log-obj)])
+  (:use [think.util.log :only (log log-obj)])
   (:require [redlobster.promise :as p]
             [clojure.browser.repl :as repl]
             [dommy.core :as dom]
