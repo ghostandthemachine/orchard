@@ -33328,6 +33328,107 @@ goog.require("think.dispatch");
 goog.require("think.canvas");
 goog.require("think.renderers");
 goog.require("think.util");
+goog.provide("think.util.cljs");
+goog.require("cljs.core");
+goog.require("clojure.string");
+cljs.core._STAR_print_fn_STAR_ = function(p1__20958_SHARP_) {
+  return console.log(clojure.string.trim.call(null, p1__20958_SHARP_))
+};
+think.util.cljs.__GT_dottedkw = function() {
+  var __GT_dottedkw__delegate = function(args) {
+    return cljs.core.keyword.call(null, clojure.string.join.call(null, ".", cljs.core.map.call(null, cljs.core.name, cljs.core.filter.call(null, cljs.core.identity, args))))
+  };
+  var __GT_dottedkw = function(var_args) {
+    var args = null;
+    if(goog.isDef(var_args)) {
+      args = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0)
+    }
+    return __GT_dottedkw__delegate.call(this, args)
+  };
+  __GT_dottedkw.cljs$lang$maxFixedArity = 0;
+  __GT_dottedkw.cljs$lang$applyTo = function(arglist__20959) {
+    var args = cljs.core.seq(arglist__20959);
+    return __GT_dottedkw__delegate(args)
+  };
+  __GT_dottedkw.cljs$lang$arity$variadic = __GT_dottedkw__delegate;
+  return __GT_dottedkw
+}();
+think.util.cljs.js__GT_clj = function() {
+  var js__GT_clj__delegate = function(x, options) {
+    var map__20965 = options;
+    var map__20965__$1 = cljs.core.seq_QMARK_.call(null, map__20965) ? cljs.core.apply.call(null, cljs.core.hash_map, map__20965) : map__20965;
+    var force_obj = cljs.core._lookup.call(null, map__20965__$1, "\ufdd0'force-obj", null);
+    var keywordize_keys = cljs.core._lookup.call(null, map__20965__$1, "\ufdd0'keywordize-keys", null);
+    var keyfn = cljs.core.truth_(keywordize_keys) ? cljs.core.keyword : cljs.core.str;
+    var f = function thisfn(x__$1) {
+      if(cljs.core.seq_QMARK_.call(null, x__$1)) {
+        return cljs.core.doall.call(null, cljs.core.map.call(null, thisfn, x__$1))
+      }else {
+        if(cljs.core.coll_QMARK_.call(null, x__$1)) {
+          return cljs.core.into.call(null, cljs.core.empty.call(null, x__$1), cljs.core.map.call(null, thisfn, x__$1))
+        }else {
+          if(cljs.core.truth_(goog.isArray(x__$1))) {
+            return cljs.core.vec.call(null, cljs.core.map.call(null, thisfn, x__$1))
+          }else {
+            if(cljs.core.truth_(function() {
+              var or__3824__auto__ = force_obj;
+              if(cljs.core.truth_(or__3824__auto__)) {
+                return or__3824__auto__
+              }else {
+                var or__3824__auto____$1 = cljs.core.type.call(null, x__$1) === Object;
+                if(or__3824__auto____$1) {
+                  return or__3824__auto____$1
+                }else {
+                  return cljs.core.type.call(null, x__$1) === global.Object
+                }
+              }
+            }())) {
+              return cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, function() {
+                var iter__2585__auto__ = function iter__20968(s__20969) {
+                  return new cljs.core.LazySeq(null, false, function() {
+                    var s__20969__$1 = s__20969;
+                    while(true) {
+                      if(cljs.core.seq.call(null, s__20969__$1)) {
+                        var k = cljs.core.first.call(null, s__20969__$1);
+                        return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([keyfn.call(null, k), thisfn.call(null, x__$1[k])], true), iter__20968.call(null, cljs.core.rest.call(null, s__20969__$1)))
+                      }else {
+                        return null
+                      }
+                      break
+                    }
+                  }, null)
+                };
+                return iter__2585__auto__.call(null, cljs.core.js_keys.call(null, x__$1))
+              }())
+            }else {
+              if("\ufdd0'else") {
+                return x__$1
+              }else {
+                return null
+              }
+            }
+          }
+        }
+      }
+    };
+    return f.call(null, x)
+  };
+  var js__GT_clj = function(x, var_args) {
+    var options = null;
+    if(goog.isDef(var_args)) {
+      options = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return js__GT_clj__delegate.call(this, x, options)
+  };
+  js__GT_clj.cljs$lang$maxFixedArity = 1;
+  js__GT_clj.cljs$lang$applyTo = function(arglist__20970) {
+    var x = cljs.core.first(arglist__20970);
+    var options = cljs.core.rest(arglist__20970);
+    return js__GT_clj__delegate(x, options)
+  };
+  js__GT_clj.cljs$lang$arity$variadic = js__GT_clj__delegate;
+  return js__GT_clj
+}();
 goog.provide("goog.math.Box");
 goog.require("goog.math.Coordinate");
 goog.math.Box = function(top, right, bottom, left) {
@@ -39046,6 +39147,668 @@ think.xhr.xhr_promise = function() {
   xhr_promise.cljs$lang$arity$variadic = xhr_promise__delegate;
   return xhr_promise
 }();
+goog.provide("think.objects.context");
+goog.require("cljs.core");
+goog.require("think.object");
+think.objects.context.contexts = cljs.core.atom.call(null, cljs.core.PersistentHashSet.EMPTY);
+think.objects.context.groups = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
+think.objects.context.ctx__GT_obj = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
+think.objects.context.ctx__GT_group = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
+think.objects.context.group__GT_ctxs = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
+think.objects.context.ctx_obj = null;
+think.objects.context.append_group = function append_group(group, name) {
+  return cljs.core.swap_BANG_.call(null, think.objects.context.groups, function(all) {
+    if(cljs.core.truth_(all.call(null, group))) {
+      return cljs.core.update_in.call(null, all, cljs.core.PersistentVector.fromArray([group], true), cljs.core.conj, name)
+    }else {
+      return cljs.core.assoc.call(null, all, group, cljs.core.PersistentHashSet.fromArray([name]))
+    }
+  })
+};
+think.objects.context.in_QMARK_ = function in_QMARK_(k) {
+  return cljs.core.deref.call(null, think.objects.context.contexts).call(null, k)
+};
+think.objects.context.out_BANG_ = function out_BANG_(ctxs) {
+  var ctxs__$1 = cljs.core.coll_QMARK_.call(null, ctxs) ? ctxs : cljs.core.PersistentVector.fromArray([ctxs], true);
+  cljs.core.swap_BANG_.call(null, think.objects.context.contexts, function(p1__15399_SHARP_) {
+    return cljs.core.apply.call(null, cljs.core.disj, p1__15399_SHARP_, ctxs__$1)
+  });
+  cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_obj, function(p1__15400_SHARP_) {
+    return cljs.core.apply.call(null, cljs.core.dissoc, p1__15400_SHARP_, ctxs__$1)
+  });
+  think.object.raise.call(null, think.objects.context.ctx_obj, "\ufdd0'out!", ctxs__$1);
+  var G__15404 = cljs.core.seq.call(null, ctxs__$1);
+  while(true) {
+    if(G__15404) {
+      var c = cljs.core.first.call(null, G__15404);
+      if(cljs.core.truth_(think.objects.context.in_QMARK_.call(null, c))) {
+        think.object.raise.call(null, think.objects.context.ctx_obj, cljs.core.keyword.call(null, [cljs.core.str("out!"), cljs.core.str(cljs.core.name.call(null, c))].join("")));
+        var G__15405 = cljs.core.next.call(null, G__15404);
+        G__15404 = G__15405;
+        continue
+      }else {
+        var G__15406 = cljs.core.next.call(null, G__15404);
+        G__15404 = G__15406;
+        continue
+      }
+    }else {
+      return null
+    }
+    break
+  }
+};
+think.objects.context.in_BANG_ = function() {
+  var in_BANG___delegate = function(ctxs, p__15407) {
+    var vec__15410 = p__15407;
+    var obj = cljs.core.nth.call(null, vec__15410, 0, null);
+    var ctxs__$1 = cljs.core.coll_QMARK_.call(null, ctxs) ? ctxs : cljs.core.PersistentVector.fromArray([ctxs], true);
+    cljs.core.swap_BANG_.call(null, think.objects.context.contexts, function(p1__15401_SHARP_) {
+      return cljs.core.apply.call(null, cljs.core.conj, p1__15401_SHARP_, ctxs__$1)
+    });
+    cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_obj, function(p1__15402_SHARP_) {
+      return cljs.core.merge.call(null, p1__15402_SHARP_, cljs.core.zipmap.call(null, ctxs__$1, cljs.core.repeat.call(null, obj)))
+    });
+    think.object.raise.call(null, think.objects.context.ctx_obj, "\ufdd0'in!", ctxs__$1);
+    var G__15411 = cljs.core.seq.call(null, ctxs__$1);
+    while(true) {
+      if(G__15411) {
+        var c = cljs.core.first.call(null, G__15411);
+        var temp__3974__auto___15412 = cljs.core.deref.call(null, think.objects.context.group__GT_ctxs).call(null, cljs.core.deref.call(null, think.objects.context.ctx__GT_group).call(null, c));
+        if(cljs.core.truth_(temp__3974__auto___15412)) {
+          var group_15413 = temp__3974__auto___15412;
+          think.objects.context.out_BANG_.call(null, group_15413)
+        }else {
+        }
+        think.object.raise.call(null, think.objects.context.ctx_obj, cljs.core.keyword.call(null, [cljs.core.str("in!"), cljs.core.str(cljs.core.name.call(null, c))].join("")));
+        var G__15414 = cljs.core.next.call(null, G__15411);
+        G__15411 = G__15414;
+        continue
+      }else {
+        return null
+      }
+      break
+    }
+  };
+  var in_BANG_ = function(ctxs, var_args) {
+    var p__15407 = null;
+    if(goog.isDef(var_args)) {
+      p__15407 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return in_BANG___delegate.call(this, ctxs, p__15407)
+  };
+  in_BANG_.cljs$lang$maxFixedArity = 1;
+  in_BANG_.cljs$lang$applyTo = function(arglist__15415) {
+    var ctxs = cljs.core.first(arglist__15415);
+    var p__15407 = cljs.core.rest(arglist__15415);
+    return in_BANG___delegate(ctxs, p__15407)
+  };
+  in_BANG_.cljs$lang$arity$variadic = in_BANG___delegate;
+  return in_BANG_
+}();
+think.objects.context.toggle_BANG_ = function() {
+  var toggle_BANG___delegate = function(ctxs, p__15416) {
+    var vec__15419 = p__15416;
+    var obj = cljs.core.nth.call(null, vec__15419, 0, null);
+    var G__15420 = cljs.core.seq.call(null, ctxs);
+    while(true) {
+      if(G__15420) {
+        var c = cljs.core.first.call(null, G__15420);
+        if(cljs.core.truth_(think.objects.context.in_QMARK_.call(null, c))) {
+          think.objects.context.out_BANG_.call(null, c)
+        }else {
+          think.objects.context.in_BANG_.call(null, c, obj)
+        }
+        var G__15421 = cljs.core.next.call(null, G__15420);
+        G__15420 = G__15421;
+        continue
+      }else {
+        return null
+      }
+      break
+    }
+  };
+  var toggle_BANG_ = function(ctxs, var_args) {
+    var p__15416 = null;
+    if(goog.isDef(var_args)) {
+      p__15416 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return toggle_BANG___delegate.call(this, ctxs, p__15416)
+  };
+  toggle_BANG_.cljs$lang$maxFixedArity = 1;
+  toggle_BANG_.cljs$lang$applyTo = function(arglist__15422) {
+    var ctxs = cljs.core.first(arglist__15422);
+    var p__15416 = cljs.core.rest(arglist__15422);
+    return toggle_BANG___delegate(ctxs, p__15416)
+  };
+  toggle_BANG_.cljs$lang$arity$variadic = toggle_BANG___delegate;
+  return toggle_BANG_
+}();
+think.objects.context.current = function current() {
+  return cljs.core.deref.call(null, think.objects.context.contexts)
+};
+think.objects.context.group_BANG_ = function group_BANG_(ctx, group) {
+  cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_group, cljs.core.assoc, ctx, group);
+  return cljs.core.swap_BANG_.call(null, think.objects.context.group__GT_ctxs, cljs.core.update_in, cljs.core.PersistentVector.fromArray([group], true), cljs.core.conj, ctx)
+};
+think.objects.context.__GT_obj = function __GT_obj(ctx) {
+  return cljs.core.deref.call(null, think.objects.context.ctx__GT_obj).call(null, ctx)
+};
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.context/log-on-in", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'in!"]), "\ufdd0'reaction", function(obj, ctxs) {
+  return null
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.context/log-on-out", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'out!"]), "\ufdd0'reaction", function(obj, ctxs) {
+  return null
+});
+think.object.object_STAR_.call(null, "\ufdd0'think.objects.context/context", "\ufdd0'triggers", cljs.core.PersistentVector.fromArray(["\ufdd0'in!", "\ufdd0'out!", "\ufdd0'in!context-name", "\ufdd0'out!context-name"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.EMPTY, "\ufdd0'init", function() {
+  return null
+});
+think.objects.context.ctx_obj = think.object.create.call(null, "\ufdd0'think.objects.context/context");
+goog.provide("think.objects.app");
+goog.require("cljs.core");
+goog.require("think.util.js");
+goog.require("think.util.log");
+goog.require("think.util.dom");
+goog.require("think.util.dom");
+goog.require("think.util.log");
+goog.require("think.util.js");
+goog.require("think.objects.context");
+goog.require("think.object");
+think.objects.app.gui = require("nw.gui");
+think.objects.app.win = think.objects.app.gui.Window.get();
+think.objects.app.closing = true;
+think.objects.app.prevent_close = function prevent_close() {
+  return think.objects.app.closing = false
+};
+think.objects.app.close = function close(force_QMARK_) {
+  if(cljs.core.truth_(force_QMARK_)) {
+    think.object.raise.call(null, think.objects.app.app, "\ufdd0'closed")
+  }else {
+  }
+  return think.objects.app.win.close(force_QMARK_)
+};
+think.objects.app.refresh = function refresh() {
+  return window.location.reload(true)
+};
+think.objects.app.open_window = function open_window() {
+  var id = cljs.core.swap_BANG_.call(null, global.windowsId, cljs.core.inc);
+  var w = think.objects.app.gui.Window.open("index.html", cljs.core.clj__GT_js.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'toolbar", "\ufdd0'show"], {"\ufdd0'toolbar":false, "\ufdd0'show":false})));
+  w.ltid = id;
+  return cljs.core.swap_BANG_.call(null, think.objects.app.windows, cljs.core.assoc, id, w)
+};
+think.objects.app.ready_QMARK_ = function ready_QMARK_(this$) {
+  return cljs.core._EQ_.call(null, 0, (new cljs.core.Keyword("\ufdd0'delays")).call(null, cljs.core.deref.call(null, this$)))
+};
+think.objects.app.args = function args() {
+  return cljs.core.seq.call(null, think.objects.app.gui.App.argv)
+};
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/refresh", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'refresh"]), "\ufdd0'reaction", function(obj) {
+  think.objects.app.closing = true;
+  think.object.raise.call(null, think.objects.app.app, "\ufdd0'reload");
+  if(cljs.core.truth_(think.objects.app.closing)) {
+    return think.objects.app.refresh.call(null)
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/close!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'close!"]), "\ufdd0'reaction", function(this$) {
+  think.objects.app.closing = true;
+  think.object.raise.call(null, this$, "\ufdd0'close");
+  if(cljs.core.truth_(think.objects.app.closing)) {
+    think.object.raise.call(null, this$, "\ufdd0'closed");
+    return think.objects.app.close.call(null, true)
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/show!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show!"]), "\ufdd0'reaction", function(this$) {
+  think.objects.app.win.show();
+  return think.object.raise.call(null, think.objects.app.app, "\ufdd0'show")
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/delay!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'delay!"]), "\ufdd0'reaction", function(this$) {
+  return think.object.update_BANG_.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'delays"], true), cljs.core.inc)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/store-position-on-close", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'closed"]), "\ufdd0'reaction", function(this$) {
+  localStorage.x = think.objects.app.win.x;
+  localStorage.y = think.objects.app.win.y;
+  localStorage.width = think.objects.app.win.width;
+  localStorage.height = think.objects.app.win.height;
+  return localStorage.fullscreen = think.objects.app.win.isFullscreen
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/restore-fullscreen", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show"]), "\ufdd0'reaction", function(this$) {
+  if(cljs.core._EQ_.call(null, localStorage.fullscreen, "true")) {
+    return think.objects.app.win.enterFullscreen()
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/restore-position-on-init", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'init"]), "\ufdd0'reaction", function(this$) {
+  if(cljs.core.truth_(localStorage.width)) {
+    think.objects.app.win.resizeTo(parseInt(localStorage.width), parseInt(localStorage.height));
+    return think.objects.app.win.moveTo(parseInt(localStorage.x), parseInt(localStorage.y))
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/ready!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'delay!"]), "\ufdd0'reaction", function(this$) {
+  think.object.update_BANG_.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'delays"], true), cljs.core.dec);
+  return think.objects.app.ready_QMARK_.call(null, this$)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/startup-time", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show"]), "\ufdd0'reaction", function(this$) {
+  return think.util.js.now.call(null) - setup.startTime
+});
+think.object.object_STAR_.call(null, "\ufdd0'think.objects.app/app", "\ufdd0'tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0'app"]), "\ufdd0'trigers", cljs.core.PersistentVector.fromArray(["\ufdd0'init", "\ufdd0'close", "\ufdd0'reload", "\ufdd0'refresh", "\ufdd0'close!"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.app/refresh", "\ufdd0'think.objects.app/close!", "\ufdd0'think.objects.app/show!", "\ufdd0'think.objects.app/delay!", "\ufdd0'think.objects.app/ready!", 
+"\ufdd0'think.objects.app/startup-time", "\ufdd0'think.objects.app/on-show-bind-navigate"], true), "\ufdd0'delays", 0, "\ufdd0'init", function(this$) {
+  return think.objects.context.in_BANG_.call(null, "\ufdd0'app", this$)
+});
+think.object.tag_behaviors.call(null, "\ufdd0'app", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.app/store-position-on-close", "\ufdd0'think.objects.app/restore-position-on-init", "\ufdd0'think.objects.app/restore-fullscreen"], true));
+if(cljs.core.truth_(global.windows)) {
+}else {
+  global.windows = cljs.core.atom.call(null, cljs.core.sorted_map.call(null, 0, think.objects.app.win));
+  global.windowsId = cljs.core.atom.call(null, 0);
+  think.objects.app.win.ltid = 0
+}
+think.objects.app.windows = global.windows;
+think.objects.app.app = think.object.create.call(null, "\ufdd0'think.objects.app/app");
+think.objects.app.init = function init() {
+  think.util.log.log.call(null, "Starting app...");
+  think.util.start_repl_server.call(null);
+  return think.object.raise.call(null, think.objects.app.app, "\ufdd0'show!")
+};
+goog.provide("think.objects.canvas");
+goog.require("cljs.core");
+goog.require("crate.binding");
+goog.require("think.util.dom");
+goog.require("crate.binding");
+goog.require("think.util.dom");
+goog.require("think.objects.context");
+goog.require("think.object");
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/refresh", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'refresh"]), "\ufdd0'reaction", function(obj) {
+  return window.location.reload(true)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/remove-on-destroy", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'destroy"]), "\ufdd0'reaction", function(obj) {
+  return think.objects.canvas.rem_BANG_.call(null, obj)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/rep-on-redef", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'redef"]), "\ufdd0'reaction", function(obj) {
+  return think.objects.canvas.__GT_rep.call(null, obj)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/alt-down-drag", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'object.mousedown"]), "\ufdd0'reaction", function(canv, obj, e) {
+  if(cljs.core.truth_(e.altKey)) {
+    think.object.merge_BANG_.call(null, canv, cljs.core.ObjMap.fromObject(["\ufdd0'dragging"], {"\ufdd0'dragging":obj}));
+    think.util.dom.prevent.call(null, e);
+    return think.util.dom.stop_propagation.call(null, e)
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/dragging", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'mousemove"]), "\ufdd0'reaction", function(canv, e) {
+  var temp__3974__auto__ = (new cljs.core.Keyword("\ufdd0'dragging")).call(null, cljs.core.deref.call(null, canv));
+  if(cljs.core.truth_(temp__3974__auto__)) {
+    var obj = temp__3974__auto__;
+    var $drag = think.objects.canvas.get_rep.call(null, obj);
+    think.util.dom.css.call(null, $drag, cljs.core.ObjMap.fromObject(["\ufdd0'position", "\ufdd0'margin", "\ufdd0'z-index"], {"\ufdd0'position":"absolute", "\ufdd0'margin":0, "\ufdd0'z-index":1}));
+    return think.objects.canvas.position_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'left"], {"\ufdd0'top":e.pageY - think.util.dom.height.call(null, $drag) / 2, "\ufdd0'left":e.pageX - think.util.dom.width.call(null, $drag) / 2}))
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/drag-end", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'mouseup"]), "\ufdd0'reaction", function(canv, e) {
+  var temp__3974__auto__ = (new cljs.core.Keyword("\ufdd0'dragging")).call(null, cljs.core.deref.call(null, canv));
+  if(cljs.core.truth_(temp__3974__auto__)) {
+    var obj = temp__3974__auto__;
+    var $drag = think.objects.canvas.get_rep.call(null, obj);
+    think.util.dom.css.call(null, $drag, cljs.core.ObjMap.fromObject(["\ufdd0'z-index"], {"\ufdd0'z-index":0}));
+    return think.object.merge_BANG_.call(null, canv, cljs.core.ObjMap.fromObject(["\ufdd0'dragging"], {"\ufdd0'dragging":null}))
+  }else {
+    return null
+  }
+});
+think.objects.canvas.canvas_elem = function canvas_elem(obj) {
+  var e__14417__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div#canvas"], true));
+  var G__15386_15388 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.fromArray(["\ufdd0'mousemove", function(e) {
+    return think.object.raise.call(null, obj, "\ufdd0'mousemove", e)
+  }, "\ufdd0'click", function(e) {
+    return think.object.raise.call(null, obj, "\ufdd0'click", e)
+  }, "\ufdd0'mousedown", function(e) {
+    return think.object.raise.call(null, obj, "\ufdd0'mousedown", e)
+  }, "\ufdd0'mouseup", function(e) {
+    return think.object.raise.call(null, obj, "\ufdd0'mouseup", e)
+  }, "\ufdd0'contextmenu", function(e) {
+    return think.object.raise.call(null, obj, "\ufdd0'contextmenu", e)
+  }], true)));
+  while(true) {
+    if(G__15386_15388) {
+      var vec__15387_15389 = cljs.core.first.call(null, G__15386_15388);
+      var ev__14418__auto___15390 = cljs.core.nth.call(null, vec__15387_15389, 0, null);
+      var func__14419__auto___15391 = cljs.core.nth.call(null, vec__15387_15389, 1, null);
+      think.util.dom.on.call(null, e__14417__auto__, ev__14418__auto___15390, func__14419__auto___15391);
+      var G__15392 = cljs.core.next.call(null, G__15386_15388);
+      G__15386_15388 = G__15392;
+      continue
+    }else {
+    }
+    break
+  }
+  return e__14417__auto__
+};
+think.objects.canvas.__GT_rep = function __GT_rep(obj, canvas) {
+  var content = (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, obj));
+  think.util.dom.attr.call(null, content, cljs.core.ObjMap.fromObject(["\ufdd0'objId"], {"\ufdd0'objId":think.object.__GT_id.call(null, obj)}));
+  return content
+};
+think.object.object_STAR_.call(null, "\ufdd0'think.objects.canvas/canvas", "\ufdd0'triggers", cljs.core.PersistentVector.fromArray(["\ufdd0'mousemove", "\ufdd0'mousedown", "\ufdd0'mouseup", "\ufdd0'contextmenu", "\ufdd0'click", "\ufdd0'object.mousemove", "\ufdd0'object.mousedown", "\ufdd0'object.mouseup", "\ufdd0'object.click", "\ufdd0'object.contextmenu"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.canvas/alt-down-drag", "\ufdd0'think.objects.canvas/dragging", 
+"\ufdd0'think.objects.canvas/drag-end"], true), "\ufdd0'init", function(obj) {
+  return think.objects.canvas.canvas_elem.call(null, obj)
+});
+think.objects.canvas.canvas = think.object.create.call(null, "\ufdd0'think.objects.canvas/canvas");
+think.objects.canvas.add_BANG_ = function() {
+  var add_BANG___delegate = function(obj, p__15393) {
+    var vec__15395 = p__15393;
+    var position_QMARK_ = cljs.core.nth.call(null, vec__15395, 0, null);
+    think.object.add_behavior_BANG_.call(null, obj, "\ufdd0'think.objects.canvas/remove-on-destroy");
+    think.object.add_behavior_BANG_.call(null, obj, "\ufdd0'think.objects.canvas/rep-on-redef");
+    var rep = think.objects.canvas.__GT_rep.call(null, obj, think.objects.canvas.canvas);
+    think.util.dom.append.call(null, (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)), rep);
+    think.object.raise.call(null, obj, "\ufdd0'show", rep);
+    if(cljs.core.truth_(position_QMARK_)) {
+      think.object.merge_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'think.objects.canvas/position"], {"\ufdd0'think.objects.canvas/position":cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'right"], {"\ufdd0'top":50, "\ufdd0'right":10})}));
+      return think.objects.canvas.position_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'right"], {"\ufdd0'top":50, "\ufdd0'right":10}))
+    }else {
+      return null
+    }
+  };
+  var add_BANG_ = function(obj, var_args) {
+    var p__15393 = null;
+    if(goog.isDef(var_args)) {
+      p__15393 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return add_BANG___delegate.call(this, obj, p__15393)
+  };
+  add_BANG_.cljs$lang$maxFixedArity = 1;
+  add_BANG_.cljs$lang$applyTo = function(arglist__15396) {
+    var obj = cljs.core.first(arglist__15396);
+    var p__15393 = cljs.core.rest(arglist__15396);
+    return add_BANG___delegate(obj, p__15393)
+  };
+  add_BANG_.cljs$lang$arity$variadic = add_BANG___delegate;
+  return add_BANG_
+}();
+think.objects.canvas.get_rep = function get_rep(obj) {
+  return think.util.dom.$.call(null, [cljs.core.str("[objid='"), cljs.core.str(think.object.__GT_id.call(null, obj)), cljs.core.str("']")].join(""), (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)))
+};
+think.objects.canvas.position_BANG_ = function position_BANG_(obj, pos) {
+  return think.util.dom.css.call(null, think.objects.canvas.get_rep.call(null, obj), cljs.core.merge.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'position", "\ufdd0'left", "\ufdd0'right", "\ufdd0'bottom", "\ufdd0'top"], {"\ufdd0'position":"absolute", "\ufdd0'left":"auto", "\ufdd0'right":"auto", "\ufdd0'bottom":"auto", "\ufdd0'top":"auto"}), pos))
+};
+think.objects.canvas.rem_BANG_ = function rem_BANG_(obj) {
+  var temp__3974__auto___15397 = think.objects.canvas.get_rep.call(null, obj);
+  if(cljs.core.truth_(temp__3974__auto___15397)) {
+    var rep_15398 = temp__3974__auto___15397;
+    think.util.dom.remove.call(null, rep_15398)
+  }else {
+  }
+  return think.object.raise.call(null, obj, "\ufdd0'object.remove")
+};
+think.objects.canvas.__GT_px = function __GT_px(s) {
+  return[cljs.core.str(function() {
+    var or__3824__auto__ = s;
+    if(cljs.core.truth_(or__3824__auto__)) {
+      return or__3824__auto__
+    }else {
+      return 0
+    }
+  }()), cljs.core.str("px")].join("")
+};
+think.util.dom.append.call(null, think.util.dom.$.call(null, "\ufdd0'#wrapper"), (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)));
+think.objects.context.in_BANG_.call(null, "\ufdd0'global", think.objects.canvas.canvas);
+goog.provide("think.objects.editor.pool");
+goog.require("cljs.core");
+goog.require("think.util.cljs");
+goog.require("think.util.dom");
+goog.require("think.util.cljs");
+goog.require("think.objects.canvas");
+goog.require("think.objects.app");
+goog.require("think.object");
+think.objects.editor.pool.get_all = function get_all() {
+  return think.object.instances_by_type.call(null, editor.ed_obj)
+};
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/theme-changed", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'theme-change"]), "\ufdd0'reaction", function(this$, theme) {
+  var G__22127 = cljs.core.seq.call(null, think.objects.editor.pool.get_all.call(null));
+  while(true) {
+    if(G__22127) {
+      var ed = cljs.core.first.call(null, G__22127);
+      var e_22128 = (new cljs.core.Keyword("\ufdd0'ed")).call(null, cljs.core.deref.call(null, ed));
+      editor.set_options.call(null, e_22128, cljs.core.ObjMap.fromObject(["\ufdd0'theme"], {"\ufdd0'theme":theme}));
+      var G__22129 = cljs.core.next.call(null, G__22127);
+      G__22127 = G__22129;
+      continue
+    }else {
+      return null
+    }
+    break
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/line-numbers-changed", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'line-numbers-change"]), "\ufdd0'reaction", function(this$, numbers_QMARK_) {
+  var G__22130 = cljs.core.seq.call(null, think.objects.editor.pool.get_all.call(null));
+  while(true) {
+    if(G__22130) {
+      var ed = cljs.core.first.call(null, G__22130);
+      var e_22131 = (new cljs.core.Keyword("\ufdd0'ed")).call(null, cljs.core.deref.call(null, ed));
+      editor.set_options.call(null, e_22131, cljs.core.ObjMap.fromObject(["\ufdd0'lineNumbers"], {"\ufdd0'lineNumbers":numbers_QMARK_}));
+      var G__22132 = cljs.core.next.call(null, G__22130);
+      G__22130 = G__22132;
+      continue
+    }else {
+      return null
+    }
+    break
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/options-changed", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'options-changed"]), "\ufdd0'reaction", function(this$, opts) {
+  var G__22133 = cljs.core.seq.call(null, think.objects.editor.pool.get_all.call(null));
+  while(true) {
+    if(G__22133) {
+      var ed = cljs.core.first.call(null, G__22133);
+      var e_22134 = (new cljs.core.Keyword("\ufdd0'ed")).call(null, cljs.core.deref.call(null, ed));
+      editor.set_options.call(null, e_22134, opts);
+      var G__22135 = cljs.core.next.call(null, G__22133);
+      G__22133 = G__22135;
+      continue
+    }else {
+      return null
+    }
+    break
+  }
+});
+think.object.object_STAR_.call(null, "\ufdd0'think.objects.editor.pool/pool", "\ufdd0'tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0'editor.pool"]));
+think.object.tag_behaviors.call(null, "\ufdd0'editor.pool", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/theme-changed", "\ufdd0'think.objects.editor.pool/line-numbers-changed", "\ufdd0'think.objects.editor.pool/options-changed"], true));
+think.objects.editor.pool.unsaved_QMARK_ = function unsaved_QMARK_() {
+  return cljs.core.some.call(null, function(p1__22136_SHARP_) {
+    return(new cljs.core.Keyword("\ufdd0'dirty")).call(null, cljs.core.deref.call(null, p1__22136_SHARP_))
+  }, think.object.instances_by_type.call(null, editor.ed_obj))
+};
+think.objects.editor.pool.by_path = function by_path(path) {
+  return cljs.core.filter.call(null, function(p1__22137_SHARP_) {
+    return cljs.core._EQ_.call(null, (new cljs.core.Keyword("\ufdd0'path")).call(null, (new cljs.core.Keyword("\ufdd0'info")).call(null, cljs.core.deref.call(null, p1__22137_SHARP_))), path)
+  }, think.object.by_tag.call(null, "\ufdd0'editor"))
+};
+think.objects.editor.pool.button = function() {
+  var button__delegate = function(label, p__22138) {
+    var vec__22142 = p__22138;
+    var cb = cljs.core.nth.call(null, vec__22142, 0, null);
+    var e__14417__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div.button.right", label], true));
+    var G__22143_22145 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.fromArray(["\ufdd0'click", function() {
+      if(cljs.core.truth_(cb)) {
+        return cb.call(null)
+      }else {
+        return null
+      }
+    }], true)));
+    while(true) {
+      if(G__22143_22145) {
+        var vec__22144_22146 = cljs.core.first.call(null, G__22143_22145);
+        var ev__14418__auto___22147 = cljs.core.nth.call(null, vec__22144_22146, 0, null);
+        var func__14419__auto___22148 = cljs.core.nth.call(null, vec__22144_22146, 1, null);
+        think.util.dom.on.call(null, e__14417__auto__, ev__14418__auto___22147, func__14419__auto___22148);
+        var G__22149 = cljs.core.next.call(null, G__22143_22145);
+        G__22143_22145 = G__22149;
+        continue
+      }else {
+      }
+      break
+    }
+    return e__14417__auto__
+  };
+  var button = function(label, var_args) {
+    var p__22138 = null;
+    if(goog.isDef(var_args)) {
+      p__22138 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return button__delegate.call(this, label, p__22138)
+  };
+  button.cljs$lang$maxFixedArity = 1;
+  button.cljs$lang$applyTo = function(arglist__22150) {
+    var label = cljs.core.first(arglist__22150);
+    var p__22138 = cljs.core.rest(arglist__22150);
+    return button__delegate(label, p__22138)
+  };
+  button.cljs$lang$arity$variadic = button__delegate;
+  return button
+}();
+think.objects.editor.pool.pool = think.object.create.call(null, "\ufdd0'think.objects.editor.pool/pool");
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/track-active", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'active"]), "\ufdd0'reaction", function(this$) {
+  return think.object.merge_BANG_.call(null, think.objects.editor.pool.pool, cljs.core.ObjMap.fromObject(["\ufdd0'last"], {"\ufdd0'last":this$}))
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/stop-close-dirty", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'close"]), "\ufdd0'reaction", function(this$) {
+  if(cljs.core.truth_(think.objects.editor.pool.unsaved_QMARK_.call(null))) {
+    think.objects.app.prevent_close.call(null);
+    return think.objects.editor.pool.unsaved_prompt.call(null, cljs.core.partial.call(null, think.objects.app.close, true))
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/stop-reload-dirty", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'reload"]), "\ufdd0'reaction", function(this$) {
+  if(cljs.core.truth_(think.objects.editor.pool.unsaved_QMARK_.call(null))) {
+    think.objects.app.prevent_close.call(null);
+    return think.objects.editor.pool.unsaved_prompt.call(null, think.objects.app.refresh)
+  }else {
+    return null
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/ed-close", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'close"]), "\ufdd0'reaction", function(this$) {
+  if(cljs.core.truth_((new cljs.core.Keyword("\ufdd0'dirty")).call(null, cljs.core.deref.call(null, this$)))) {
+    return think.objects.editor.pool.unsaved_prompt.call(null, function() {
+      return think.object.raise.call(null, this$, "\ufdd0'close.force")
+    })
+  }else {
+    return think.object.raise.call(null, this$, "\ufdd0'close.force")
+  }
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/focus-last-on-focus", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'focus!"]), "\ufdd0'reaction", function(this$) {
+  return think.objects.editor.pool.focus_last.call(null)
+});
+think.objects.editor.pool.last_active = function last_active() {
+  return(new cljs.core.Keyword("\ufdd0'last")).call(null, cljs.core.deref.call(null, think.objects.editor.pool.pool))
+};
+think.objects.editor.pool.focus_last = function focus_last() {
+  var temp__3974__auto__ = think.objects.editor.pool.last_active.call(null);
+  if(cljs.core.truth_(temp__3974__auto__)) {
+    var ed = temp__3974__auto__;
+    var temp__3974__auto____$1 = (new cljs.core.Keyword("\ufdd0'ed")).call(null, cljs.core.deref.call(null, ed));
+    if(cljs.core.truth_(temp__3974__auto____$1)) {
+      var ed__$1 = temp__3974__auto____$1;
+      think.util.dom.focus.call(null, document.body);
+      return editor.focus.call(null, ed__$1)
+    }else {
+      return null
+    }
+  }else {
+    return null
+  }
+};
+think.objects.editor.pool.set_syntax = function set_syntax(ed, mode) {
+  var prev_type = (new cljs.core.Keyword("\ufdd0'type")).call(null, (new cljs.core.Keyword("\ufdd0'info")).call(null, cljs.core.deref.call(null, ed)));
+  think.object.update_BANG_.call(null, ed, cljs.core.PersistentVector.fromArray(["\ufdd0'info"], true), cljs.core.assoc, "\ufdd0'type", mode);
+  editor.set_mode.call(null, ed, mode);
+  if(cljs.core.truth_(prev_type)) {
+    think.object.remove_tags.call(null, ed, cljs.core.PersistentVector.fromArray([think.util.cljs.__GT_dottedkw.call(null, "\ufdd0'editor", prev_type)], true))
+  }else {
+  }
+  return think.object.add_tags.call(null, ed, cljs.core.PersistentVector.fromArray([think.util.cljs.__GT_dottedkw.call(null, "\ufdd0'editor", mode)], true))
+};
+think.objects.editor.pool.create = function() {
+  var create__delegate = function(info, p__22151) {
+    var vec__22153 = p__22151;
+    var wraps = cljs.core.nth.call(null, vec__22153, 0, null);
+    var wraps__$1 = cljs.core.apply.call(null, cljs.core.comp, wraps);
+    var ed = think.object.create.call(null, wraps__$1.call(null, editor.ed_obj), info);
+    think.object.add_tags.call(null, ed, cljs.core.PersistentVector.fromArray([think.util.cljs.__GT_dottedkw.call(null, "\ufdd0'editor", (new cljs.core.Keyword("\ufdd0'type")).call(null, info))], true));
+    think.object.raise.call(null, think.objects.editor.pool.pool, "\ufdd0'create", ed, info);
+    return ed
+  };
+  var create = function(info, var_args) {
+    var p__22151 = null;
+    if(goog.isDef(var_args)) {
+      p__22151 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
+    }
+    return create__delegate.call(this, info, p__22151)
+  };
+  create.cljs$lang$maxFixedArity = 1;
+  create.cljs$lang$applyTo = function(arglist__22154) {
+    var info = cljs.core.first(arglist__22154);
+    var p__22151 = cljs.core.rest(arglist__22154);
+    return create__delegate(info, p__22151)
+  };
+  create.cljs$lang$arity$variadic = create__delegate;
+  return create
+}();
+think.object.add_behavior_BANG_.call(null, think.objects.canvas.canvas, "\ufdd0'think.objects.editor.pool/focus-last-on-focus");
+think.object.tag_behaviors.call(null, "\ufdd0'app", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/stop-close-dirty", "\ufdd0'think.objects.editor.pool/stop-reload-dirty"], true));
+think.object.tag_behaviors.call(null, "\ufdd0'editor", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/ed-close", "\ufdd0'think.objects.editor.pool/track-active"], true));
+think.objects.editor.pool.default_tab_settings = cljs.core.ObjMap.fromObject(["\ufdd0'indentWithTabs", "\ufdd0'indentUnit", "\ufdd0'tabSize"], {"\ufdd0'indentWithTabs":false, "\ufdd0'indentUnit":2, "\ufdd0'tabSize":2});
+think.objects.editor.pool.tab_size = cmd.options_input.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'placeholder"], {"\ufdd0'placeholder":"Tab size"}));
+think.objects.editor.pool.indent_unit = cmd.options_input.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'placeholder"], {"\ufdd0'placeholder":"Indent unit"}));
+think.objects.editor.pool.use_tabs = cmd.filter_list.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'items", "\ufdd0'key", "\ufdd0'set-on-select", "\ufdd0'placeholder"], {"\ufdd0'items":cljs.core.PersistentVector.fromArray([cljs.core.ObjMap.fromObject(["\ufdd0'item", "\ufdd0'value"], {"\ufdd0'item":"true", "\ufdd0'value":true}), cljs.core.ObjMap.fromObject(["\ufdd0'item", "\ufdd0'value"], {"\ufdd0'item":"false", "\ufdd0'value":false})], true), "\ufdd0'key":"\ufdd0'item", "\ufdd0'set-on-select":true, 
+"\ufdd0'placeholder":"Use tabs?"}));
+think.object.object_STAR_.call(null, "\ufdd0'think.objects.editor.pool/tab-options", "\ufdd0'tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0'tab-options"]), "\ufdd0'init", function(this$) {
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.tab-settings", cljs.core.PersistentVector.fromArray(["\ufdd0'label", "Tab size (width of a tab character)"], true), think.object.__GT_content.call(null, think.objects.editor.pool.tab_size), cljs.core.PersistentVector.fromArray(["\ufdd0'label", "Indent unit (spaces per indent)"], true), think.object.__GT_content.call(null, think.objects.editor.pool.indent_unit), cljs.core.PersistentVector.fromArray(["\ufdd0'label", "Indent with tabs?"], true), 
+  think.object.__GT_content.call(null, think.objects.editor.pool.use_tabs)], true)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/focus-options", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'focus!"]), "\ufdd0'reaction", function(this$) {
+  return think.object.raise.call(null, think.objects.editor.pool.tab_size, "\ufdd0'focus!")
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/set-tab-settings", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'select"]), "\ufdd0'reaction", function(this$, v) {
+  return cmd.exec_active_BANG_.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'indentWithTabs", "\ufdd0'indentUnit", "\ufdd0'tabSize"], {"\ufdd0'indentWithTabs":(new cljs.core.Keyword("\ufdd0'value")).call(null, cmd.current_selected.call(null, think.objects.editor.pool.use_tabs)), "\ufdd0'indentUnit":parseInt(think.util.dom.val.call(null, think.object.__GT_content.call(null, think.objects.editor.pool.indent_unit))), "\ufdd0'tabSize":parseInt(think.util.dom.val.call(null, think.object.__GT_content.call(null, 
+  think.objects.editor.pool.tab_size)))}))
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/add-tab-settings", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'create"]), "\ufdd0'reaction", function(this$, ed) {
+  var stts = function() {
+    var or__3824__auto__ = settings.fetch.call(null, "\ufdd0'tab-settings");
+    if(cljs.core.truth_(or__3824__auto__)) {
+      return or__3824__auto__
+    }else {
+      return think.objects.editor.pool.default_tab_settings
+    }
+  }();
+  return editor.set_options.call(null, ed, stts)
+});
+think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.editor.pool/init-tab-settings", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'init"]), "\ufdd0'reaction", function(this$) {
+  var stts = function() {
+    var or__3824__auto__ = settings.fetch.call(null, "\ufdd0'tab-settings");
+    if(cljs.core.truth_(or__3824__auto__)) {
+      return or__3824__auto__
+    }else {
+      return think.objects.editor.pool.default_tab_settings
+    }
+  }();
+  think.object.merge_BANG_.call(null, think.objects.editor.pool.tab_size, cljs.core.ObjMap.fromObject(["\ufdd0'value"], {"\ufdd0'value":(new cljs.core.Keyword("\ufdd0'tabSize")).call(null, stts)}));
+  think.object.merge_BANG_.call(null, think.objects.editor.pool.indent_unit, cljs.core.ObjMap.fromObject(["\ufdd0'value"], {"\ufdd0'value":(new cljs.core.Keyword("\ufdd0'indentUnit")).call(null, stts)}));
+  return cmd.set_and_select.call(null, think.objects.editor.pool.use_tabs, cljs.core.truth_((new cljs.core.Keyword("\ufdd0'indentWithTabs")).call(null, stts)) ? "true" : "false")
+});
+think.object.add_behavior_BANG_.call(null, think.objects.editor.pool.tab_size, "\ufdd0'think.objects.editor.pool/set-tab-settings");
+think.object.add_behavior_BANG_.call(null, think.objects.editor.pool.indent_unit, "\ufdd0'think.objects.editor.pool/set-tab-settings");
+think.object.add_behavior_BANG_.call(null, think.objects.editor.pool.use_tabs, "\ufdd0'think.objects.editor.pool/set-tab-settings");
+think.object.tag_behaviors.call(null, "\ufdd0'tab-options", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/focus-options"], true));
+think.object.tag_behaviors.call(null, "\ufdd0'editor.pool", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/add-tab-settings"], true));
+think.object.tag_behaviors.call(null, "\ufdd0'app", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.editor.pool/init-tab-settings"], true));
 goog.provide("think.project");
 goog.require("cljs.core");
 goog.require("think.dispatch");
@@ -39460,289 +40223,6 @@ think.webrtc.init = function init() {
   think.view_helpers.append_body.call(null, think.webrtc.view.call(null));
   return think.webrtc.init_handler.call(null)
 };
-goog.provide("think.objects.context");
-goog.require("cljs.core");
-goog.require("think.object");
-think.objects.context.contexts = cljs.core.atom.call(null, cljs.core.PersistentHashSet.EMPTY);
-think.objects.context.groups = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
-think.objects.context.ctx__GT_obj = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
-think.objects.context.ctx__GT_group = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
-think.objects.context.group__GT_ctxs = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
-think.objects.context.ctx_obj = null;
-think.objects.context.append_group = function append_group(group, name) {
-  return cljs.core.swap_BANG_.call(null, think.objects.context.groups, function(all) {
-    if(cljs.core.truth_(all.call(null, group))) {
-      return cljs.core.update_in.call(null, all, cljs.core.PersistentVector.fromArray([group], true), cljs.core.conj, name)
-    }else {
-      return cljs.core.assoc.call(null, all, group, cljs.core.PersistentHashSet.fromArray([name]))
-    }
-  })
-};
-think.objects.context.in_QMARK_ = function in_QMARK_(k) {
-  return cljs.core.deref.call(null, think.objects.context.contexts).call(null, k)
-};
-think.objects.context.out_BANG_ = function out_BANG_(ctxs) {
-  var ctxs__$1 = cljs.core.coll_QMARK_.call(null, ctxs) ? ctxs : cljs.core.PersistentVector.fromArray([ctxs], true);
-  cljs.core.swap_BANG_.call(null, think.objects.context.contexts, function(p1__15399_SHARP_) {
-    return cljs.core.apply.call(null, cljs.core.disj, p1__15399_SHARP_, ctxs__$1)
-  });
-  cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_obj, function(p1__15400_SHARP_) {
-    return cljs.core.apply.call(null, cljs.core.dissoc, p1__15400_SHARP_, ctxs__$1)
-  });
-  think.object.raise.call(null, think.objects.context.ctx_obj, "\ufdd0'out!", ctxs__$1);
-  var G__15404 = cljs.core.seq.call(null, ctxs__$1);
-  while(true) {
-    if(G__15404) {
-      var c = cljs.core.first.call(null, G__15404);
-      if(cljs.core.truth_(think.objects.context.in_QMARK_.call(null, c))) {
-        think.object.raise.call(null, think.objects.context.ctx_obj, cljs.core.keyword.call(null, [cljs.core.str("out!"), cljs.core.str(cljs.core.name.call(null, c))].join("")));
-        var G__15405 = cljs.core.next.call(null, G__15404);
-        G__15404 = G__15405;
-        continue
-      }else {
-        var G__15406 = cljs.core.next.call(null, G__15404);
-        G__15404 = G__15406;
-        continue
-      }
-    }else {
-      return null
-    }
-    break
-  }
-};
-think.objects.context.in_BANG_ = function() {
-  var in_BANG___delegate = function(ctxs, p__15407) {
-    var vec__15410 = p__15407;
-    var obj = cljs.core.nth.call(null, vec__15410, 0, null);
-    var ctxs__$1 = cljs.core.coll_QMARK_.call(null, ctxs) ? ctxs : cljs.core.PersistentVector.fromArray([ctxs], true);
-    cljs.core.swap_BANG_.call(null, think.objects.context.contexts, function(p1__15401_SHARP_) {
-      return cljs.core.apply.call(null, cljs.core.conj, p1__15401_SHARP_, ctxs__$1)
-    });
-    cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_obj, function(p1__15402_SHARP_) {
-      return cljs.core.merge.call(null, p1__15402_SHARP_, cljs.core.zipmap.call(null, ctxs__$1, cljs.core.repeat.call(null, obj)))
-    });
-    think.object.raise.call(null, think.objects.context.ctx_obj, "\ufdd0'in!", ctxs__$1);
-    var G__15411 = cljs.core.seq.call(null, ctxs__$1);
-    while(true) {
-      if(G__15411) {
-        var c = cljs.core.first.call(null, G__15411);
-        var temp__3974__auto___15412 = cljs.core.deref.call(null, think.objects.context.group__GT_ctxs).call(null, cljs.core.deref.call(null, think.objects.context.ctx__GT_group).call(null, c));
-        if(cljs.core.truth_(temp__3974__auto___15412)) {
-          var group_15413 = temp__3974__auto___15412;
-          think.objects.context.out_BANG_.call(null, group_15413)
-        }else {
-        }
-        think.object.raise.call(null, think.objects.context.ctx_obj, cljs.core.keyword.call(null, [cljs.core.str("in!"), cljs.core.str(cljs.core.name.call(null, c))].join("")));
-        var G__15414 = cljs.core.next.call(null, G__15411);
-        G__15411 = G__15414;
-        continue
-      }else {
-        return null
-      }
-      break
-    }
-  };
-  var in_BANG_ = function(ctxs, var_args) {
-    var p__15407 = null;
-    if(goog.isDef(var_args)) {
-      p__15407 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
-    }
-    return in_BANG___delegate.call(this, ctxs, p__15407)
-  };
-  in_BANG_.cljs$lang$maxFixedArity = 1;
-  in_BANG_.cljs$lang$applyTo = function(arglist__15415) {
-    var ctxs = cljs.core.first(arglist__15415);
-    var p__15407 = cljs.core.rest(arglist__15415);
-    return in_BANG___delegate(ctxs, p__15407)
-  };
-  in_BANG_.cljs$lang$arity$variadic = in_BANG___delegate;
-  return in_BANG_
-}();
-think.objects.context.toggle_BANG_ = function() {
-  var toggle_BANG___delegate = function(ctxs, p__15416) {
-    var vec__15419 = p__15416;
-    var obj = cljs.core.nth.call(null, vec__15419, 0, null);
-    var G__15420 = cljs.core.seq.call(null, ctxs);
-    while(true) {
-      if(G__15420) {
-        var c = cljs.core.first.call(null, G__15420);
-        if(cljs.core.truth_(think.objects.context.in_QMARK_.call(null, c))) {
-          think.objects.context.out_BANG_.call(null, c)
-        }else {
-          think.objects.context.in_BANG_.call(null, c, obj)
-        }
-        var G__15421 = cljs.core.next.call(null, G__15420);
-        G__15420 = G__15421;
-        continue
-      }else {
-        return null
-      }
-      break
-    }
-  };
-  var toggle_BANG_ = function(ctxs, var_args) {
-    var p__15416 = null;
-    if(goog.isDef(var_args)) {
-      p__15416 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
-    }
-    return toggle_BANG___delegate.call(this, ctxs, p__15416)
-  };
-  toggle_BANG_.cljs$lang$maxFixedArity = 1;
-  toggle_BANG_.cljs$lang$applyTo = function(arglist__15422) {
-    var ctxs = cljs.core.first(arglist__15422);
-    var p__15416 = cljs.core.rest(arglist__15422);
-    return toggle_BANG___delegate(ctxs, p__15416)
-  };
-  toggle_BANG_.cljs$lang$arity$variadic = toggle_BANG___delegate;
-  return toggle_BANG_
-}();
-think.objects.context.current = function current() {
-  return cljs.core.deref.call(null, think.objects.context.contexts)
-};
-think.objects.context.group_BANG_ = function group_BANG_(ctx, group) {
-  cljs.core.swap_BANG_.call(null, think.objects.context.ctx__GT_group, cljs.core.assoc, ctx, group);
-  return cljs.core.swap_BANG_.call(null, think.objects.context.group__GT_ctxs, cljs.core.update_in, cljs.core.PersistentVector.fromArray([group], true), cljs.core.conj, ctx)
-};
-think.objects.context.__GT_obj = function __GT_obj(ctx) {
-  return cljs.core.deref.call(null, think.objects.context.ctx__GT_obj).call(null, ctx)
-};
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.context/log-on-in", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'in!"]), "\ufdd0'reaction", function(obj, ctxs) {
-  return null
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.context/log-on-out", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'out!"]), "\ufdd0'reaction", function(obj, ctxs) {
-  return null
-});
-think.object.object_STAR_.call(null, "\ufdd0'think.objects.context/context", "\ufdd0'triggers", cljs.core.PersistentVector.fromArray(["\ufdd0'in!", "\ufdd0'out!", "\ufdd0'in!context-name", "\ufdd0'out!context-name"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.EMPTY, "\ufdd0'init", function() {
-  return null
-});
-think.objects.context.ctx_obj = think.object.create.call(null, "\ufdd0'think.objects.context/context");
-goog.provide("think.objects.app");
-goog.require("cljs.core");
-goog.require("think.util.js");
-goog.require("think.util.log");
-goog.require("think.util.dom");
-goog.require("think.util.dom");
-goog.require("think.util.log");
-goog.require("think.util.js");
-goog.require("think.objects.context");
-goog.require("think.object");
-think.objects.app.gui = require("nw.gui");
-think.objects.app.win = think.objects.app.gui.Window.get();
-think.objects.app.closing = true;
-think.objects.app.prevent_close = function prevent_close() {
-  return think.objects.app.closing = false
-};
-think.objects.app.close = function close(force_QMARK_) {
-  if(cljs.core.truth_(force_QMARK_)) {
-    think.object.raise.call(null, think.objects.app.app, "\ufdd0'closed")
-  }else {
-  }
-  return think.objects.app.win.close(force_QMARK_)
-};
-think.objects.app.refresh = function refresh() {
-  return window.location.reload(true)
-};
-think.objects.app.open_window = function open_window() {
-  var id = cljs.core.swap_BANG_.call(null, global.windowsId, cljs.core.inc);
-  var w = think.objects.app.gui.Window.open("index.html", cljs.core.clj__GT_js.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'toolbar", "\ufdd0'show"], {"\ufdd0'toolbar":false, "\ufdd0'show":false})));
-  w.ltid = id;
-  return cljs.core.swap_BANG_.call(null, think.objects.app.windows, cljs.core.assoc, id, w)
-};
-think.objects.app.ready_QMARK_ = function ready_QMARK_(this$) {
-  return cljs.core._EQ_.call(null, 0, (new cljs.core.Keyword("\ufdd0'delays")).call(null, cljs.core.deref.call(null, this$)))
-};
-think.objects.app.args = function args() {
-  return cljs.core.seq.call(null, think.objects.app.gui.App.argv)
-};
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/refresh", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'refresh"]), "\ufdd0'reaction", function(obj) {
-  think.objects.app.closing = true;
-  think.object.raise.call(null, think.objects.app.app, "\ufdd0'reload");
-  if(cljs.core.truth_(think.objects.app.closing)) {
-    return think.objects.app.refresh.call(null)
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/close!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'close!"]), "\ufdd0'reaction", function(this$) {
-  think.objects.app.closing = true;
-  think.object.raise.call(null, this$, "\ufdd0'close");
-  if(cljs.core.truth_(think.objects.app.closing)) {
-    think.object.raise.call(null, this$, "\ufdd0'closed");
-    return think.objects.app.close.call(null, true)
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/show!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show!"]), "\ufdd0'reaction", function(this$) {
-  think.objects.app.win.show();
-  return think.object.raise.call(null, think.objects.app.app, "\ufdd0'show")
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/delay!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'delay!"]), "\ufdd0'reaction", function(this$) {
-  return think.object.update_BANG_.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'delays"], true), cljs.core.inc)
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/store-position-on-close", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'closed"]), "\ufdd0'reaction", function(this$) {
-  localStorage.x = think.objects.app.win.x;
-  localStorage.y = think.objects.app.win.y;
-  localStorage.width = think.objects.app.win.width;
-  localStorage.height = think.objects.app.win.height;
-  return localStorage.fullscreen = think.objects.app.win.isFullscreen
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/restore-fullscreen", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show"]), "\ufdd0'reaction", function(this$) {
-  if(cljs.core._EQ_.call(null, localStorage.fullscreen, "true")) {
-    return think.objects.app.win.enterFullscreen()
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/restore-position-on-init", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'init"]), "\ufdd0'reaction", function(this$) {
-  if(cljs.core.truth_(localStorage.width)) {
-    think.objects.app.win.resizeTo(parseInt(localStorage.width), parseInt(localStorage.height));
-    return think.objects.app.win.moveTo(parseInt(localStorage.x), parseInt(localStorage.y))
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/ready!", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'delay!"]), "\ufdd0'reaction", function(this$) {
-  think.object.update_BANG_.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'delays"], true), cljs.core.dec);
-  return think.objects.app.ready_QMARK_.call(null, this$)
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/on-show-bind-navigate", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show"]), "\ufdd0'reaction", function(this$) {
-  return think.util.dom.on.call(null, think.util.dom.$.call(null, document, "\ufdd0'#canvas"), "\ufdd0'click", function(e) {
-    if(cljs.core._EQ_.call(null, e.target.nodeName, "A")) {
-      think.util.dom.prevent.call(null, e);
-      var temp__3974__auto__ = e.target.href;
-      if(cljs.core.truth_(temp__3974__auto__)) {
-        var href = temp__3974__auto__;
-        think.objects.app.gui.Shell.openExternal(href);
-        return think.objects.app.win.focus()
-      }else {
-        return null
-      }
-    }else {
-      return null
-    }
-  })
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.app/startup-time", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'show"]), "\ufdd0'reaction", function(this$) {
-  return think.util.js.now.call(null) - setup.startTime
-});
-think.object.object_STAR_.call(null, "\ufdd0'think.objects.app/app", "\ufdd0'tags", cljs.core.PersistentHashSet.fromArray(["\ufdd0'app"]), "\ufdd0'trigers", cljs.core.PersistentVector.fromArray(["\ufdd0'init", "\ufdd0'close", "\ufdd0'reload", "\ufdd0'refresh", "\ufdd0'close!"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.app/refresh", "\ufdd0'think.objects.app/close!", "\ufdd0'think.objects.app/show!", "\ufdd0'think.objects.app/delay!", "\ufdd0'think.objects.app/ready!", 
-"\ufdd0'think.objects.app/startup-time", "\ufdd0'think.objects.app/on-show-bind-navigate"], true), "\ufdd0'delays", 0, "\ufdd0'init", function(this$) {
-  return think.objects.context.in_BANG_.call(null, "\ufdd0'app", this$)
-});
-think.object.tag_behaviors.call(null, "\ufdd0'app", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.app/store-position-on-close", "\ufdd0'think.objects.app/restore-position-on-init", "\ufdd0'think.objects.app/restore-fullscreen"], true));
-if(cljs.core.truth_(global.windows)) {
-}else {
-  global.windows = cljs.core.atom.call(null, cljs.core.sorted_map.call(null, 0, think.objects.app.win));
-  global.windowsId = cljs.core.atom.call(null, 0);
-  think.objects.app.win.ltid = 0
-}
-think.objects.app.windows = global.windows;
-think.objects.app.app = think.object.create.call(null, "\ufdd0'think.objects.app/app");
-think.objects.app.init = function init() {
-  think.util.log.log.call(null, "Starting app...");
-  return think.util.start_repl_server.call(null)
-};
 goog.provide("think.wiki_scrapper");
 goog.require("cljs.core");
 goog.require("think.xhr");
@@ -39759,151 +40239,6 @@ think.wiki_scrapper.wiki_url = function wiki_url(term) {
 think.wiki_scrapper.get_page_promise = function get_page_promise(search_term) {
   return think.xhr.xhr_promise.call(null, think.wiki_scrapper.wiki_url.call(null, search_term), cljs.core.ObjMap.EMPTY)
 };
-goog.provide("think.objects.canvas");
-goog.require("cljs.core");
-goog.require("crate.binding");
-goog.require("think.util.dom");
-goog.require("crate.binding");
-goog.require("think.util.dom");
-goog.require("think.objects.context");
-goog.require("think.object");
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/refresh", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'refresh"]), "\ufdd0'reaction", function(obj) {
-  return window.location.reload(true)
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/remove-on-destroy", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'destroy"]), "\ufdd0'reaction", function(obj) {
-  return think.objects.canvas.rem_BANG_.call(null, obj)
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/rep-on-redef", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'redef"]), "\ufdd0'reaction", function(obj) {
-  return think.objects.canvas.__GT_rep.call(null, obj)
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/alt-down-drag", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'object.mousedown"]), "\ufdd0'reaction", function(canv, obj, e) {
-  if(cljs.core.truth_(e.altKey)) {
-    think.object.merge_BANG_.call(null, canv, cljs.core.ObjMap.fromObject(["\ufdd0'dragging"], {"\ufdd0'dragging":obj}));
-    think.util.dom.prevent.call(null, e);
-    return think.util.dom.stop_propagation.call(null, e)
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/dragging", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'mousemove"]), "\ufdd0'reaction", function(canv, e) {
-  var temp__3974__auto__ = (new cljs.core.Keyword("\ufdd0'dragging")).call(null, cljs.core.deref.call(null, canv));
-  if(cljs.core.truth_(temp__3974__auto__)) {
-    var obj = temp__3974__auto__;
-    var $drag = think.objects.canvas.get_rep.call(null, obj);
-    think.util.dom.css.call(null, $drag, cljs.core.ObjMap.fromObject(["\ufdd0'position", "\ufdd0'margin", "\ufdd0'z-index"], {"\ufdd0'position":"absolute", "\ufdd0'margin":0, "\ufdd0'z-index":1}));
-    return think.objects.canvas.position_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'left"], {"\ufdd0'top":e.pageY - think.util.dom.height.call(null, $drag) / 2, "\ufdd0'left":e.pageX - think.util.dom.width.call(null, $drag) / 2}))
-  }else {
-    return null
-  }
-});
-think.object.behavior_STAR_.call(null, "\ufdd0'think.objects.canvas/drag-end", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'mouseup"]), "\ufdd0'reaction", function(canv, e) {
-  var temp__3974__auto__ = (new cljs.core.Keyword("\ufdd0'dragging")).call(null, cljs.core.deref.call(null, canv));
-  if(cljs.core.truth_(temp__3974__auto__)) {
-    var obj = temp__3974__auto__;
-    var $drag = think.objects.canvas.get_rep.call(null, obj);
-    think.util.dom.css.call(null, $drag, cljs.core.ObjMap.fromObject(["\ufdd0'z-index"], {"\ufdd0'z-index":0}));
-    return think.object.merge_BANG_.call(null, canv, cljs.core.ObjMap.fromObject(["\ufdd0'dragging"], {"\ufdd0'dragging":null}))
-  }else {
-    return null
-  }
-});
-think.objects.canvas.canvas_elem = function canvas_elem(obj) {
-  var e__14417__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div#canvas"], true));
-  var G__15386_15388 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.fromArray(["\ufdd0'mousemove", function(e) {
-    return think.object.raise.call(null, obj, "\ufdd0'mousemove", e)
-  }, "\ufdd0'click", function(e) {
-    return think.object.raise.call(null, obj, "\ufdd0'click", e)
-  }, "\ufdd0'mousedown", function(e) {
-    return think.object.raise.call(null, obj, "\ufdd0'mousedown", e)
-  }, "\ufdd0'mouseup", function(e) {
-    return think.object.raise.call(null, obj, "\ufdd0'mouseup", e)
-  }, "\ufdd0'contextmenu", function(e) {
-    return think.object.raise.call(null, obj, "\ufdd0'contextmenu", e)
-  }], true)));
-  while(true) {
-    if(G__15386_15388) {
-      var vec__15387_15389 = cljs.core.first.call(null, G__15386_15388);
-      var ev__14418__auto___15390 = cljs.core.nth.call(null, vec__15387_15389, 0, null);
-      var func__14419__auto___15391 = cljs.core.nth.call(null, vec__15387_15389, 1, null);
-      think.util.dom.on.call(null, e__14417__auto__, ev__14418__auto___15390, func__14419__auto___15391);
-      var G__15392 = cljs.core.next.call(null, G__15386_15388);
-      G__15386_15388 = G__15392;
-      continue
-    }else {
-    }
-    break
-  }
-  return e__14417__auto__
-};
-think.objects.canvas.__GT_rep = function __GT_rep(obj, canvas) {
-  var content = (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, obj));
-  think.util.dom.attr.call(null, content, cljs.core.ObjMap.fromObject(["\ufdd0'objId"], {"\ufdd0'objId":think.object.__GT_id.call(null, obj)}));
-  return content
-};
-think.object.object_STAR_.call(null, "\ufdd0'think.objects.canvas/canvas", "\ufdd0'triggers", cljs.core.PersistentVector.fromArray(["\ufdd0'mousemove", "\ufdd0'mousedown", "\ufdd0'mouseup", "\ufdd0'contextmenu", "\ufdd0'click", "\ufdd0'object.mousemove", "\ufdd0'object.mousedown", "\ufdd0'object.mouseup", "\ufdd0'object.click", "\ufdd0'object.contextmenu"], true), "\ufdd0'behaviors", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.canvas/alt-down-drag", "\ufdd0'think.objects.canvas/dragging", 
-"\ufdd0'think.objects.canvas/drag-end"], true), "\ufdd0'init", function(obj) {
-  return think.objects.canvas.canvas_elem.call(null, obj)
-});
-think.objects.canvas.canvas = think.object.create.call(null, "\ufdd0'think.objects.canvas/canvas");
-think.objects.canvas.add_BANG_ = function() {
-  var add_BANG___delegate = function(obj, p__15393) {
-    var vec__15395 = p__15393;
-    var position_QMARK_ = cljs.core.nth.call(null, vec__15395, 0, null);
-    think.object.add_behavior_BANG_.call(null, obj, "\ufdd0'think.objects.canvas/remove-on-destroy");
-    think.object.add_behavior_BANG_.call(null, obj, "\ufdd0'think.objects.canvas/rep-on-redef");
-    var rep = think.objects.canvas.__GT_rep.call(null, obj, think.objects.canvas.canvas);
-    think.util.dom.append.call(null, (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)), rep);
-    think.object.raise.call(null, obj, "\ufdd0'show", rep);
-    if(cljs.core.truth_(position_QMARK_)) {
-      think.object.merge_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'think.objects.canvas/position"], {"\ufdd0'think.objects.canvas/position":cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'right"], {"\ufdd0'top":50, "\ufdd0'right":10})}));
-      return think.objects.canvas.position_BANG_.call(null, obj, cljs.core.ObjMap.fromObject(["\ufdd0'top", "\ufdd0'right"], {"\ufdd0'top":50, "\ufdd0'right":10}))
-    }else {
-      return null
-    }
-  };
-  var add_BANG_ = function(obj, var_args) {
-    var p__15393 = null;
-    if(goog.isDef(var_args)) {
-      p__15393 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0)
-    }
-    return add_BANG___delegate.call(this, obj, p__15393)
-  };
-  add_BANG_.cljs$lang$maxFixedArity = 1;
-  add_BANG_.cljs$lang$applyTo = function(arglist__15396) {
-    var obj = cljs.core.first(arglist__15396);
-    var p__15393 = cljs.core.rest(arglist__15396);
-    return add_BANG___delegate(obj, p__15393)
-  };
-  add_BANG_.cljs$lang$arity$variadic = add_BANG___delegate;
-  return add_BANG_
-}();
-think.objects.canvas.get_rep = function get_rep(obj) {
-  return think.util.dom.$.call(null, [cljs.core.str("[objid='"), cljs.core.str(think.object.__GT_id.call(null, obj)), cljs.core.str("']")].join(""), (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)))
-};
-think.objects.canvas.position_BANG_ = function position_BANG_(obj, pos) {
-  return think.util.dom.css.call(null, think.objects.canvas.get_rep.call(null, obj), cljs.core.merge.call(null, cljs.core.ObjMap.fromObject(["\ufdd0'position", "\ufdd0'left", "\ufdd0'right", "\ufdd0'bottom", "\ufdd0'top"], {"\ufdd0'position":"absolute", "\ufdd0'left":"auto", "\ufdd0'right":"auto", "\ufdd0'bottom":"auto", "\ufdd0'top":"auto"}), pos))
-};
-think.objects.canvas.rem_BANG_ = function rem_BANG_(obj) {
-  var temp__3974__auto___15397 = think.objects.canvas.get_rep.call(null, obj);
-  if(cljs.core.truth_(temp__3974__auto___15397)) {
-    var rep_15398 = temp__3974__auto___15397;
-    think.util.dom.remove.call(null, rep_15398)
-  }else {
-  }
-  return think.object.raise.call(null, obj, "\ufdd0'object.remove")
-};
-think.objects.canvas.__GT_px = function __GT_px(s) {
-  return[cljs.core.str(function() {
-    var or__3824__auto__ = s;
-    if(cljs.core.truth_(or__3824__auto__)) {
-      return or__3824__auto__
-    }else {
-      return 0
-    }
-  }()), cljs.core.str("px")].join("")
-};
-think.util.dom.append.call(null, think.util.dom.$.call(null, "\ufdd0'#wrapper"), (new cljs.core.Keyword("\ufdd0'content")).call(null, cljs.core.deref.call(null, think.objects.canvas.canvas)));
-think.objects.context.in_BANG_.call(null, "\ufdd0'global", think.objects.canvas.canvas);
 goog.provide("think.project_nav");
 goog.require("cljs.core");
 goog.require("think.util");

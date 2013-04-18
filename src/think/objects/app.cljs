@@ -59,8 +59,7 @@
                   :triggers #{:show!}
                   :reaction (fn [this]
                               (.show win)
-                              (object/raise app :show)
-                              ))
+                              (object/raise app :show)))
 
 (object/behavior* ::delay!
                   :triggers #{:delay!}
@@ -81,16 +80,14 @@
                   :triggers #{:show}
                   :reaction (fn [this]
                                 (when (= js/localStorage.fullscreen "true")
-                                  (.enterFullscreen win))
-                              ))
+                                  (.enterFullscreen win))))
 
 (object/behavior* ::restore-position-on-init
                   :triggers #{:init}
                   :reaction (fn [this]
                               (when (.-width js/localStorage)
                                 (.resizeTo win (js/parseInt js/localStorage.width) (js/parseInt js/localStorage.height))
-                                (.moveTo win (js/parseInt js/localStorage.x) (js/parseInt js/localStorage.y)))
-                              ))
+                                (.moveTo win (js/parseInt js/localStorage.x) (js/parseInt js/localStorage.y)))))
 
 (object/behavior* ::ready!
                   :triggers #{:delay!}
@@ -98,16 +95,16 @@
                               (object/update! this [:delays] dec)
                               (ready? this)))
 
-(object/behavior* ::on-show-bind-navigate
-                  :triggers #{:show}
-                  :reaction (fn [this]
-                              (dom/on ($ js/document :#canvas) :click (fn [e]
-                                                            ;;TODO: when prevent default has been called don't do this.
-                                                            (when (= (.-target.nodeName e) "A")
-                                                              (dom/prevent e)
-                                                              (when-let [href (.-target.href e)]
-                                                                (.Shell.openExternal gui href)
-                                                                (.focus win)))))))
+; (object/behavior* ::on-show-bind-navigate
+;                   :triggers #{:show}
+;                   :reaction (fn [this]
+;                               (dom/on ($ js/document :#canvas) :click (fn [e]
+;                                                             ;;TODO: when prevent default has been called don't do this.
+;                                                             (when (= (.-target.nodeName e) "A")
+;                                                               (dom/prevent e)
+;                                                               (when-let [href (.-target.href e)]
+;                                                                 (.Shell.openExternal gui href)
+;                                                                 (.focus win)))))))
 
 (object/behavior* ::startup-time
                   :triggers #{:show}
@@ -143,6 +140,6 @@
   ; (object/raise app :pre-init)
   ; (object/raise app :init)
   ; (object/raise app :post-init)
-  ; (object/raise app :show!)
+  (object/raise app :show!)
   )
 
