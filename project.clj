@@ -7,6 +7,7 @@
                  [prismatic/dommy "0.1.0"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
+                 [crate "0.2.4"]
                  [org.clojure/clojurescript "0.0-1552"
                   :exclusions [org.apache.ant/ant]]]
 

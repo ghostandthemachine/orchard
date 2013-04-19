@@ -9,7 +9,6 @@
  "js/cm/markdown.js",
  "js/cm/gfm.js",
 
- "js/throttle.js",
  "js/jquery-1.9.0.js",
  "js/jquery.sortable.min.js",
 

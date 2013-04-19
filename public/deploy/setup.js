@@ -1,4 +1,5 @@
 (function(window) {
+  console.log("Start setup...")
 
   var start = (new Date()).getTime();
   var fs = require("fs");

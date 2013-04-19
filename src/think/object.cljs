@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [set!])
   (:require [crate.core :as crate]
             [clojure.set :as set]
-            [think.util.js :refer [throttle debounce]])
+            ; [think.util.js :refer [throttle debounce]]
+            )
   (:use [think.util.dom :only [replace-with]]
         [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
 
@@ -104,20 +105,20 @@
   (add-b beh)
   (:name beh))
 
-(defn wrap-throttle [beh]
-  (if-let [thr (:throttle beh)]
-    (assoc beh :reaction (throttle thr (:reaction beh)))
-    beh))
+; (defn wrap-throttle [beh]
+;   (if-let [thr (:throttle beh)]
+;     (assoc beh :reaction (throttle thr (:reaction beh)))
+;     beh))
 
-(defn wrap-debounce [beh]
-  (if-let [thr (:debounce beh)]
-    (assoc beh :reaction (debounce thr (:reaction beh)))
-    beh))
+; (defn wrap-debounce [beh]
+;   (if-let [thr (:debounce beh)]
+;     (assoc beh :reaction (debounce thr (:reaction beh)))
+;     beh))
 
 (defn behavior* [name & r]
   (-> (apply make-behavior* name r)
-      (wrap-throttle)
-      (wrap-debounce)
+      ; (wrap-throttle)
+      ; (wrap-debounce)
       (store-behavior*)))
 
 (declare create)
@@ -131,7 +132,6 @@
 
 (defn update! [obj & r]
   (swap! obj #(apply update-in % r)))
-
 
 (defn ->inst [o]
   (cond
