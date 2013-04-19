@@ -15,7 +15,7 @@ node_modules
 public/js/thinker.js
 /*.app
 data/*
-
+public/js/bootstrap.js
 .DS_Store
 /out
 /repl
