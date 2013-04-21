@@ -76,7 +76,7 @@ try {
     });
 
     /* ready to go - let's load thinker_app */
-    var script = appendScript(thinker_app, false);
+    var script = load_script(thinker_app, false);
     script.onload = function() {
         try {
             think.objects.app.init();
