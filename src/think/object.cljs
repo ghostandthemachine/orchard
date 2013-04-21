@@ -8,10 +8,10 @@
         [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
 
 (def id-counter    (atom 0))
-(def instances (atom (sorted-map)))
-(def behaviors (atom {}))
-(def object-defs (atom {}))
-(def tags (atom {}))
+(def instances     (atom (sorted-map)))
+(def behaviors     (atom {}))
+(def object-defs   (atom {}))
+(def tags          (atom {}))
 
 (declare change)
 

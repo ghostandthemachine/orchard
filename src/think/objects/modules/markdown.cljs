@@ -29,7 +29,7 @@
 (defui render-present
   [this]
   [:div.module-content.markdown-module-content
-    (bound (subatom this :text) #(crate/raw (js/markdown.toHTML %)))])
+   (bound (subatom this :text) #(crate/raw (js/markdown.toHTML %)))])
 
 
 (defui render-edit
