@@ -2,7 +2,6 @@
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
             [think.model :as model]
-            [think.objects.template :as template]
             [crate.binding :refer [subatom bound]]
             [think.util.log :refer [log]]))
 
