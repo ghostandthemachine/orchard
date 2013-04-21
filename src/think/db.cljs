@@ -8,7 +8,7 @@
 (def ^:private pouch (js/require "pouchdb"))
 
 
-(defn uglify
+(defn pouch-ids
   [x]
   (let [id  (:id x)
         rev (:rev x)
@@ -18,7 +18,7 @@
         (assoc x "_id" id))))
 
 
-(defn prettify
+(defn cljs-ids
   [x]
   (let [id   (:_id x)
         rev  (:_rev x)
@@ -57,19 +57,19 @@
 (defn create-doc
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
-  (defer-node (.post db (clj->js (uglify doc))) js->clj))
+  (defer-node (.post db (clj->js (pouch-ids doc))) js->clj))
 
 
 (defn put-doc
   "Insert a document with a given key."
   [db doc]
-  (defer-node (.put db (clj->js (uglify doc))) js->clj))
+  (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
 
 
 (defn delete-doc
   "Delete a document."
   [db doc]
-  (defer-node (.remove db (clj->js (uglify doc))) js->clj))
+  (defer-node (.remove db (clj->js (pouch-ids doc))) js->clj))
 
 
 (defn all-docs
@@ -86,13 +86,13 @@
                  (str id))]
     (defer-node (.get db id-str (clj->js (merge {} opts)))
       (fn [doc]
-        (prettify (js->clj doc :keywordize-keys :forc-obj))))))
+        (cljs-ids (js->clj doc :keywordize-keys :forc-obj))))))
 
 
 (defn update-doc
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
-  (defer-node (.put db (clj->js (uglify doc))) js->clj))
+  (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
 
 
 (defn view

@@ -43,8 +43,6 @@
   (seq (.-App.argv gui)))
 
 
-
-
 (object/behavior* ::init-home
                   :triggers #{:init-home}
                   :reaction (fn [this]

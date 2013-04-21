@@ -36996,7 +36996,7 @@ goog.require("think.util.log");
 goog.require("think.util");
 goog.require("redlobster.promise");
 think.db.pouch = require("pouchdb");
-think.db.uglify = function uglify(x) {
+think.db.pouch_ids = function pouch_ids(x) {
   var id = (new cljs.core.Keyword("\ufdd0'id")).call(null, x);
   var rev = (new cljs.core.Keyword("\ufdd0'rev")).call(null, x);
   var x__$1 = cljs.core.dissoc.call(null, x, "\ufdd0'id", "\ufdd0'rev");
@@ -37013,7 +37013,7 @@ think.db.uglify = function uglify(x) {
     return cljs.core.assoc.call(null, x__$1, "_id", id)
   }
 };
-think.db.prettify = function prettify(x) {
+think.db.cljs_ids = function cljs_ids(x) {
   var id = (new cljs.core.Keyword("\ufdd0'_id")).call(null, x);
   var rev = (new cljs.core.Keyword("\ufdd0'_rev")).call(null, x);
   var type = (new cljs.core.Keyword("\ufdd0'type")).call(null, x);
@@ -37049,7 +37049,7 @@ think.db.create_doc = function create_doc(db, doc) {
       return redlobster.promise.realise.call(null, promise__3004__auto__, think.util.js__GT_clj.call(null, value__3007__auto__))
     }
   };
-  db.post(cljs.core.clj__GT_js.call(null, think.db.uglify.call(null, doc)), callback__3005__auto__);
+  db.post(cljs.core.clj__GT_js.call(null, think.db.pouch_ids.call(null, doc)), callback__3005__auto__);
   return promise__3004__auto__
 };
 think.db.put_doc = function put_doc(db, doc) {
@@ -37061,7 +37061,7 @@ think.db.put_doc = function put_doc(db, doc) {
       return redlobster.promise.realise.call(null, promise__3004__auto__, think.util.js__GT_clj.call(null, value__3007__auto__))
     }
   };
-  db.put(cljs.core.clj__GT_js.call(null, think.db.uglify.call(null, doc)), callback__3005__auto__);
+  db.put(cljs.core.clj__GT_js.call(null, think.db.pouch_ids.call(null, doc)), callback__3005__auto__);
   return promise__3004__auto__
 };
 think.db.delete_doc = function delete_doc(db, doc) {
@@ -37073,7 +37073,7 @@ think.db.delete_doc = function delete_doc(db, doc) {
       return redlobster.promise.realise.call(null, promise__3004__auto__, think.util.js__GT_clj.call(null, value__3007__auto__))
     }
   };
-  db.remove(cljs.core.clj__GT_js.call(null, think.db.uglify.call(null, doc)), callback__3005__auto__);
+  db.remove(cljs.core.clj__GT_js.call(null, think.db.pouch_ids.call(null, doc)), callback__3005__auto__);
   return promise__3004__auto__
 };
 think.db.all_docs = function() {
@@ -37097,9 +37097,9 @@ think.db.all_docs = function() {
     return all_docs__delegate.call(this, db, opts)
   };
   all_docs.cljs$lang$maxFixedArity = 1;
-  all_docs.cljs$lang$applyTo = function(arglist__12662) {
-    var db = cljs.core.first(arglist__12662);
-    var opts = cljs.core.rest(arglist__12662);
+  all_docs.cljs$lang$applyTo = function(arglist__191410) {
+    var db = cljs.core.first(arglist__191410);
+    var opts = cljs.core.rest(arglist__191410);
     return all_docs__delegate(db, opts)
   };
   all_docs.cljs$lang$arity$variadic = all_docs__delegate;
@@ -37114,7 +37114,7 @@ think.db.get_doc = function() {
         return redlobster.promise.realise_error.call(null, promise__3004__auto__, error__3006__auto__)
       }else {
         return redlobster.promise.realise.call(null, promise__3004__auto__, function(doc) {
-          return think.db.prettify.call(null, think.util.js__GT_clj.call(null, doc, "\ufdd0'keywordize-keys", "\ufdd0'forc-obj"))
+          return think.db.cljs_ids.call(null, think.util.js__GT_clj.call(null, doc, "\ufdd0'keywordize-keys", "\ufdd0'forc-obj"))
         }.call(null, value__3007__auto__))
       }
     };
@@ -37129,10 +37129,10 @@ think.db.get_doc = function() {
     return get_doc__delegate.call(this, db, id, opts)
   };
   get_doc.cljs$lang$maxFixedArity = 2;
-  get_doc.cljs$lang$applyTo = function(arglist__12663) {
-    var db = cljs.core.first(arglist__12663);
-    var id = cljs.core.first(cljs.core.next(arglist__12663));
-    var opts = cljs.core.rest(cljs.core.next(arglist__12663));
+  get_doc.cljs$lang$applyTo = function(arglist__191411) {
+    var db = cljs.core.first(arglist__191411);
+    var id = cljs.core.first(cljs.core.next(arglist__191411));
+    var opts = cljs.core.rest(cljs.core.next(arglist__191411));
     return get_doc__delegate(db, id, opts)
   };
   get_doc.cljs$lang$arity$variadic = get_doc__delegate;
@@ -37147,13 +37147,13 @@ think.db.update_doc = function update_doc(db, doc) {
       return redlobster.promise.realise.call(null, promise__3004__auto__, think.util.js__GT_clj.call(null, value__3007__auto__))
     }
   };
-  db.put(cljs.core.clj__GT_js.call(null, think.db.uglify.call(null, doc)), callback__3005__auto__);
+  db.put(cljs.core.clj__GT_js.call(null, think.db.pouch_ids.call(null, doc)), callback__3005__auto__);
   return promise__3004__auto__
 };
 think.db.view = function() {
-  var view__delegate = function(db, map_fn, p__12664) {
-    var vec__12666 = p__12664;
-    var reduce_fn = cljs.core.nth.call(null, vec__12666, 0, null);
+  var view__delegate = function(db, map_fn, p__191412) {
+    var vec__191414 = p__191412;
+    var reduce_fn = cljs.core.nth.call(null, vec__191414, 0, null);
     if(cljs.core.truth_(reduce_fn)) {
       var promise__3004__auto__ = redlobster.promise.promise.call(null);
       var callback__3005__auto__ = function(error__3006__auto__, value__3007__auto__) {
@@ -37179,18 +37179,18 @@ think.db.view = function() {
     }
   };
   var view = function(db, map_fn, var_args) {
-    var p__12664 = null;
+    var p__191412 = null;
     if(goog.isDef(var_args)) {
-      p__12664 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0)
+      p__191412 = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0)
     }
-    return view__delegate.call(this, db, map_fn, p__12664)
+    return view__delegate.call(this, db, map_fn, p__191412)
   };
   view.cljs$lang$maxFixedArity = 2;
-  view.cljs$lang$applyTo = function(arglist__12667) {
-    var db = cljs.core.first(arglist__12667);
-    var map_fn = cljs.core.first(cljs.core.next(arglist__12667));
-    var p__12664 = cljs.core.rest(cljs.core.next(arglist__12667));
-    return view__delegate(db, map_fn, p__12664)
+  view.cljs$lang$applyTo = function(arglist__191415) {
+    var db = cljs.core.first(arglist__191415);
+    var map_fn = cljs.core.first(cljs.core.next(arglist__191415));
+    var p__191412 = cljs.core.rest(cljs.core.next(arglist__191415));
+    return view__delegate(db, map_fn, p__191412)
   };
   view.cljs$lang$arity$variadic = view__delegate;
   return view
