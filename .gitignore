@@ -31,3 +31,6 @@ data/*
 /public/math.pdf
 
 /public/flute.wav
+
+/public/js/bootstrap.js
+/public/js/thinker.js
