@@ -1,5 +1,5 @@
 (ns think.objects.canvas
-  (:refer-clojure :exclude [rem])
+  (:refer-clojure :exclude [rem reset!])
   (:require [think.object :as object]
             [think.objects.context :as ctx]
             [think.util.dom :refer [$ html parent toggle-class append remove prevent stop-propagation css] :as dom])
@@ -122,6 +122,16 @@
   (when-let [rep (get-rep obj)]
     (dom/remove rep))
   (object/raise obj :object.remove))
+
+
+(defn replace! [obj1 obj2]
+  (rem! obj1)
+  (add! canvas obj2))
+
+(defn reset!
+  [obj1 obj2]
+  (dom/empty obj1)
+  (add! canvas obj2))
 
 (defn ->px [s]
   (str (or s 0) "px"))

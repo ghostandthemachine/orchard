@@ -2,8 +2,7 @@
   :description "Organize your thoughts."
   :min-lein-version "2.0.0"
 
-  :dependencies [[jayq "2.0.0"]
-                 [node-webkit-cljs "0.1.4"]
+  :dependencies [[node-webkit-cljs "0.1.4"]
                  [prismatic/dommy "0.1.0"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]

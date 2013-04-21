@@ -1,10 +1,13 @@
 (ns think.objects.app
+  (:use-macros [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.objects.context :as ctx]
+            [think.model :as model]
             [think.util.js :refer [now]]
             [think.util.log :refer [log]]
-            [think.model :as model]
-            [think.util.dom :refer [$ html append] :as dom]))
+            [think.objects.document-loader :as loader]
+            [think.util.dom :refer [$ html append] :as dom]
+            [redlobster.promise :as p]))
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
@@ -42,20 +45,19 @@
 
 
 
-; (object/behavior* ::load-home
-;                   :triggers #{:init}
-;                   :reaction (fn [this]
-;                               (log "init and raise init-db")))
+(object/behavior* ::init-home
+                  :triggers #{:init-home}
+                  :reaction (fn [this]
+                              (log "App db loaded, loading home...")))
 
 
 (object/object* ::app
                 :tags #{:app}
-                :trigers [:init]
-                :behaviors [::load-home]
+                :trigers [:init-home]
+                :behaviors [::init-home]
                 :delays 0
                 :init (fn [this]
-                        (ctx/in! :app this)
-                        ))
+                        (ctx/in! :app this)))
 
 ; (object/tag-behaviors :app [::store-position-on-close ::restore-position-on-init ::restore-fullscreen])
 
@@ -71,5 +73,9 @@
 (defn init []
   (log "Starting app...")
   (think.util/start-repl-server)
-  (object/raise app :init))
+  (object/raise app :init-home))
 
+
+(defn load-home
+  []
+  (object/raise loader/loader :load-document :home))

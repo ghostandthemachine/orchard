@@ -7,14 +7,47 @@
             [think.dispatch     :refer [fire react-to]]
             [think.db           :as db]
             [think.object       :as object]
-            [think.objects.project-loader :as loader]
             [redlobster.promise :as p]
             [dommy.template :as tpl]))
 
 
+
+
 (def DB-PATH "data/document.db")
 
-(def document-db* (atom nil))
+
+(object/behavior* ::init-db
+                  :triggers #{:init-db}
+                  :reaction (fn [this]
+                              (log "Initialize db.. ")
+                              (let-realised [db-promise (db/open DB-PATH)]
+                                (object/merge! this
+                                  {:ready? true
+                                   :document-db* @db-promise})
+                                (object/raise this :db-loaded))))
+
+(object/behavior* ::db-loaded
+                  :triggers #{:db-loaded}
+                  :reaction (fn [this]
+                              (log "PouchDB loaded...")
+                              ; (object/raise app/app :db-loaded)
+                              ))
+
+
+
+(object/object* ::model
+                :triggers  #{:db-loaded  :init-db}
+                :behaviors [::db-loaded ::init-db]
+                :ready? false
+                :init (fn [this]
+                        (object/raise this :init-db)))
+
+
+(def model (object/create ::model))
+
+
+
+; (def document-db* (atom nil))
 
 (defmulti doc->record     #(keyword (:type %)))
 (defmulti create-document #(keyword (:type %)))
@@ -25,29 +58,15 @@
   (log "doc->record - Missing or unsupported doc type: " doc)
   (log-obj doc))
 
-; (declare model)
-
-; (defn init-document-db
-;   []
-;   (when (nil? @document-db*)
-;     (let [db-promise (db/open DB-PATH)]
-;       (p/on-realised db-promise
-;         #(do
-;            (reset! document-db* %)
-;            (object/raise model :document-db-ready @document-db*))
-;         (fn [err]
-;           (log "Error opening DB!")
-;           (log-obj err))))))
-
 
 (defn delete-document
   [doc]
-  (db/delete-doc @document-db* doc))
+  (db/delete-doc (:document-db* @model) doc))
 
 
 (defn save-document
   [doc]
-  (db/update-doc @document-db*
+  (db/update-doc (:document-db* @model)
                  (if (and (contains? doc :rev) (nil? (:rev doc)))
                    (dissoc doc :rev)
                    doc)))
@@ -55,13 +74,13 @@
 
 (defn docs-of-type
   [doc-type]
-  (db/query @document-db* {:select "*" :where (str "type=" doc-type)}))
+  (db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)}))
 
 
 (defn get-document
   [id]
   (let [res-promise (p/promise)
-        doc-promise (db/get-doc @document-db* id)]
+        doc-promise (db/get-doc (:document-db* @model) id)]
     (p/on-realised doc-promise
       (fn success [doc]
         (p/realise res-promise (doc->record doc)))
@@ -76,8 +95,8 @@
 
 (defn all-documents
   []
-  (let-realised [docs (db/all-docs @document-db*)]
-    (util/await (map #(db/get-doc @document-db* (.-id %)) (.-rows @docs)))))
+  (let-realised [docs (db/all-docs (:document-db* @model))]
+    (util/await (map #(db/get-doc (:document-db* @model) (.-id %)) (.-rows @docs)))))
 
 
 (defrecord PDFDocument
@@ -150,39 +169,3 @@
   (let-realised [doc (get-document :home)]
     (delete-document @doc)
     (save-document (home-doc))))
-
-(object/behavior* ::init-db
-                  :triggers #{:document-db-ready}
-                  :reaction (fn [this]
-                              (log "init-db " @document-db*)
-                              (object/merge! this
-                                {:ready? true
-                                 :home   @document-db*})
-                              (let-realised [home (get-document :home)]
-                                (object/raise this :db-loaded @home))))
-
-(object/behavior* ::load-home
-                  :triggers #{:db-loaded}
-                  :reaction (fn [this doc]
-                              (log "call load-home")
-                              (object/raise loader/loader :load-home (doc->record doc))))
-
-(object/behavior* ::load-document-db
-                  :triggers #{:load-db}
-                  :reaction (fn [this]
-                              (let-realised [db-promise (db/open DB-PATH)]
-                                (reset! document-db* @db-promise)
-                                (object/raise this :document-db-ready))))
-
-
-(object/object* ::model
-                :triggers #{:load-db :db-loaded :document-db-ready}
-                :behaviors [::load-document-db ::load-home ::init-db]
-                :home nil
-                :ready? false
-                :init (fn [this]
-                        (log "create model object")
-                        (object/raise this :load-db)))
-
-
-(def model (object/create ::model))

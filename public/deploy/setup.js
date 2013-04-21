@@ -66,7 +66,7 @@
 
   try {
 
-  var thinker_app = "js/bootstrap.js";
+  var thinker_app = "js/thinker.js";
   var order = JSON.parse(fs.readFileSync("public/deploy/order.json"));
 
   order.forEach(function(path) {
