@@ -1,7 +1,3 @@
-(ns think.objects.module
-  (:require [think.objects.modules.markdown :as markdown]))
+(ns think.objects.module)
 
-(defn create
-  [record]
-  (case (:type record)
-    (markdown/create record)))
+(defmulti create :type)

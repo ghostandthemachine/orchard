@@ -2,7 +2,7 @@
 (ns think.objects.templates.single-column
   (:require [think.object :as object]
             [think.objects.module :as module]
-            [think.util.log :refer [log]]
+            [think.util.log :refer [log log-obj]]
             [crate.binding :refer [map-bound bound subatom]]))
 
 
@@ -10,25 +10,17 @@
   [this modules]
   [:div.span12
     (for [module modules]
-      (:content module))])
+      (:content @module))])
 
-(def t (atom nil))
-
-(object/object* ::single-column
+(object/object* :single-column-template
                 :triggers #{}
                 :behaviors []
                 :init (fn [this template-record]
-                          (let [module-objs (map module/create (:modules template-record))
+                          (let [module-objs (map
+                                              #(object/create (keyword (:type %)) %)
+                                              (:modules template-record))
                                 new-tpl     (assoc template-record :modules module-objs)]
                             (object/merge! this new-tpl)
                             [:div.container-fluid
-                              [:h3 "template"]
-                                (bound (subatom this [:modules]) (partial render-modules this))])))
+                              (bound (subatom this [:modules]) (partial render-modules this))])))
 
-
-(def single-column (object/create ::single-column))
-
-
-(defn create
-  [template-record]
-  (object/create ::single-column template-record))

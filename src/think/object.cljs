@@ -3,6 +3,7 @@
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
+            [think.util.log :refer [log]]
             )
   (:use [think.util.dom :only [replace-with]]
         [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
@@ -133,6 +134,9 @@
 (defn update! [obj & r]
   (swap! obj #(apply update-in % r)))
 
+(defn assoc! [obj & args]
+  (swap! obj #(apply assoc % args)))
+
 (defn ->inst [o]
   (cond
    (map? o) (@instances (->id o))
@@ -150,6 +154,7 @@
   inst)
 
 (defn create [obj-name & args]
+  (log "Creating object: " (str obj-name))
   (let [obj (if (keyword? obj-name)
               (@object-defs obj-name)
               obj-name)

@@ -13,7 +13,7 @@
                               (log "Loading doc " k)
                               (let-realised [doc (model/get-document k)]
                                 (log "Doc realized: " (model/doc->record @doc))
-                                (object/raise workspace/workspace :load-document (model/doc->record @doc)))))
+                                (object/raise workspace/workspace :load-document @doc))))
 
 
 (object/object* ::loader

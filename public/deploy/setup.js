@@ -13,8 +13,10 @@ process.on("uncaughtException", uncaughtError);
 window.onerror = uncaughtError;
 
 function uncaughtError(e) {
+  if (console) {
     console.log("ERROR:" + e);
     console.log(e.stack);
+  }
 }
 
 function load_script(path, isFile) {

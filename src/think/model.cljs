@@ -31,7 +31,7 @@
                   :reaction (fn [this]
                               (log "PouchDB loaded...")
                               ; (object/raise app/app :db-loaded)
-                              ))
+                              (fire :db-loaded)))
 
 
 

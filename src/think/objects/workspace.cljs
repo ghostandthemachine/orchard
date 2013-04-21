@@ -22,7 +22,7 @@
                   :triggers #{:load-document}
                   :reaction (fn [this doc]
                               (log "load-document" doc)
-                              (let [doc-obj (document/create! doc)]
+                              (let [doc-obj (object/create :document doc)]
                                 (object/merge! this {:document doc-obj})
                                 (dom/append (:content @this) (:content @doc-obj)))))
 
@@ -41,8 +41,7 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                      [:div#workspace
-                        [:h3 "workspace"]]))
+                      [:div#workspace]))
 
 (def workspace (object/create ::workspace))
 

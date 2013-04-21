@@ -3,6 +3,7 @@
   (:require [think.object :as object]
             [think.objects.context :as ctx]
             [think.model :as model]
+            [think.dispatch :refer [react-to]]
             [think.util.js :refer [now]]
             [think.util.log :refer [log]]
             [think.objects.document-loader :as loader]
@@ -77,3 +78,7 @@
 (defn load-home
   []
   (object/raise loader/loader :load-document :home))
+
+
+(react-to #{:db-loaded} #(load-home))
+

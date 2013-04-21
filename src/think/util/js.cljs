@@ -14,11 +14,11 @@
     op2
     op))
 
-(defn debounce [ts func]
-  (.debounce js/$ ts func))
+; (defn debounce [ts func]
+;   (.debounce js/$ ts func))
 
-(defn throttle [ts func]
-  (.throttle js/$ ts func))
+; (defn throttle [ts func]
+;   (.throttle js/$ ts func))
 
 (defn ->clj [data]
   (js->clj data :keywordize-keys true))

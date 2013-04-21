@@ -13,20 +13,15 @@
     (object/->content template)])
 
 
-(object/object* ::document
+(object/object* :document
                 :triggers #{}
                 :behaviors []
                 :init (fn [this document]
                         (log "Init document with document " document)
-                        (let [tpl-obj (template/create (:template document))]
+                        (let [template (:template document)
+                              tpl-obj (object/create (keyword (:type template)) template)]
                           (object/merge! this
                             (assoc document :template tpl-obj))
                           [:div.document
-                            [:h3 "document"]
                             (bound (subatom this [:template])
                               (partial render-template this))])))
-
-
-(defn create!
-  [document]
-  (object/create ::document document))
