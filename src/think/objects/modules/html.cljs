@@ -2,7 +2,6 @@
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
             [crate.core :as crate]
-            [think.objects.module :as module]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]))
 

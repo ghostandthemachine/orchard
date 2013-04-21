@@ -1,7 +1,6 @@
 
 (ns think.objects.templates.single-column
   (:require [think.object :as object]
-            [think.objects.module :as module]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [map-bound bound subatom]]))
 

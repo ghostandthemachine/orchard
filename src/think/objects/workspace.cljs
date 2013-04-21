@@ -1,7 +1,6 @@
 (ns think.objects.workspace
   (:require [think.object :as object]
             [think.objects.canvas :as canvas]
-            [think.objects.module :as module]
             [think.objects.document :as document]
             [think.util.dom :as dom]
             [think.util.log :refer [log]]

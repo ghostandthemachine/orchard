@@ -1,5 +1,5 @@
 (ns think.object
-  (:refer-clojure :exclude [set!])
+  (:refer-clojure :exclude [set! assoc!])
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
