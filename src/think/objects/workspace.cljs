@@ -40,7 +40,7 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                      [:div#workspace]))
+                      [:div#workspace.container-fluid]))
 
 (def workspace (object/create ::workspace))
 

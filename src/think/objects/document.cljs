@@ -8,7 +8,7 @@
 
 (defui render-template
   [this template]
-  [:div#template
+  [:div.document-content
     (object/->content template)])
 
 
@@ -21,6 +21,10 @@
                               tpl-obj (object/create (keyword (:type template)) template)]
                           (object/merge! this
                             (assoc document :template tpl-obj))
-                          [:div.document
+
+                          [:div.container-fluid.document
+                            [:div.row-fluid
+                              [:div.span12
+                                [:h4 (:title @this)]]]
                             (bound (subatom this [:template])
                               (partial render-template this))])))
