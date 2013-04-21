@@ -137,7 +137,6 @@
   (str (or s 0) "px"))
 
 
-(dom/append (dom/$ :#wrapper) (:content @canvas))
-
+(dom/append (dom/$ :#container) (:content @canvas))
 
 (ctx/in! :global canvas)
