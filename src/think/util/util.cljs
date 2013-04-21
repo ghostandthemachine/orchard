@@ -426,3 +426,10 @@
         (p/on-realised subp succ fail)))
     p))
 
+
+
+(defn bound-do
+  [a* handler]
+  (add-watch a* :mode-toggle-watch
+    (fn [k elem* ov nv]
+      (handler nv))))

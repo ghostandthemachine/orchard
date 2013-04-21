@@ -100,7 +100,7 @@
   [{:keys [rev title template] :as doc}]
   (assoc doc
          :type :wiki-document
-         :id         id (util/uuid)
+         :id         (util/uuid)
          :created-at (util/date-json)
          :updated-at (util/date-json)))
 
