@@ -41,7 +41,8 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                      [:div#workspace]))
+                      [:div#workspace
+                        [:h3 "workspace"]]))
 
 (def workspace (object/create ::workspace))
 

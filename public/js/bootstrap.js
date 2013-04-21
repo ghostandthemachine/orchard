@@ -36845,24 +36845,23 @@ think.object.on_change = function on_change(obj, func) {
 };
 goog.provide("think.objects.modules.markdown");
 goog.require("cljs.core");
+goog.require("think.util.log");
 goog.require("crate.binding");
 goog.require("crate.binding");
+goog.require("think.util.log");
 goog.require("dommy.template");
 goog.require("think.object");
 think.objects.modules.markdown.render_markdown = function render_markdown(this$, text) {
-  var e__12442__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div.markdown", function() {
-    var html = markdown.toHTML(text);
-    return dommy.template.html__GT_nodes.call(null, html)
-  }()], true));
-  var G__121890_121892 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
+  var e__12442__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div.markdown", cljs.core.PersistentVector.fromArray(["\ufdd0'h1", "should be a module"], true)], true));
+  var G__174470_174472 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
   while(true) {
-    if(G__121890_121892) {
-      var vec__121891_121893 = cljs.core.first.call(null, G__121890_121892);
-      var ev__12443__auto___121894 = cljs.core.nth.call(null, vec__121891_121893, 0, null);
-      var func__12444__auto___121895 = cljs.core.nth.call(null, vec__121891_121893, 1, null);
-      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___121894, func__12444__auto___121895);
-      var G__121896 = cljs.core.next.call(null, G__121890_121892);
-      G__121890_121892 = G__121896;
+    if(G__174470_174472) {
+      var vec__174471_174473 = cljs.core.first.call(null, G__174470_174472);
+      var ev__12443__auto___174474 = cljs.core.nth.call(null, vec__174471_174473, 0, null);
+      var func__12444__auto___174475 = cljs.core.nth.call(null, vec__174471_174473, 1, null);
+      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___174474, func__12444__auto___174475);
+      var G__174476 = cljs.core.next.call(null, G__174470_174472);
+      G__174470_174472 = G__174476;
       continue
     }else {
     }
@@ -36871,8 +36870,8 @@ think.objects.modules.markdown.render_markdown = function render_markdown(this$,
   return e__12442__auto__
 };
 think.object.object_STAR_.call(null, "\ufdd0'think.objects.modules.markdown/markdown-module", "\ufdd0'tags", cljs.core.PersistentHashSet.EMPTY, "\ufdd0'mode", "\ufdd0'present", "\ufdd0'init", function(this$, record) {
-  think.object.merge_BANG_.call(null, this$, record);
-  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.markdown-module", cljs.core.PersistentVector.fromArray(["\ufdd0'h1", "should render module here"], true)], true)
+  var this$__$1 = think.object.merge_BANG_.call(null, this$, record);
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.markdown-module"], true)
 });
 think.objects.modules.markdown.create = function create(record) {
   return think.object.create.call(null, "\ufdd0'think.objects.modules.markdown/markdown-module", record)
@@ -39311,22 +39310,41 @@ think.xhr.xhr_promise = function() {
 }();
 goog.provide("think.objects.templates.single_column");
 goog.require("cljs.core");
+goog.require("think.util.log");
 goog.require("crate.binding");
 goog.require("crate.binding");
+goog.require("think.util.log");
 goog.require("think.objects.module");
 goog.require("think.object");
 think.objects.templates.single_column.render_modules = function render_modules(this$, modules) {
-  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.span12"], true)
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.span12", function() {
+    var iter__2585__auto__ = function iter__191193(s__191194) {
+      return new cljs.core.LazySeq(null, false, function() {
+        var s__191194__$1 = s__191194;
+        while(true) {
+          if(cljs.core.seq.call(null, s__191194__$1)) {
+            var module = cljs.core.first.call(null, s__191194__$1);
+            return cljs.core.cons.call(null, (new cljs.core.Keyword("\ufdd0'content")).call(null, module), iter__191193.call(null, cljs.core.rest.call(null, s__191194__$1)))
+          }else {
+            return null
+          }
+          break
+        }
+      }, null)
+    };
+    return iter__2585__auto__.call(null, modules)
+  }()], true)
 };
 think.objects.templates.single_column.t = cljs.core.atom.call(null, null);
 think.object.object_STAR_.call(null, "\ufdd0'think.objects.templates.single-column/single-column", "\ufdd0'triggers", cljs.core.PersistentHashSet.EMPTY, "\ufdd0'behaviors", cljs.core.PersistentVector.EMPTY, "\ufdd0'init", function(this$, template_record) {
-  think.object.merge_BANG_.call(null, this$, cljs.core.assoc.call(null, template_record, "\ufdd0'modules", cljs.core.map.call(null, think.objects.module.create, (new cljs.core.Keyword("\ufdd0'modules")).call(null, template_record))));
-  cljs.core.reset_BANG_.call(null, think.objects.templates.single_column.t, template_record);
-  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.container-fluid", crate.binding.bound.call(null, crate.binding.subatom.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'modules"], true)), cljs.core.partial.call(null, think.objects.templates.single_column.render_modules, this$))], true)
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.container-fluid", cljs.core.PersistentVector.fromArray(["\ufdd0'h3", "template"], true)], true)
 });
 think.objects.templates.single_column.single_column = think.object.create.call(null, "\ufdd0'think.objects.templates.single-column/single-column");
 think.objects.templates.single_column.create = function create(template_record) {
-  return think.object.create.call(null, "\ufdd0'think.objects.templates.single-column/single-column", template_record)
+  var obj = think.object.create.call(null, "\ufdd0'think.objects.templates.single-column/single-column");
+  think.object.merge_BANG_.call(null, think.objects.templates.single_column.single_column, cljs.core.assoc.call(null, template_record, "\ufdd0'modules", cljs.core.doall.call(null, cljs.core.map.call(null, think.objects.module.create, (new cljs.core.Keyword("\ufdd0'modules")).call(null, template_record)))));
+  think.util.log.log.call(null, (new cljs.core.Keyword("\ufdd0'modules")).call(null, cljs.core.assoc.call(null, template_record, "\ufdd0'modules", cljs.core.doall.call(null, cljs.core.map.call(null, think.objects.module.create, (new cljs.core.Keyword("\ufdd0'modules")).call(null, template_record))))));
+  return obj
 };
 goog.provide("think.objects.template");
 goog.require("cljs.core");
@@ -39350,15 +39368,15 @@ goog.require("think.model");
 goog.require("think.object");
 think.objects.document.render_template = function render_template(this$, template) {
   var e__12442__auto__ = crate.core.html.call(null, cljs.core.PersistentVector.fromArray(["\ufdd0'div#template", think.object.__GT_content.call(null, template)], true));
-  var G__100441_100443 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
+  var G__176283_176285 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
   while(true) {
-    if(G__100441_100443) {
-      var vec__100442_100444 = cljs.core.first.call(null, G__100441_100443);
-      var ev__12443__auto___100445 = cljs.core.nth.call(null, vec__100442_100444, 0, null);
-      var func__12444__auto___100446 = cljs.core.nth.call(null, vec__100442_100444, 1, null);
-      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___100445, func__12444__auto___100446);
-      var G__100447 = cljs.core.next.call(null, G__100441_100443);
-      G__100441_100443 = G__100447;
+    if(G__176283_176285) {
+      var vec__176284_176286 = cljs.core.first.call(null, G__176283_176285);
+      var ev__12443__auto___176287 = cljs.core.nth.call(null, vec__176284_176286, 0, null);
+      var func__12444__auto___176288 = cljs.core.nth.call(null, vec__176284_176286, 1, null);
+      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___176287, func__12444__auto___176288);
+      var G__176289 = cljs.core.next.call(null, G__176283_176285);
+      G__176283_176285 = G__176289;
       continue
     }else {
     }
@@ -39370,7 +39388,7 @@ think.object.object_STAR_.call(null, "\ufdd0'think.objects.document/document", "
   think.util.log.log.call(null, "Init document with document ", document);
   var tpl_obj = think.objects.template.create.call(null, (new cljs.core.Keyword("\ufdd0'template")).call(null, document));
   think.object.merge_BANG_.call(null, this$, cljs.core.assoc.call(null, document, "\ufdd0'template", tpl_obj));
-  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.document", crate.binding.bound.call(null, crate.binding.subatom.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'template"], true)), cljs.core.partial.call(null, think.objects.document.render_template, this$))], true)
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div.document", cljs.core.PersistentVector.fromArray(["\ufdd0'h3", "document"], true), crate.binding.bound.call(null, crate.binding.subatom.call(null, this$, cljs.core.PersistentVector.fromArray(["\ufdd0'template"], true)), cljs.core.partial.call(null, think.objects.document.render_template, this$))], true)
 });
 think.objects.document.create_BANG_ = function create_BANG_(document) {
   return think.object.create.call(null, "\ufdd0'think.objects.document/document", document)
@@ -39701,15 +39719,15 @@ goog.require("think.object");
 think.objects.workspace.default_width = 950;
 think.objects.workspace.render_document = function render_document(this$, doc) {
   var e__12442__auto__ = crate.core.html.call(null, think.object.__GT_content.call(null, doc));
-  var G__114667_114669 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
+  var G__175677_175679 = cljs.core.seq.call(null, cljs.core.partition.call(null, 2, cljs.core.PersistentVector.EMPTY));
   while(true) {
-    if(G__114667_114669) {
-      var vec__114668_114670 = cljs.core.first.call(null, G__114667_114669);
-      var ev__12443__auto___114671 = cljs.core.nth.call(null, vec__114668_114670, 0, null);
-      var func__12444__auto___114672 = cljs.core.nth.call(null, vec__114668_114670, 1, null);
-      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___114671, func__12444__auto___114672);
-      var G__114673 = cljs.core.next.call(null, G__114667_114669);
-      G__114667_114669 = G__114673;
+    if(G__175677_175679) {
+      var vec__175678_175680 = cljs.core.first.call(null, G__175677_175679);
+      var ev__12443__auto___175681 = cljs.core.nth.call(null, vec__175678_175680, 0, null);
+      var func__12444__auto___175682 = cljs.core.nth.call(null, vec__175678_175680, 1, null);
+      think.util.dom.on.call(null, e__12442__auto__, ev__12443__auto___175681, func__12444__auto___175682);
+      var G__175683 = cljs.core.next.call(null, G__175677_175679);
+      G__175677_175679 = G__175683;
       continue
     }else {
     }
@@ -39741,7 +39759,7 @@ think.objects.workspace.__GT_width = function __GT_width(width) {
   }()), cljs.core.str("px")].join("")
 };
 think.object.object_STAR_.call(null, "\ufdd0'think.objects.workspace/workspace", "\ufdd0'triggers", cljs.core.PersistentHashSet.fromArray(["\ufdd0'load-document"]), "\ufdd0'behaviors", cljs.core.PersistentVector.fromArray(["\ufdd0'think.objects.workspace/load-document"], true), "\ufdd0'width", 0, "\ufdd0'transients", cljs.core.List.EMPTY, "\ufdd0'max-width", think.objects.workspace.default_width, "\ufdd0'init", function(this$) {
-  return cljs.core.PersistentVector.fromArray(["\ufdd0'div#workspace"], true)
+  return cljs.core.PersistentVector.fromArray(["\ufdd0'div#workspace", cljs.core.PersistentVector.fromArray(["\ufdd0'h3", "workspace"], true)], true)
 });
 think.objects.workspace.workspace = think.object.create.call(null, "\ufdd0'think.objects.workspace/workspace");
 think.objects.canvas.add_BANG_.call(null, think.objects.workspace.workspace);

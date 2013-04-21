@@ -22,6 +22,7 @@
                           (object/merge! this
                             (assoc document :template tpl-obj))
                           [:div.document
+                            [:h3 "document"]
                             (bound (subatom this [:template])
                               (partial render-template this))])))
 

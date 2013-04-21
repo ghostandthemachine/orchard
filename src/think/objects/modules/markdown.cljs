@@ -2,6 +2,7 @@
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
             [dommy.template :as tpl]
+            [think.util.log :refer [log]]
             [crate.binding :refer [bound subatom]]))
 
 
@@ -133,18 +134,19 @@
 (defui render-markdown
   [this text]
   [:div.markdown
-    (let [html (js/markdown.toHTML text)]
-      (tpl/html->nodes html))])
+    ; (let [html (js/markdown.toHTML text)]
+    ;   (tpl/html->nodes html))
+    [:h1 "should be a module"]
+    ])
 
 (object/object* ::markdown-module
                 :tags #{}
                 :mode :present
                 :init (fn [this record]
-                        (object/merge! this record)
-                        [:div.markdown-module
-                        [:h1 "should render module here"]
-                          ; (bound (subatom this :text) (partial render-markdown this))
-                          ]))
+                        (let [this (object/merge! this record)]
+                          [:div.markdown-module
+                            ; (bound (subatom this [:text]) (partial render-markdown this))
+                            ])))
 
 (defn create
   [record]
