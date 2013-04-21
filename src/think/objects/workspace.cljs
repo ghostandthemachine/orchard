@@ -16,7 +16,6 @@
   (object/->content doc))
 
 
-
 (object/behavior* ::load-document
                   :triggers #{:load-document}
                   :reaction (fn [this doc]
