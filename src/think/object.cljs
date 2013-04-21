@@ -7,7 +7,7 @@
   (:use [think.util.dom :only [replace-with]]
         [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
 
-(def obj-id (atom 0))
+(def id-counter    (atom 0))
 (def instances (atom (sorted-map)))
 (def behaviors (atom {}))
 (def object-defs (atom {}))
@@ -157,7 +157,7 @@
   (let [obj (if (keyword? obj-name)
               (@object-defs obj-name)
               obj-name)
-        id (or (::id obj) (swap! obj-id inc))
+        id (or (::id obj) (swap! id-counter inc))
         obj (update-listeners obj)
         inst (atom (assoc (dissoc obj :init)
                      ::id id
