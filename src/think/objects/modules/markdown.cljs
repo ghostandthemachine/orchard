@@ -145,6 +145,7 @@
                 :init (fn [this record]
                         (let [this (object/merge! this record)]
                           [:div.markdown-module
+                          [:h1 "should be a module"]
                             ; (bound (subatom this [:text]) (partial render-markdown this))
                             ])))
 

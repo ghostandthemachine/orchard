@@ -18,11 +18,12 @@
                 :triggers #{}
                 :behaviors []
                 :init (fn [this template-record]
-
-                          [:div.container-fluid
-                          [:h3 "template"]
-                          ; (bound (subatom this [:modules]) (partial render-modules this))
-                          ]))
+                          (let [module-objs (map module/create (:modules template-record))
+                                new-tpl     (assoc template-record :modules module-objs)]
+                            (object/merge! this new-tpl)
+                            [:div.container-fluid
+                              [:h3 "template"]
+                                (bound (subatom this [:modules]) (partial render-modules this))])))
 
 
 (def single-column (object/create ::single-column))
@@ -30,9 +31,4 @@
 
 (defn create
   [template-record]
-  (let [;modules (map module/create (:modules template-record))
-        obj (object/create ::single-column)]
-    (object/merge! single-column (assoc template-record :modules (doall (map module/create (:modules template-record)))))
-    (log (:modules (assoc template-record :modules (doall (map module/create (:modules template-record))))))
-    obj
-    ))
+  (object/create ::single-column template-record))

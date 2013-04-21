@@ -72,7 +72,7 @@ try {
 
     order.forEach(function(path) {
         if(hasExt(path, ["css"])) load_css(path, false);
-        if(hasExt(path, ["js"]))  load_cript(path, false);
+        if(hasExt(path, ["js"]))  load_script(path, false);
     });
 
     /* ready to go - let's load thinker_app */
