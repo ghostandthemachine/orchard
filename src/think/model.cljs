@@ -90,7 +90,7 @@
   [{:keys [title authors path filename notes annotations cites tags] :as doc}]
   (assoc doc
          :type :pdf-document
-         :id         (or id (util/uuid))
+         :id         (util/uuid)
          :type       type
          :created-at (util/date-json)
          :updated-at (util/date-json)))
@@ -100,7 +100,7 @@
   [{:keys [rev title template] :as doc}]
   (assoc doc
          :type :wiki-document
-         :id         (or id (util/uuid))
+         :id         id (util/uuid)
          :created-at (util/date-json)
          :updated-at (util/date-json)))
 
@@ -111,17 +111,17 @@
 
 (defn home-doc
   []
-  (create-document
-    {:type :wiki-document
-     :id :home
-     :template {:type :single-column-template
-                :modules [{:type ::markdown-module
-                           :text "## Now we can use markdown"
-                           :id   (util/uuid)}
-                          {:type ::html-module
-                           :text "<h1> Or raw HTML </h1>"
-                           :id   (util/uuid)}]}
-     :title "thinker app"}))
+  {:type :wiki-document
+   :id :home
+   :template {:type :single-column-template
+              :modules [{:type ::markdown-module
+                         :text "## Now we can use markdown"
+                         :id   (util/uuid)}
+                        {:type ::html-module
+                         :text "<h1> Or raw HTML </h1>"
+                         :id   (util/uuid)}]}
+   :title "thinker app"})
+
 
 (defn reset-home
   []
