@@ -15,9 +15,9 @@
 ;                 "compiler/clojurescript/src/cljs"]
 
   :cljsbuild {:builds [{:source-paths ["src"]
-                        ;:notify-command ["growlnotify" "-m"]
+                        :notify-command ["growlnotify" "-m"]
                         ;:incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
-                        :compiler {:output-to     "public/js/bootstrap.js"
+                        :compiler {:output-to     "public/js/thinker.js"
                                    :optimizations :whitespace
                                    :warnings true
                                    :pretty-print true}}]})
