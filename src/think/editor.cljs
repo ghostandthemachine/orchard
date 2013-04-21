@@ -6,9 +6,7 @@
             [dommy.core :as dom]
             [dommy.attrs :as attrs]
             [think.dispatch :as dispatch]
-            [think.view-helpers :as view]
             [think.util.log :refer [log]]
-            [think.project :as project]
             [think.util :refer [start-repl-server]]))
 
 ; (def default-opts

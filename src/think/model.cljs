@@ -30,7 +30,6 @@
                   :triggers #{:db-loaded}
                   :reaction (fn [this]
                               (log "PouchDB loaded...")
-                              ; (object/raise app/app :db-loaded)
                               (fire :db-loaded)))
 
 
@@ -44,19 +43,6 @@
 
 
 (def model (object/create ::model))
-
-
-
-; (def document-db* (atom nil))
-
-(defmulti doc->record     #(keyword (:type %)))
-(defmulti create-document #(keyword (:type %)))
-
-
-(defmethod doc->record :default
-  [doc]
-  (log "doc->record - Missing or unsupported doc type: " doc)
-  (log-obj doc))
 
 
 (defn delete-document
@@ -74,7 +60,8 @@
 
 (defn docs-of-type
   [doc-type]
-  (db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)}))
+  (let [doc-type (if (keyword? doc-type) (name doc-type) (str doc-type))]
+    (db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)})))
 
 
 (defn get-document
@@ -83,7 +70,7 @@
         doc-promise (db/get-doc (:document-db* @model) id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        (p/realise res-promise (doc->record doc)))
+        (p/realise res-promise doc))
 
       (fn error [err]
         (if (and (= (.-status err) 404)
@@ -99,51 +86,23 @@
     (util/await (map #(db/get-doc (:document-db* @model) (.-id %)) (.-rows @docs)))))
 
 
-(defrecord PDFDocument
-  [type id rev created-at updated-at
-   title authors path filename notes annotations cites tags])
-
-(defrecord WikiDocument
-  [type id rev created-at updated-at title template])
-
-(defmethod doc->record :wiki-document
-  [{:keys [type id rev template title created-at updated-at]}]
-  (let [tpl (doc->record template)]
-    (map->WikiDocument. {:type type :id id :rev rev :created-at created-at :updated-at updated-at
-                         :title title
-                         :template tpl})))
+(defn pdf-document
+  [{:keys [title authors path filename notes annotations cites tags] :as doc}]
+  (assoc doc
+         :type :pdf-document
+         :id         (or id (util/uuid))
+         :type       type
+         :created-at (util/date-json)
+         :updated-at (util/date-json)))
 
 
-(defmethod create-document :wiki-document
-  [{:keys [type id template title modules]}]
-  (map->WikiDocument {:id         (or id (util/uuid))
-                      :type       type
-                      :created-at (util/date-json)
-                      :updated-at (util/date-json)
-                      :title      title
-                      :template   template}))
-
-(defrecord SingleColumnTemplate [type modules])
-
-(defmethod doc->record :single-column-template
-  [{:keys [modules]}]
-  (map->SingleColumnTemplate.
-    {:type :single-column-template
-     :modules (map doc->record modules)}))
-
-(defrecord MarkdownModule [text])
-
-
-(defrecord HTMLModule [text])
-
-
-(defmethod doc->record :markdown-module
-  [module]
-  (map->MarkdownModule module))
-
-(defmethod doc->record :html-module
-  [module]
-  (map->HTMLModule module))
+(defn wiki-document
+  [{:keys [rev title template] :as doc}]
+  (assoc doc
+         :type :wiki-document
+         :id         (or id (util/uuid))
+         :created-at (util/date-json)
+         :updated-at (util/date-json)))
 
 
 (defrecord FormModule     [fields])
@@ -169,3 +128,5 @@
   (let-realised [doc (get-document :home)]
     (delete-document @doc)
     (save-document (home-doc))))
+
+
