@@ -6,6 +6,7 @@
             [think.util.log :refer [log]]
             [think.util.cljs :refer [->dottedkw]]
             [think.objects.templates.single-column :as sctmpl]
+            [think.objects.templates.two-column :as tctmpl]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 

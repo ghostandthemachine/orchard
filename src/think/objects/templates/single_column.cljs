@@ -17,8 +17,8 @@
 
 (defui add-module-btn
   [this]
-  [:button.btn.btn-mini.btn-primary.pull-right.add-module-btn
-    [:h4 "+"]]
+  [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
+    [:i.icon-plus-sign.icon-white]]
   :click #(object/update! this [:modules] concat (list (object/create :markdown-module {:text "#### new module" :id (uuid)}))))
 
 

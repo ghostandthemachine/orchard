@@ -136,6 +136,14 @@
    :title "thinker app"})
 
 
+(defn test-doc
+  [mods-left mods-right]
+  {:type :wiki-document
+   :id :home
+   :template {:template :two-column-template
+              :modules-left mods-left
+              :modules-right mods-right}})
+
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]
@@ -149,3 +157,10 @@
         (save-document doc)))))
 
 
+; (def md-doc (markdown-doc))
+; (def ht-doc (html-doc))
+; (def home   (home-doc (:id md-doc) (:id ht-doc)))
+
+; (save-document md-doc)
+; (save-document ht-doc)
+; (save-document home)
