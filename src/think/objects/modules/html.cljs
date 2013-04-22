@@ -14,7 +14,8 @@
      :lineNumbers true
      :tabMode "indent"
      :autofocus true
-     :linewrapping true}))
+     :linewrapping true
+     :viewportMargin js/Infinity}))
 
 (defui module-btn
   [this]
@@ -47,7 +48,7 @@
               (fn [elem]
                 (dom/append (dom/$ (str "#module-" (:id @this) " .module-content"))
                   elem))
-              (clj->js default-opts))]
+              default-opts)]
       (object/assoc! this :editor cm)
       (.setValue cm (:text @this)))
     (object/assoc! this :text (.getValue (:editor @this)))))
