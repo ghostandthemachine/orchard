@@ -9,6 +9,7 @@
 (object/behavior* ::save-module
                   :triggers #{:save}
                   :reaction (fn [this]
+                              (log "saving...")
                               (let [original-doc (first (:args @this))
                                     doc-keys     (keys original-doc)
                                     new-doc      (select-keys @this doc-keys)]

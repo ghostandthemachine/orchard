@@ -12,13 +12,27 @@
     (object/->content template)])
 
 
+(object/behavior* ::save-document
+                  :triggers #{:save}
+                  :reaction (fn [this]
+                              (log "saving document...")
+                              (log-obj @this)
+                              (let [original-doc (first (:args @this))
+                                    doc-keys     (keys original-doc)
+                                    mod-ids      (map :id (:modules (:template @this)))
+                                    _ (log "mod-ids:" mod-ids)
+                                    new-doc      (select-keys @this doc-keys)
+                                    new-doc      (assoc-in new-doc [:template :modules] mod-ids)]
+                                (model/save-document new-doc))))
+
+
 (object/object* :document
-                :triggers #{}
-                :behaviors []
+                :triggers #{:save}
+                :behaviors [::save-document]
                 :init (fn [this document]
                         (log "Init document with document " document)
                         (let [template (:template document)
-                              tpl-obj (object/create (keyword (:type template)) template)]
+                              tpl-obj (object/create (keyword (:type template)) template this)]
                           (object/merge! this
                             (assoc document :template tpl-obj))
 
