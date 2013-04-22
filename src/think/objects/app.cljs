@@ -75,13 +75,15 @@
 (def app         (object/create ::app))
 (def note-editor (object/create :think.objects.note-editor/note-editor))
 
-(defn setup-tray []
+(defn setup-tray
+  []
   "Creates a tray menu in upper-right app tray."
+  (log "creating tray menu...")
   (nw/tray! {:title "Thinker"
              :menu (nw/menu [{:label "Take note..." :click (object/raise note-editor :take-note)}
                              {:label "Show"         :click #(.show (nw/window))}
                              {:type "separator"}
-                             {:label "Quit"         :click (object/raise app :quit)}
+                             {:label "Quit"         :click #(object/raise app :quit)}
                              ])}))
 
 
@@ -99,9 +101,8 @@
   (log "Starting app...")
   (think.util/start-repl-server)
   (object/raise app :init-home)
-  ;(setup-tray)
+  (setup-tray)
   )
 
 
 (react-to #{:db-loaded} load-home)
-
