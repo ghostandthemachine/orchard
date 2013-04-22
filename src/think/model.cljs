@@ -52,6 +52,8 @@
 
 (defn save-document
   [doc]
+  (log "save-document: ")
+  (log-obj doc)
   (db/update-doc (:document-db* @model)
                  (if (and (contains? doc :rev) (nil? (:rev doc)))
                    (dissoc doc :rev)
@@ -70,7 +72,12 @@
         doc-promise (db/get-doc (:document-db* @model) id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        (p/realise res-promise doc))
+        (let [modules (map #(db/get-doc (:document-db* @model) %)
+                           (get-in doc [:template :modules]))]
+          (when-realised modules
+                         (log "modules realised...")
+                         (p/realise res-promise (assoc-in doc [:template :modules]
+                                                          (map deref modules))))))
 
       (fn error [err]
         (if (and (= (.-status err) 404)
@@ -108,25 +115,37 @@
 (defrecord FormModule     [fields])
 (defrecord QueryModule    [query template])
 
+(defn markdown-doc
+  []
+  {:type ::markdown-module
+   :text "## Markdown module"
+   :id   (util/uuid)})
+
+(defn html-doc
+  []
+  {:type ::html-module
+   :text "<h1> Or raw HTML </h1>"
+   :id   (util/uuid)})
 
 (defn home-doc
-  []
+  [& mods]
   {:type :wiki-document
    :id :home
    :template {:type :single-column-template
-              :modules [{:type ::markdown-module
-                         :text "## Now we can use markdown"
-                         :id   (util/uuid)}
-                        {:type ::html-module
-                         :text "<h1> Or raw HTML </h1>"
-                         :id   (util/uuid)}]}
+              :modules mods}
    :title "thinker app"})
 
 
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]
+    ;(doseq [doc (conj (:modules @doc) @doc)]
     (delete-document @doc)
-    (save-document (home-doc))))
+
+    (let [md-doc (markdown-doc)
+          ht-doc (html-doc)
+          home   (home-doc (:id md-doc) (:id ht-doc))]
+      (doseq [doc [md-doc ht-doc home]]
+        (save-document doc)))))
 
 

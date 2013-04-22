@@ -5,7 +5,8 @@
             [think.util :refer [bound-do]]
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
-            [crate.binding :refer [bound subatom]]))
+            [crate.binding :refer [bound subatom]]
+            [think.model :as model]))
 
 (def default-opts
   (clj->js
@@ -53,13 +54,17 @@
     (object/assoc! this :text (.getValue (:editor @this)))))
 
 
+
 (object/object* :markdown-module
                 :tags #{}
+                :triggers #{:save}
+                :behaviors [:think.objects.modules/save-module]
                 :mode :present
                 :editor nil
                 :init (fn [this record]
                         (object/merge! this record)
-                        (bound-do (subatom this [:mode]) (partial render-module this))
+                        (bound-do (subatom this :mode) (partial render-module this))
+                        (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
                         [:div.span12.module.markdown-module {:id (str "module-" (:id @this))}
                           [:div.module-tray (module-btn this)]
                           [:div.module-element
