@@ -47,12 +47,11 @@
       :edit    (render-edit this)))
   (if (= mode :edit)
     (let [cm (js/CodeMirror
-              (fn [elem]
-                (dom/append (dom/$ (str "#module-" (:id @this) " .module-content"))
-                  elem))
-              default-opts)]
+                (fn [elem]
+                  (dom/append (dom/$ (str "#module-" (:id @this) " .module-content"))
+                    elem))
+                default-opts)]
       (object/assoc! this :editor cm)
-      (.setOption cm "viewportMargin" js/Infinity)
       (.setValue cm (:text @this)))
     (object/assoc! this :text (.getValue (:editor @this)))))
 

@@ -100,7 +100,7 @@
   (log "Starting app...")
   (think.util/start-repl-server)
   (object/raise app :init-home)
-  (setup-tray)
+  ; (setup-tray)  ;; this is creating a new tray icon everytime i refresh and keeping the old ones
   )
 
 
