@@ -3,7 +3,7 @@
   (:require [think.object :as object]
             [think.model :as model]
             [crate.binding :refer [subatom bound]]
-            [think.util.log :refer [log]]))
+            [think.util.log :refer [log log-obj]]))
 
 
 (defui render-template

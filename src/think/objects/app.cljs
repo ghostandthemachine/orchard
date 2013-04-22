@@ -80,11 +80,10 @@
   "Creates a tray menu in upper-right app tray."
   (log "creating tray menu...")
   (nw/tray! {:title "Thinker"
-             :menu (nw/menu [{:label "Take note..." :click (object/raise note-editor :take-note)}
-                             {:label "Show"         :click #(.show (nw/window))}
+             :menu (nw/menu [{:label "Take note..." :onclick (object/raise note-editor :take-note)}
+                             {:label "Show"         :onclick #(.show (nw/window))}
                              {:type "separator"}
-                             {:label "Quit"         :click #(object/raise app :quit)}
-                             ])}))
+                             {:label "Quit"         :onclick #(object/raise app :quit)}])}))
 
 
 (defn load-document
