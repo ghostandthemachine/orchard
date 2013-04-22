@@ -1,11 +1,11 @@
 (ns think.project
   (:use-macros [redlobster.macros :only [when-realised let-realised]]
                [dommy.macros :only [sel sel1]]
-               [think.macros :only [defview]])
+               [think.macros :only [defui]])
   (:require [redlobster.promise :refer [promise on-realised]]
             [think.dispatch :refer [fire react-to]]
             [think.model :as model]
-            [think.log :refer [log log-obj log-err]]
+            [think.util.log :refer [log log-obj log-err]]
             [think.util :refer [uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
             [dommy.template :as tpl]
@@ -18,7 +18,7 @@
 
 (def cur-project* (atom nil))
 
-(defview new-project-form
+(defui new-project-form
   []
   [:div
     [:form
@@ -27,7 +27,7 @@
   :submit #(model/create-project (.-value (sel1 :#new-project-input))))
 
 
-(defview project-list-item
+(defui project-list-item
   [p]
   [:li (.-title p)]
   :click (fn [e]
@@ -35,7 +35,7 @@
             (fire :load-project (.-content p))))
 
 
-(defview project-menu
+(defui project-menu
   [projects]
   [:div#project-nav
    [:h3 "Projects"]

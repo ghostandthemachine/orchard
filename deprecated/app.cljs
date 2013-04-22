@@ -1,13 +1,16 @@
 (ns think.app
   (:use-macros [redlobster.macros :only [when-realised let-realised]]
                [dommy.macros :only [sel sel1]]
-               [think.macros :only [defview]])
+               [think.macros :only [defui]])
   (:require [redlobster.promise :refer [promise on-realised]]
             [think.dispatch :refer [fire react-to]]
             [think.model :as model]
-            [think.log :refer [log log-obj log-err]]
+            [think.object :as object]
+            [think.util.log :refer [log log-obj log-err]]
             [think.util :refer [start-repl-server uuid ready refresh r! clipboard read-clipboard open-window editor-window]]
             [think.view-helpers :as view]
+            [crate.binding :refer [map-bound bound subatom]]
+            [crate.core :refer [html]]
             [dommy.template :as tpl]
             [dommy.core :as dom]
             [redlobster.promise :as p]))
@@ -26,19 +29,22 @@
                                       "Home"]]
    [:a.btn.btn-small.pull-right {:id "search-btn"} "Search"]])
 
-(defview module-btn
+(defui module-btn
   [record]
   [:div.module-btn]
   :click (fn [e] (fire :toggle-module record)))
 
-(defview module
+(defui module
   [content record & handlers]
   [:div.module {:id (:id record)}
     (module-btn record)
-    [:div.module-content]
-      content]
+    [:div.module-content
+      content]]
   handlers)
 
+
+
+;; Merge record with Object defs
 
 ; CodeMirror functions
 
@@ -63,7 +69,9 @@
 
 (defn create-cm-module
   [record]
-  (let [module (module [:textarea {:id (str "editor-" (:id record))}] record)
+  (let [module (module
+                  [:div.module-editor
+                    [:textarea {:id (str "editor-" (:id record))}]] record)
         id     (:id record)]
     (dom/replace! (sel1 (str "#" id))
       module)
@@ -87,6 +95,27 @@
   (-elem [this]
     [:div.document
       (tpl/-elem (:template this))]))
+
+
+(extend-type model/SingleColumnTemplate
+  dommy.template/PElement
+  (-elem [this]
+    (vec (concat [:div.template.single-column-template]
+                 (map tpl/-elem (:modules this))))))
+
+
+
+(defn single-column-template
+  [template]
+  (object/object* ::single-column-template
+                  :triggers #{}
+                  :behaviors []
+                  :init (fn [this]
+                          [:div.template.single-column-template
+                            (bound (subatom this [:modules]) )]
+                          )
+                  (into {} template)))
+
 
 
 (extend-type model/MarkdownModule
@@ -119,11 +148,6 @@
       (tpl/-elem (:template this))]))
 
 
-(extend-type model/SingleColumnTemplate
-  dommy.template/PElement
-  (-elem [this]
-    (vec (concat [:div.template.single-column-template]
-                 (map tpl/-elem (:modules this))))))
 
 
 (defn app-view
@@ -170,8 +194,9 @@
   []
   (start-repl-server)
   (model/init-document-db)
-  (init-view)
-  (react-to #{:document-db-ready} go-home))
+  ; (init-view)
+  ; (react-to #{:document-db-ready} go-home)
+  )
 
 
 (defn save-and-swap
@@ -190,3 +215,5 @@
     (if (nil? ((:id record) @editors*))
       (create-cm-module record)
       (save-and-swap record))))
+
+
