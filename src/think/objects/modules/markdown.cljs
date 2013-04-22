@@ -15,6 +15,7 @@
      :tabMode "indent"
      :autofocus true
      :linewrapping true
+     :matchBrackets true
      :viewportMargin js/Infinity}))
 
 (defui module-btn
@@ -50,6 +51,7 @@
                   elem))
               default-opts)]
       (object/assoc! this :editor cm)
+      (.setOption cm "viewportMargin" js/Infinity)
       (.setValue cm (:text @this)))
     (object/assoc! this :text (.getValue (:editor @this)))))
 
