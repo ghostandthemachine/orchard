@@ -25,7 +25,13 @@
                                     new-doc      (assoc-in new-doc [:template :modules] mod-ids)]
                                 (model/save-document new-doc))))
 
-
+;(let [modules (map #(db/get-doc (:document-db* @model) %)
+;                           (get-in doc [:template :modules]))]
+;          (when-realised modules
+;                         (log "modules realised...")
+;                         (p/realise res-promise (assoc-in doc [:template :modules]
+;                                                          (map deref modules)))))
+;
 (object/object* :document
                 :triggers #{:save}
                 :behaviors [::save-document]

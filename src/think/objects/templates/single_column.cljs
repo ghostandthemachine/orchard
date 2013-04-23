@@ -18,8 +18,9 @@
 (defui add-module-btn
   [this]
   [:button.btn.btn-mini.btn-primary.pull-right.add-module-btn
-    [:h4 "+"]]
-  :click #(object/update! this [:modules] concat (list (object/create :markdown-module {:text "#### new module" :id (uuid)}))))
+   [:h4 "+"]]
+  :click #(object/update! this [:modules] conj
+            (object/create :markdown-module {:text "#### new module" :id (uuid)})))
 
 
 (object/object* :single-column-template
@@ -31,7 +32,9 @@
                                               (:modules template-record))
                                 new-tpl     (assoc template-record :modules module-objs)]
                             (object/merge! this new-tpl)
-                            (bound-do (subatom this :modules) (fn [_] (object/raise document :save)))
+                            (bound-do (subatom this :modules)
+                                      (fn [_] (object/raise document :save)))
+
                             [:div.template.single-column-template
                               [:div.fluid-row
                                 (bound (subatom this :modules) (partial render-modules this))]

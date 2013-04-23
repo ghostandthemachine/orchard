@@ -16,13 +16,11 @@
   (object/->content doc))
 
 
-(object/behavior* ::load-document
-                  :triggers #{:load-document}
+(object/behavior* ::show-document
+                  :triggers #{:show-document}
                   :reaction (fn [this doc]
-                              (log "load-document" doc)
-                              (let [doc-obj (object/create :document doc)]
-                                (object/merge! this {:document doc-obj})
-                                (dom/append (:content @this) (:content @doc-obj)))))
+                              (object/merge! this {:document doc})
+                              (dom/append (:content @this) (:content @doc))))
 
 
 (defn active-content [active]
@@ -33,8 +31,8 @@
   (str (or width 0) "px"))
 
 (object/object* ::workspace
-                :triggers  #{:load-document}
-                :behaviors [::load-document]
+                :triggers  #{:show-document}
+                :behaviors [::show-document]
                 :width 0
                 :transients '()
                 :max-width default-width
@@ -44,7 +42,6 @@
 (def workspace (object/create ::workspace))
 
 (canvas/add! workspace)
-
 
 
 ; (defn add-module [module]

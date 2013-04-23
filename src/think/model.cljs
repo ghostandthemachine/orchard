@@ -72,12 +72,27 @@
         doc-promise (db/get-doc (:document-db* @model) id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        (let [modules (map #(db/get-doc (:document-db* @model) %)
-                           (get-in doc [:template :modules]))]
-          (when-realised modules
-                         (log "modules realised...")
-                         (p/realise res-promise (assoc-in doc [:template :modules]
-                                                          (map deref modules))))))
+        (p/realise res-promise doc))
+
+      (fn error [err]
+        (if (and (= (.-status err) 404)
+                 (= (.-error err) "not_found"))
+          (p/realise res-promise nil)
+          (p/realise-error res-promise err))))
+    res-promise))
+
+
+(defn load-document
+  [id]
+  (let [res-promise (p/promise)
+        doc-promise (get-document id)]
+    (p/on-realised doc-promise
+      (fn success [doc]
+        (log "realizing new document of type: " (:type doc))
+        (let [obj-type (keyword (:type doc))]
+          (if (object/defined? obj-type)
+            (p/realise res-promise (object/create obj-type doc))
+            (p/realise res-promise :no-matching-type))))
 
       (fn error [err]
         (if (and (= (.-status err) 404)
@@ -91,6 +106,12 @@
   []
   (let-realised [docs (db/all-docs (:document-db* @model))]
     (util/await (map #(db/get-doc (:document-db* @model) (.-id %)) (.-rows @docs)))))
+
+
+(defn load-all-documents
+  []
+  (let-realised [docs (all-documents)]
+    (util/await (map #(load-document (.-id %)) (.-rows @docs)))))
 
 
 (defn pdf-document
@@ -115,17 +136,20 @@
 (defrecord FormModule     [fields])
 (defrecord QueryModule    [query template])
 
+
 (defn markdown-doc
   []
   {:type ::markdown-module
    :text "## Markdown module"
    :id   (util/uuid)})
 
+
 (defn html-doc
   []
   {:type ::html-module
    :text "<h1> Or raw HTML </h1>"
    :id   (util/uuid)})
+
 
 (defn home-doc
   [& mods]
