@@ -60,7 +60,7 @@
                                   (object/merge! canv {:dragging nil})))))
 
 (defui canvas-elem [obj]
-  [:div#canvas]
+  [:div#canvas.unselectble]
   :mousemove (fn [e]
                (object/raise obj :mousemove e))
   :click (fn [e]

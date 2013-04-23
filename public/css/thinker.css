@@ -119,8 +119,8 @@ video {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 5px;
-  -webkit-transition:.4s;
-  transition: border-color .4s ease-out;
+  -webkit-mouseover-transition:.4s;
+  mouseover-transition: border-color .4s ease-out;
 }
 
 .module:hover {
@@ -137,13 +137,13 @@ video {
   float:right;
   top: -7px;
   -webkit-transition:.4s;
-  transition: background-color .4s ease-out;
+  transition: background-color .4s ease-in;
 }
 
 .module:hover .module-btn {
     background-image: -webkit-radial-gradient(center, circle closest-side, #1271FF 0%, #81DDEF 100%);
     -webkit-transition:.1s;
-    transition: background-color .1s ease-out;
+    transition: background-color .1s ease-in;
 }
 
 .module .module-btn:hover {

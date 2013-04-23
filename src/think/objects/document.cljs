@@ -16,11 +16,9 @@
                   :triggers #{:save}
                   :reaction (fn [this]
                               (log "saving document...")
-                              (log-obj @this)
                               (let [original-doc (first (:args @this))
                                     doc-keys     (keys original-doc)
                                     mod-ids      (map :id (:modules (:template @this)))
-                                    _ (log "mod-ids:" mod-ids)
                                     new-doc      (select-keys @this doc-keys)
                                     new-doc      (assoc-in new-doc [:template :modules] mod-ids)]
                                 (model/save-document new-doc))))
