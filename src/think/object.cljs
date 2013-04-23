@@ -91,10 +91,17 @@
       (raise inst :redef))
     id))
 
+
 (defn object* [name & r]
   (-> (apply make-object* name r)
       (store-object*)
       (handle-redef)))
+
+
+(defn defined?
+  [obj-name]
+  (contains? @object-defs obj-name))
+
 
 (defn make-behavior* [name & r]
   (let [be (merge {:name name}
@@ -258,5 +265,4 @@
 (defn on-change [obj func]
   (add-watch obj (gensym change) (fn [_ _ _ v]
                                    (func v))))
-
 

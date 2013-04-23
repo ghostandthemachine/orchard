@@ -9,6 +9,7 @@
             [think.util.dom :refer [$ html append] :as dom]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
+            think.objects.wiki-document
             [redlobster.promise :as p]))
 
 (def gui (js/require "nw.gui"))
@@ -86,22 +87,23 @@
                              {:label "Quit"         :onclick #(object/raise app :quit)}])}))
 
 
-(defn load-document
+(defn open-document
   [doc-id]
-  (let-realised [doc (model/get-document doc-id)]
-    (object/raise workspace/workspace :load-document @doc)))
+  (let-realised [doc (model/load-document doc-id)]
+    (object/raise workspace/workspace :show-document @doc)))
 
 
 (defn load-home
   []
-  (load-document :home))
+  (open-document :home))
+
 
 (defn init []
   (log "Starting app...")
   (think.util/start-repl-server)
   (object/raise app :init-home)
-  ; (setup-tray)  ;; this is creating a new tray icon everytime i refresh and keeping the old ones
-  )
+  (setup-tray))
 
 
 (react-to #{:db-loaded} load-home)
+
