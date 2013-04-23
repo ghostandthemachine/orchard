@@ -1,11 +1,9 @@
 (ns think.objects.workspace
   (:require [think.object :as object]
             [think.objects.canvas :as canvas]
-            [think.objects.document :as document]
             [think.util.dom :as dom]
             [think.util.log :refer [log]]
             [think.util.cljs :refer [->dottedkw]]
-            [think.objects.templates.single-column :as sctmpl]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 
@@ -42,20 +40,3 @@
 (def workspace (object/create ::workspace))
 
 (canvas/add! workspace)
-
-
-; (defn add-module [module]
-;   (object/update! workspace [:modules] conj module))
-
-; (defn record->module
-;   [record]
-;   (module/create-module record))
-
-
-; (defn create
-;   [record]
-;   (object/merge! workspace
-;     ; (assoc record :template (sctmpl/record->template record))
-;     record
-;     ))
-
