@@ -67,7 +67,9 @@
                         (bound-do (subatom this :mode)
                                   (partial render-module this))
                         (bound-do (subatom this :text)
-                                  (fn [_] (object/raise this :save)))
+                                  (fn [_]
+                                    (object/raise this :save)))
+
                         [:div.span12.module.markdown-module {:id (str "module-" (:id @this))}
                           [:div.module-tray (module-btn this)]
                           [:div.module-element (render-present this)]]))
