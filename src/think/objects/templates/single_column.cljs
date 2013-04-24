@@ -20,8 +20,9 @@
   [this]
   [:button.btn.btn-mini.btn-primary.pull-right.add-module-btn
    [:h4 "+"]]
-  :click #(object/update! this [:modules] conj
-                          (object/create :markdown-module {:text "#### new module" :id (util/uuid)})))
+  :click #(object/update! this [:modules] cons
+                          (object/create :markdown-module
+                                         {:text "#### new module" :id (util/uuid)})))
 
 
 (object/object* :single-column-template

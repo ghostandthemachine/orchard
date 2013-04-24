@@ -13,6 +13,7 @@
   [:div.document-content
     (object/->content template)])
 
+
 (object/behavior* ::save-document
                   :triggers #{:save}
                   :reaction (fn [this]
@@ -23,6 +24,7 @@
                                     new-doc      (select-keys @this doc-keys)
                                     new-doc      (assoc-in new-doc [:template :modules] mod-ids)]
                                 (model/save-document new-doc))))
+
 
 (object/object* :wiki-document
                 :triggers #{:save}
