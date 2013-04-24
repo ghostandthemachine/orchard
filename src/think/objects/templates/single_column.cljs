@@ -21,7 +21,7 @@
   [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
     [:i.icon-plus-sign.icon-white]]
   :click #(object/update! this [:modules] conj
-            (object/create :markdown-module {:text "#### new module" :id (uuid)})))
+            (object/create :markdown-module {:text "#### new module" :id (util/uuid)})))
 
 
 (object/object* :single-column-template
