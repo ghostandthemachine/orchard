@@ -19,7 +19,7 @@
 
 (defui module-btn
   [this]
-  [:div.module-btn]
+  [:i.icon-pencil.module-btn]
   :click (fn [e]
             (object/assoc! this :mode
               (if (= (:mode @this) :present)
