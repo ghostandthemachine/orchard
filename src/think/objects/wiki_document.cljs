@@ -34,10 +34,10 @@
                               tpl-obj  (object/create (keyword (:type template)) template this)]
                           (object/merge! this (assoc document :template tpl-obj))
                           [:div.container-fluid.document
-                            [:div.row-fluid
-                              [:div.span12
-                                [:h4 (:title @this)]]]
-                            (bound (subatom this [:template])
-                              (partial render-template this))])))
+                           [:div.row-fluid
+                            [:div.span12
+                             [:h4 (:title @this)]]]
+                           (bound (subatom this [:template])
+                                  (partial render-template this))])))
 
 

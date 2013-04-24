@@ -102,9 +102,9 @@
   (log "Starting app...")
   (think.util/start-repl-server)
   (object/raise app :init-home)
-  (setup-tray))
+  ; (setup-tray)
+  )
 
 
 (react-to #{:db-loaded} load-home)
-
 
