@@ -2,7 +2,7 @@
   (:require [think.object :as object]
             [think.objects.canvas :as canvas]
             [think.util.dom :as dom]
-            [think.util.log :refer [log]]
+            [think.util.log :refer [log log-obj]]
             [think.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
@@ -18,6 +18,7 @@
                   :triggers #{:show-document}
                   :reaction (fn [this doc]
                               (object/merge! this {:document doc})
+                              (dom/empty (:content @this))
                               (dom/append (:content @this) (:content @doc))))
 
 

@@ -32,7 +32,7 @@
                         (let [template (:template document)
                               tpl-obj  (object/create (keyword (:type template)) template this)]
                           (object/merge! this (assoc document :template tpl-obj))
-                          [:div.container-fluid.document
+                          [:div#document
                             [:div.row-fluid
                               [:div.span12
                                 [:h4 (:title @this)]]]
