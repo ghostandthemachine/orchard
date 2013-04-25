@@ -31,10 +31,9 @@
   :click (fn [e]
           (let [md-doc  (markdown-doc)
                 new-mod (object/create :markdown-module md-doc)]
-            (object/update! this [:modules]
-              (fn [mods]
-                (concat mods
-                  (list new-mod)))))))
+            (log "add module button")
+            (log-obj (keys @new-mod))
+            (object/update! this [:modules] conj new-mod))))
 
 
 (object/object* :single-column-template
@@ -51,7 +50,8 @@
                       (util/bound-do (subatom this :modules)
                         (fn [_]
                           (log "template modules save fired")
-                          (object/raise document :save)))))
+                          (object/raise document :save)
+                          ))))
 
                   [:div.template.single-column-template
                    [:div.fluid-row

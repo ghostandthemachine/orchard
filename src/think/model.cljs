@@ -192,6 +192,14 @@
     (doseq [doc [ht-doc ht-doc2 test-doc]]
       (save-document doc))))
 
+(defn create-test-doc3
+  []
+  (let [ht-doc (html-doc)
+        ht-doc3 (html-doc)
+        test-doc (test-doc :test-doc3 (:id ht-doc) (:id ht-doc3))]
+    (doseq [doc [ht-doc ht-doc3 test-doc]]
+      (save-document doc))))
+
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]

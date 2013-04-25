@@ -1,5 +1,5 @@
 (ns think.object
-  (:refer-clojure :exclude [set! assoc!])
+  (:refer-clojure :exclude [set! assoc! dissoc!])
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
@@ -144,6 +144,9 @@
 
 (defn assoc! [obj & args]
   (swap! obj #(apply assoc % args)))
+
+(defn dissoc! [obj & args]
+  (swap! obj #(apply dissoc % args)))
 
 (defn ->inst [o]
   (cond

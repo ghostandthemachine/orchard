@@ -19,10 +19,12 @@
                               (log "saving document...")
                               (let [original-doc (first (:args @this))
                                     doc-keys     (keys original-doc)
-                                    mod-ids      (map #(-> deref :id) (:modules @(:template @this)))
+                                    mod-ids      (map (fn [mod] (:id @mod)) (:modules @(:template @this)))
                                     new-doc      (select-keys @this doc-keys)
                                     new-tpl      (merge @(:template new-doc) {:modules mod-ids})
                                     new-doc      (assoc new-doc :template new-tpl)]
+
+                                (log-obj new-doc)
                                 (model/save-document new-doc))))
 
 (object/object* :wiki-document
