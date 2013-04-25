@@ -129,25 +129,25 @@ video {
 
 .module .module-btn {
   position: relative;
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 19px;
   border-radius: 10px;
-  background-color: transparent;
-  right: -6px;
-  float:right;
-  top: -7px;
-  -webkit-transition:.4s;
-  transition: background-color .4s ease-in;
+  right: -12px;
+  float: right;
+  top: -6px;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: .4s;
 }
 
 .module:hover .module-btn {
-    background-image: -webkit-radial-gradient(center, circle closest-side, #1271FF 0%, #81DDEF 100%);
-    -webkit-transition:.1s;
-    transition: background-color .1s ease-in;
+    /*background-image: -webkit-radial-gradient(center, circle closest-side, #1271FF 0%, #81DDEF 100%);*/
+    opacity: 1;
+    visibility: visible;
 }
 
 .module .module-btn:hover {
-  background-color: rgb(100, 200, 255);
+
 }
 
 

@@ -4,6 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util :as util]
+            [think.model :as model]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
 
@@ -16,12 +17,26 @@
         (:content @module)])])
 
 
+(defn markdown-doc
+  []
+  {:type ::markdown-module
+   :text "## Markdown module"
+   :id   (util/uuid)})
+
+
 (defui add-module-btn
   [this]
   [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
     [:i.icon-plus-sign.icon-white]]
-  :click #(object/update! this [:modules] conj
-            (object/create :markdown-module {:text "#### new module" :id (util/uuid)})))
+;  :click #(object/update! this [:modules] conj
+;            (object/create :markdown-module {:text "#### new module" :id (util/uuid)})))
+  :click (fn [e]
+          (let [md-doc  (markdown-doc)
+                new-mod (object/create :markdown-module md-doc)]
+            (object/update! this [:modules]
+              (fn [mods]
+                (concat mods
+                  (list new-mod)))))))
 
 
 (object/object* :single-column-template
@@ -35,9 +50,10 @@
                     (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
                           new-tpl     (assoc tpl :modules module-objs)]
                       (object/merge! this new-tpl)
-
                       (util/bound-do (subatom this :modules)
-                                     (fn [_] (object/raise document :save)))))
+                        (fn [_]
+                          (log "template modules save fired")
+                          (object/raise document :save)))))
 
                   [:div.template.single-column-template
                    [:div.fluid-row

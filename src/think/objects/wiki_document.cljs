@@ -20,9 +20,10 @@
                               (log "saving document...")
                               (let [original-doc (first (:args @this))
                                     doc-keys     (keys original-doc)
-                                    mod-ids      (map :id (:modules (:template @this)))
+                                    mod-ids      (map #(-> deref :id) (:modules @(:template @this)))
                                     new-doc      (select-keys @this doc-keys)
-                                    new-doc      (assoc-in new-doc [:template :modules] mod-ids)]
+                                    new-tpl      (merge @(:template new-doc) {:modules mod-ids})
+                                    new-doc      (assoc new-doc :template new-tpl)]
                                 (model/save-document new-doc))))
 
 

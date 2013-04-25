@@ -3,7 +3,7 @@
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
-            [think.util.log :refer [log]])
+            [think.util.log :refer [log log-obj]])
   (:use [think.util.dom :only [replace-with]]
         [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
 
@@ -138,6 +138,8 @@
             (throw (js/Error. "Recursive sub-objects are not allowed"))))))
 
 (defn update! [obj & r]
+  (log "update! obj: ")
+  (log-obj obj)
   (swap! obj #(apply update-in % r)))
 
 (defn assoc! [obj & args]
