@@ -63,6 +63,8 @@
 (defn put-doc
   "Insert a document with a given key."
   [db doc]
+  (log "db/update-doc")
+  (log-obj (pouch-ids doc))
   (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
 
 
@@ -92,6 +94,8 @@
 (defn update-doc
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
+  (log "db/update-doc")
+  (log-obj (pouch-ids doc))
   (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
 
 
