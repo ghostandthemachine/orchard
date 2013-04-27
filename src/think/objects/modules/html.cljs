@@ -5,7 +5,8 @@
             [think.util.dom :as dom]
             [think.util :refer [bound-do]]
             [think.util.log :refer [log log-obj]]
-            [crate.binding :refer [bound subatom]]))
+            [crate.binding :refer [bound subatom]]
+            [dommy.core :as dommy]))
 
 (def default-opts
   (clj->js
@@ -74,3 +75,13 @@
                           [:div.module-tray (module-btn this)]
                           [:div.module-element
                             (render-present this)]]))
+
+
+
+(dommy/listen! [(dom/$ :body) :.html-module-content :a] :click
+  (fn [e]
+    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    (think.objects.app/open-document
+      (keyword
+        (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    (.preventDefault e)))

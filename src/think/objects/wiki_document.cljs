@@ -45,6 +45,8 @@
                               [:div.span12
                                 [:h4 (:title @this)]]]
                             (bound (subatom this [:template])
-                              (partial render-template this))])))
+                              (partial render-template this))
+
+  ])))
 
 

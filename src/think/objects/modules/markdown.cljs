@@ -6,7 +6,8 @@
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
-            [think.model :as model]))
+            [think.model :as model]
+            [dommy.core :as dommy]))
 
 (def default-opts
   (clj->js
@@ -60,7 +61,9 @@
                 default-opts)]
       (object/assoc! this :editor cm)
       (.setValue cm (:text @this)))
-    (object/assoc! this :text (.getValue (:editor @this)))))
+    (object/assoc! this :text (.getValue (:editor @this))))
+    (log (str "#module-" (:id @this) " .module-content a"))
+    (log (dom/$ (str "#module-" (:id @this) " .module-content a"))))
 
 
 (object/object* :markdown-module
@@ -82,3 +85,10 @@
                           [:div.module-element (render-present this)]]))
 
 
+(dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click
+  (fn [e]
+    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    (think.objects.app/open-document
+      (keyword
+        (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    (.preventDefault e)))
