@@ -108,9 +108,5 @@
 
 (react-to #{:db-loaded} load-home)
 
-(.click (js/$ "a")
-  (fn [e]
-    (.preventDefault e)
-    (log e)))
 
 

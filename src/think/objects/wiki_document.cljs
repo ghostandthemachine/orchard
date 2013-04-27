@@ -34,7 +34,6 @@
                   (log-obj v))
                 (model/save-document new-doc))))
 
-
 (object/object* :wiki-document
   :triggers #{:save}
   :behaviors [::save-document]
@@ -47,5 +46,6 @@
               [:div.span12
                [:h4 (:title @this)]]]
              (bound (subatom this [:template])
-                    (partial render-template this))])))
+                    (partial render-template this))
 
+             ])))
