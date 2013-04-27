@@ -159,16 +159,45 @@
               :modules mods}
    :title "thinker app"})
 
+(defn test-doc
+  [id & mods]
+  {:type :wiki-document
+   :id id
+   :template {:type :single-column-template
+              :modules mods}
+   :title (str "test document " id)})
+
+
+(defn create-home
+  []
+  (let [md-doc (markdown-doc)
+        ht-doc (html-doc)
+        home   (home-doc (:id md-doc) (:id ht-doc))]
+    (doseq [doc [md-doc ht-doc home]]
+      (save-document doc))))
+
+(defn create-test-doc
+  []
+  (let [md-doc (markdown-doc)
+        ht-doc (html-doc)
+        test-doc   (test-doc :test-doc1 (:id md-doc) (:id ht-doc))]
+    (doseq [doc [md-doc ht-doc test-doc]]
+      (save-document doc))))
+
+(defn create-test-doc2
+  []
+  (let [ht-doc (html-doc)
+        ht-doc2 (html-doc)
+        test-doc (test-doc :test-doc2 (:id ht-doc) (:id ht-doc2))]
+    (doseq [doc [ht-doc ht-doc2 test-doc]]
+      (save-document doc))))
 
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]
     ;(doseq [doc (conj (:modules @doc) @doc)]
     (delete-document @doc)
-
-    (let [md-doc (markdown-doc)
-          ht-doc (html-doc)
-          home   (home-doc (:id md-doc) (:id ht-doc))]
-      (doseq [doc [md-doc ht-doc home]]
-        (save-document doc)))))
+    (create-test-doc)
+    (create-test-doc2)
+    (create-home)))
 
