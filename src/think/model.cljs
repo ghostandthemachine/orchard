@@ -139,14 +139,14 @@
 
 (defn markdown-doc
   []
-  {:type ::markdown-module
+  {:type :markdown-module
    :text "## Markdown module"
    :id   (util/uuid)})
 
 
 (defn html-doc
   []
-  {:type ::html-module
+  {:type :html-module
    :text "<h1> Or raw HTML </h1>"
    :id   (util/uuid)})
 
@@ -192,20 +192,22 @@
     (doseq [doc [ht-doc ht-doc2 test-doc]]
       (save-document doc))))
 
-(defn create-test-doc3
+(defn create-test-doc4
   []
-  (let [ht-doc (html-doc)
-        ht-doc3 (html-doc)
-        test-doc (test-doc :test-doc3 (:id ht-doc) (:id ht-doc3))]
-    (doseq [doc [ht-doc ht-doc3 test-doc]]
-      (save-document doc))))
+  (let [two-col-doc {:type :wiki-document
+                     :id id
+                     :template {:type :two-column-template
+                                :modules {:left [(html-doc) (html-doc) (html-doc)]
+                                          :right [(html-doc) (html-doc) (html-doc)]}}
+                     :title "Two Column Doc"}]
+    (save-document two-col-doc)))
 
 (defn reset-home
   []
   (let-realised [doc (get-document :home)]
     ;(doseq [doc (conj (:modules @doc) @doc)]
     (delete-document @doc)
-    (create-test-doc)
-    (create-test-doc2)
+    ; (create-test-doc)
+    ; (create-test-doc2)
     (create-home)))
 

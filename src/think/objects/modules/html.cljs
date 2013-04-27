@@ -17,9 +17,16 @@
      :linewrapping true
      :viewportMargin js/Infinity}))
 
+
+(defn module-btn-icon
+  [mode]
+  (if (= mode :present)
+    "icon-pencil module-btn"
+    "icon-ok module-btn"))
+
 (defui module-btn
   [this]
-  [:i.icon-pencil.module-btn]
+  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
   :click (fn [e]
             (object/assoc! this :mode
               (if (= (:mode @this) :present)
