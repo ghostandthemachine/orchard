@@ -1,3 +1,5 @@
+
+
 (function(window) {
 
 var css_files = [
@@ -16,6 +18,12 @@ var js_files = [
     "js/jquery-1.9.0.js",
     "js/jquery.sortable.min.js",
     "js/throttle.js",
+
+    // "js/pdf/compatibility.js",
+    // "js/pdf/l10n.js",
+    "js/pdf.js",
+    // "js/pdf/debugger.js",
+    // "js/pdf/viewer.js",
 
     "bootstrap/js/bootstrap.min.js",
     "js/thinker.js"]
@@ -37,7 +45,7 @@ var head = window.document.querySelector("head");
 
 
 function load_script(path, isFile) {
-        script= document.createElement('script');
+    script= document.createElement('script');
     script.type= 'text/javascript';
     script.async = false;
     if(isFile) {
@@ -75,6 +83,7 @@ try {
         console.log(path)
         load_script(path, false);
     });
+
 
     script.onload = function() {
         try {

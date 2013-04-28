@@ -173,3 +173,6 @@ video {
   overflow-x: auto;
 }
 
+.media-module-content {
+  text-align: center;
+}
