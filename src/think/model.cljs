@@ -114,10 +114,10 @@
     (util/await (map #(load-document (.-id %)) (.-rows @docs)))))
 
 
-(defn pdf-document
+(defn media-document
   [{:keys [title authors path filename notes annotations cites tags] :as doc}]
   (assoc doc
-         :type :pdf-document
+         :type :media-document
          :id         (util/uuid)
          :type       type
          :created-at (util/date-json)
@@ -149,6 +149,12 @@
   {:type :html-module
    :text "<h1> Or raw HTML </h1>"
    :id   (util/uuid)})
+
+(defn media-doc
+  []
+  {:type :media-module
+   :path "test.media"
+   :id (util/uuid)})
 
 
 (defn home-doc
@@ -192,15 +198,19 @@
     (doseq [doc [ht-doc ht-doc2 test-doc]]
       (save-document doc))))
 
-(defn create-test-doc4
-  []
-  (let [two-col-doc {:type :wiki-document
-                     :id id
-                     :template {:type :two-column-template
-                                :modules {:left [(html-doc) (html-doc) (html-doc)]
-                                          :right [(html-doc) (html-doc) (html-doc)]}}
-                     :title "Two Column Doc"}]
-    (save-document two-col-doc)))
+(defn create-media-test
+  [id]
+  (let [mod1 (media-doc)
+        mod2 (markdown-doc)
+        mod3 (html-doc)
+
+        media-test-doc {:type :wiki-document
+                      :id id
+                      :template {:type :single-column-template
+                                 :modules [(:id mod1) (:id mod2) (:id mod3)]}
+                      :title "media Test doc"}]
+    (doseq [doc [mod1 mod2 mod3 media-test-doc]]
+      (save-document doc))))
 
 (defn reset-home
   []

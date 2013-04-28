@@ -1,5 +1,5 @@
 {
-    //"main": "public/index.html",
+    // "main": "public/index.html",
     "main": "http://localhost:3000/index.html",
     "name": "Thinker",
     "version": "0.1.0",
