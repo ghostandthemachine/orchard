@@ -2,7 +2,7 @@
   (:use-macros [redlobster.macros :only [when-realised defer-node]])
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
-            [think.util :refer [js->clj]]
+            [think.util :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
 (def ^:private pouch (js/require "pouchdb"))
@@ -31,7 +31,7 @@
   [p]
   (fn [err res]
     (if err
-      (p/realise-error p (js->clj err))
+      (p/realise-error p (util/js->clj err))
       (p/realise p res))))
 
 
@@ -57,7 +57,7 @@
 (defn create-doc
   "Insert or modify a document. Respoinse will contain the generated key."
   [db doc]
-  (defer-node (.post db (clj->js (pouch-ids doc))) js->clj))
+  (defer-node (.post db (clj->js (pouch-ids doc))) util/js->clj))
 
 
 (defn put-doc
@@ -65,19 +65,20 @@
   [db doc]
   (log "db/update-doc")
   (log-obj (pouch-ids doc))
-  (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
+  (defer-node (.put db (clj->js (pouch-ids doc))) util/js->clj))
 
 
 (defn delete-doc
   "Delete a document."
   [db doc]
-  (defer-node (.remove db (clj->js (pouch-ids doc))) js->clj))
+  (defer-node (.remove db (clj->js (pouch-ids doc))) util/js->clj))
 
 
 (defn all-docs
   "Get all documents in the DB."
   [db & opts]
-  (defer-node (.allDocs db (clj->js (merge {} opts))) js->clj))
+  (defer-node (.allDocs db (clj->js (merge {} opts)))
+    #(util/js->clj % :keywordize-keys true)))
 
 
 (defn get-doc
@@ -88,7 +89,7 @@
                  (str id))]
     (defer-node (.get db id-str (clj->js (merge {} opts)))
       (fn [doc]
-        (cljs-ids (js->clj doc :keywordize-keys :forc-obj))))))
+        (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true))))))
 
 
 (defn update-doc
@@ -96,15 +97,15 @@
   [db doc]
   (log "db/update-doc")
   (log-obj (pouch-ids doc))
-  (defer-node (.put db (clj->js (pouch-ids doc))) js->clj))
+  (defer-node (.put db (clj->js (pouch-ids doc))) util/js->clj))
 
 
 (defn view
   "Generate a DB view using a mapping function, and optionally a reduce function."
   [db map-fn & [reduce-fn]]
   (if reduce-fn
-    (defer-node (.query db {:map map-fn} {:reduce reduce-fn}) js->clj)
-    (defer-node (.query db {:map map-fn}) js->clj)))
+    (defer-node (.query db {:map map-fn} {:reduce reduce-fn}) util/js->clj)
+    (defer-node (.query db {:map map-fn}) util/js->clj)))
 
 (defn query
   "Run a GQL query against the database."
@@ -115,7 +116,7 @@
   "Replicate source to target. Source and target can be either local DB names
   or remote locations, i.e. URLs."
   [src tgt]
-  (defer-node (.replicate js/Pouch src tgt (clj->js {})) js->clj))
+  (defer-node (.replicate js/Pouch src tgt (clj->js {})) util/js->clj))
 
 ;; SQL Database API
 

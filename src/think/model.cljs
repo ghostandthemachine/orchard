@@ -84,11 +84,13 @@
 
 (defn load-document
   [id]
+  (log "load-document: " id)
   (let [res-promise (p/promise)
         doc-promise (get-document id)]
     (p/on-realised doc-promise
       (fn success [doc]
         (log "realizing new document of type: " (:type doc))
+        (log-obj doc)
         (let [obj-type (keyword (:type doc))]
           (if (object/defined? obj-type)
             (p/realise res-promise (object/create obj-type doc))
@@ -105,13 +107,7 @@
 (defn all-documents
   []
   (let-realised [docs (db/all-docs (:document-db* @model))]
-    (util/await (map #(db/get-doc (:document-db* @model) (.-id %)) (.-rows @docs)))))
-
-
-(defn load-all-documents
-  []
-  (let-realised [docs (all-documents)]
-    (util/await (map #(load-document (.-id %)) (.-rows @docs)))))
+    (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs)))))
 
 
 (defn pdf-document
@@ -137,18 +133,24 @@
 (defrecord QueryModule    [query template])
 
 
-(defn markdown-doc
+(defn markdown-module
   []
   {:type :markdown-module
    :text "## Markdown module"
    :id   (util/uuid)})
 
 
-(defn html-doc
+(defn html-module
   []
   {:type :html-module
    :text "<h1> Or raw HTML </h1>"
    :id   (util/uuid)})
+
+
+(defn index-module
+  []
+  {:type :index-module
+   :id (util/uuid)})
 
 
 (defn home-doc
@@ -170,24 +172,25 @@
 
 (defn create-home
   []
-  (let [md-doc (markdown-doc)
-        ht-doc (html-doc)
-        home   (home-doc (:id md-doc) (:id ht-doc))]
-    (doseq [doc [md-doc ht-doc home]]
+  (let [index  (index-module)
+        md-doc (markdown-module)
+        ht-doc (html-module)
+        home   (home-doc (:id index) (:id md-doc) (:id ht-doc))]
+    (doseq [doc [index md-doc ht-doc home]]
       (save-document doc))))
 
 (defn create-test-doc
   []
-  (let [md-doc (markdown-doc)
-        ht-doc (html-doc)
+  (let [md-doc (markdown-module)
+        ht-doc (html-module)
         test-doc   (test-doc :test-doc1 (:id md-doc) (:id ht-doc))]
     (doseq [doc [md-doc ht-doc test-doc]]
       (save-document doc))))
 
 (defn create-test-doc2
   []
-  (let [ht-doc (html-doc)
-        ht-doc2 (html-doc)
+  (let [ht-doc (html-module)
+        ht-doc2 (html-module)
         test-doc (test-doc :test-doc2 (:id ht-doc) (:id ht-doc2))]
     (doseq [doc [ht-doc ht-doc2 test-doc]]
       (save-document doc))))
@@ -195,10 +198,10 @@
 (defn create-test-doc4
   []
   (let [two-col-doc {:type :wiki-document
-                     :id id
+                     :id :home
                      :template {:type :two-column-template
-                                :modules {:left [(html-doc) (html-doc) (html-doc)]
-                                          :right [(html-doc) (html-doc) (html-doc)]}}
+                                :modules {:left [(html-module) (html-module) (html-module)]
+                                          :right [(html-module) (html-module) (html-module)]}}
                      :title "Two Column Doc"}]
     (save-document two-col-doc)))
 

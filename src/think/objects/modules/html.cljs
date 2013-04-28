@@ -10,7 +10,7 @@
 
 (def default-opts
   (clj->js
-    {:mode "markdown"
+    {:mode "html"
      :theme "default"
      :lineNumbers true
      :tabMode "indent"
