@@ -38,8 +38,8 @@
     (::id @obj)
     (::id obj)))
 
-(defn merge! [obj m]
-  (swap! obj merge m))
+(defn merge! [obj & m]
+  (swap! obj #(apply merge % m)))
 
 (defn instances-by-type [type]
   (filter #(= type (:type (deref %))) (vals @instances)))

@@ -38,25 +38,34 @@
             (object/update! this [:modules] conj new-mod))))
 
 
+(object/behavior* ::save-template
+  :triggers #{:save}
+  :reaction (fn [this]
+              (log "saving template...")
+              (let [mod-ids      (map #(:id @%) (:modules @this))
+                    original-doc (first (:args @this))
+                    doc-keys     (keys original-doc)
+                    new-doc      (assoc (select-keys @this doc-keys) :modules mod-ids)]
+                (model/save-document new-doc))))
+
+
 (object/object* :single-column-template
-                :triggers #{}
-                :behaviors []
-                :init
-                (fn [this tpl wiki-document]
-                  (log "creating single column template with modules: " (:modules tpl))
+  :triggers #{:save}
+  :behaviors [::save-template]
+  :init (fn [this tpl]
+          (log "creating single column template with modules: " (:modules tpl))
+          (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
+            (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
+                  new-tpl     (assoc tpl :modules module-objs)]
+              (object/merge! this new-tpl)
+              (util/bound-do (subatom this :modules)
+                (fn [_]
+                  (log "template modules save fired")
+                  (object/raise this :save)))))
 
-                  (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
-                    (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
-                          new-tpl     (assoc tpl :modules module-objs :db-keys (keys @this))]
-                      (object/merge! this new-tpl)
-                      (util/bound-do (subatom this :modules)
-                        (fn [_]
-                          (log "template modules save fired")
-                          (object/raise wiki-document :save)))))
-
-                  [:div.template.single-column-template
-                   [:div.fluid-row
-                    (bound (subatom this :modules)
-                           (partial render-modules this))]
-                   [:div.fluid-row
-                    (add-module-btn this)]]))
+          [:div.template.single-column-template
+           [:div.fluid-row
+            (bound (subatom this :modules)
+                   (partial render-modules this))]
+           [:div.fluid-row
+            (add-module-btn this)]]))

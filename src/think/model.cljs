@@ -107,7 +107,16 @@
 (defn all-documents
   []
   (let-realised [docs (db/all-docs (:document-db* @model))]
-    (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs)))))
+    (if (= (:total_rows @docs) 0)
+      []
+      (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
+
+
+(defn delete-all-documents
+  "Delete all documents."
+  []
+  (let-realised [docs (all-documents)]
+    (util/await (map #(db/delete-doc (:document-db* @model) %) @docs))))
 
 
 (defn media-document
@@ -146,7 +155,7 @@
    :text "<h1> Or raw HTML </h1>"
    :id   (util/uuid)})
 
-(defn media-doc
+(defn media-module
   []
   {:type :media-module
    :path "test.media"
@@ -159,53 +168,52 @@
    :id (util/uuid)})
 
 
+(defn single-column-template
+  [& mod-ids]
+  {:type :single-column-template
+   :modules mod-ids
+   :id (util/uuid)})
+
+
 (defn home-doc
-  [& mods]
+  [tpl-id]
   {:type :wiki-document
    :id :home
-   :template {:type :single-column-template
-              :modules mods}
+   :template tpl-id
    :title "thinker app"})
 
 (defn test-doc
-  [id & mods]
+  [id tpl]
   {:type :wiki-document
    :id id
-   :template {:type :single-column-template
-              :modules mods}
+   :template tpl
    :title (str "test document " id)})
 
 
 (defn create-home
   []
-  (let [index  (index-module)
-        md-doc (markdown-module)
-        ht-doc (html-module)
-        home   (home-doc (:id index) (:id md-doc) (:id ht-doc))]
-    (doseq [doc [index md-doc ht-doc home]]
+  (let [index      (index-module)
+        md-doc     (markdown-module)
+        ht-doc     (html-module)
+        tpl-doc    (single-column-template (:id index) (:id md-doc) (:id ht-doc))
+        home-doc   (home-doc (:id tpl-doc))]
+    (doseq [doc [index md-doc ht-doc tpl-doc home-doc]]
       (save-document doc))))
 
 (defn create-test-doc
   []
-  (let [md-doc (markdown-module)
-        ht-doc (html-module)
-        test-doc   (test-doc :test-doc1 (:id md-doc) (:id ht-doc))]
-    (doseq [doc [md-doc ht-doc test-doc]]
-      (save-document doc))))
-
-(defn create-test-doc2
-  []
-  (let [ht-doc (html-module)
-        ht-doc2 (html-module)
-        test-doc (test-doc :test-doc2 (:id ht-doc) (:id ht-doc2))]
-    (doseq [doc [ht-doc ht-doc2 test-doc]]
+  (let [md-doc     (markdown-module)
+        ht-doc     (html-module)
+        tpl-doc    (single-column-template (:id md-doc) (:id ht-doc))
+        test-doc   (test-doc :test-doc1 (:id tpl-doc))]
+    (doseq [doc [md-doc ht-doc tpl-doc test-doc]]
       (save-document doc))))
 
 (defn create-media-test
   [id]
-  (let [mod1 (media-doc)
-        mod2 (markdown-doc)
-        mod3 (html-doc)
+  (let [mod1 (media-module)
+        mod2 (markdown-module)
+        mod3 (html-module)
 
         media-test-doc {:type :wiki-document
                       :id id

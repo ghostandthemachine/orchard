@@ -1,5 +1,5 @@
 (ns think.db
-  (:use-macros [redlobster.macros :only [when-realised defer-node]])
+  (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.util :as util]
@@ -96,7 +96,7 @@
   "Insert or modify a document, which must have a key \"_id\" or :_id."
   [db doc]
   (log "db/update-doc")
-  (log-obj (pouch-ids doc))
+  (log-obj (clj->js doc))
   (defer-node (.put db (clj->js (pouch-ids doc))) util/js->clj))
 
 
