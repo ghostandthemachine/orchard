@@ -80,7 +80,7 @@
                                   (fn [_]
                                     (object/raise this :save)))
 
-                        [:div.span12.module.markdown-module {:id (str "module-" (:id @this))}
+                        [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable true}
                           [:div.module-tray (module-btn this)]
                           [:div.module-element (render-present this)]]))
 

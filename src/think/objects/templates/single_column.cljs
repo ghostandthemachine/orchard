@@ -53,14 +53,14 @@
   :triggers #{:save}
   :behaviors [::save-template]
   :init (fn [this tpl]
-          (log "creating single column template with modules: " (:modules tpl))
+          ; (log "creating single column template with modules: " (:modules tpl))
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
               (util/bound-do (subatom this :modules)
                 (fn [_]
-                  (log "template modules save fired")
+                  ; (log "template modules save fired")
                   (object/raise this :save)))))
 
           [:div.template.single-column-template
@@ -69,3 +69,10 @@
                    (partial render-modules this))]
            [:div.fluid-row
             (add-module-btn this)]]))
+
+
+(defn single-column-template-doc
+  [& mod-ids]
+  {:type :single-column-template
+   :modules mod-ids
+   :id (util/uuid)})

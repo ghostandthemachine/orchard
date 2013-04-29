@@ -26,7 +26,7 @@
             (let [tpl-obj  (object/create (keyword (:type @template)) @template)]
               (object/assoc! this :template tpl-obj)))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div#document
+          [:div.document
            [:div.row-fluid
             [:div.span12
              [:h4 (:title @this)]]]

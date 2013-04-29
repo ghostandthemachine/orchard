@@ -168,9 +168,9 @@
                 :behaviors [:think.objects.modules/save-module]
                 :mode :present
                 :editor nil
-                :init (fn [this record]
+                :init (fn [this doc]
                         (log "media path: " (:path @this))
-                        (object/merge! this record)
+                        (object/merge! this doc)
                         (bound-do (subatom this :mode)
                           (partial render-module this))
                         (bound-do (subatom this :path)

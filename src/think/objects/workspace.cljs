@@ -17,7 +17,6 @@
 (object/behavior* ::show-document
                   :triggers #{:show-document}
                   :reaction (fn [this doc]
-                              (object/merge! this {:document doc})
                               (dom/empty (:content @this))
                               (dom/append (:content @this) (:content @doc))))
 

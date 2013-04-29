@@ -152,7 +152,7 @@
 (defn html-module
   []
   {:type :html-module
-   :text "<h1> Or raw HTML </h1>"
+   :text "<button class=\"btn\" onclick=\"think.objects.new$.load_new_doc();\">New</button>"
    :id   (util/uuid)})
 
 (defn media-module
@@ -183,21 +183,20 @@
    :title "thinker app"})
 
 (defn test-doc
-  [id tpl]
+  [id tpl-id]
   {:type :wiki-document
    :id id
-   :template tpl
+   :template tpl-id
    :title (str "test document " id)})
 
 
 (defn create-home
   []
   (let [index      (index-module)
-        md-doc     (markdown-module)
         ht-doc     (html-module)
-        tpl-doc    (single-column-template (:id index) (:id md-doc) (:id ht-doc))
+        tpl-doc    (single-column-template (:id index) (:id ht-doc))
         home-doc   (home-doc (:id tpl-doc))]
-    (doseq [doc [index md-doc ht-doc tpl-doc home-doc]]
+    (doseq [doc [index ht-doc tpl-doc home-doc]]
       (save-document doc))))
 
 (defn create-test-doc
