@@ -25,7 +25,7 @@
 ;   [this k]
 ;   [:button.btn.btn-mini.btn-primary.pull-right.add-module-btn
 ;     [:h4 "+"]]
-;   :click #(object/update! this [k] concat (list (object/create :markdown-module {:text "#### new module" :id (uuid)}))))
+;   :click #(object/update! this [k] concat (list (object/create :markdown {:text "#### new module" :id (uuid)}))))
 
 
 ; (object/object* :two-column-template

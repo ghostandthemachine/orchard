@@ -21,15 +21,24 @@
      :viewportMargin js/Infinity}))
 
 
-(defn module-btn-icon
+(defn edit-module-btn-icon
   [mode]
   (if (= mode :present)
     "icon-pencil module-btn"
     "icon-ok module-btn"))
 
-(defui module-btn
+(defui delete-btn
   [this]
-  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
+  [:i.icon-trash.module-btn]
+  :click (fn [e]
+            (let [msg "Are you sure you want to delete this module?"
+                  delete? (js/confirm msg)]
+              (when delete?
+                (dom/remove (:content @this))))))
+
+(defui edit-btn
+  [this]
+  [:i {:class (bound (subatom this [:mode]) edit-module-btn-icon)}]
   :click (fn [e]
             (object/assoc! this :mode
               (if (= (:mode @this) :present)
@@ -81,7 +90,7 @@
                                     (object/raise this :save)))
 
                         [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable true}
-                          [:div.module-tray (module-btn this)]
+                          [:div.module-tray (delete-btn this) (edit-btn this)]
                           [:div.module-element (render-present this)]]))
 
 

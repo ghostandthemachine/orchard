@@ -4,6 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util :as util]
+            [think.util.dom :as dom]
             [think.model :as model]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
@@ -24,24 +25,40 @@
    :id   (util/uuid)})
 
 
-(defui add-module-btn
+(defui delete-btn
   [this]
-  [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
+  [:button.btn.btn-small.btn-primary.pull-right.delete-btn
+    [:i.icon-trash.icon-white]]
+  :click (fn [e]
+            (let [msg "Are you sure you want to delete this module?"
+                  delete? (js/confirm msg)]
+              (when delete?
+                (dom/remove this)
+                ; (object/update! this [:modules]
+                ;   (fn [mods]
+                ;     (filter #(not= % this) mods)))
+                ))))
+
+(defui edit-btn
+  [this]
+  [:button.btn.btn-small.btn-primary.pull-right.edit-btn
     [:i.icon-plus-sign.icon-white]]
-;  :click #(object/update! this [:modules] conj
-;            (object/create :markdown-module {:text "#### new module" :id (util/uuid)})))
   :click (fn [e]
           (let [md-doc  (markdown-doc)
                 new-mod (object/create :markdown-module md-doc)]
             (log "add module button")
-            (log-obj (keys @new-mod))
-            (object/update! this [:modules] conj new-mod))))
+            (let-realised [doc (model/save-document md-doc)]
+              (log "save new module")
+              (log-obj @doc)
+              (object/merge! new-mod @doc)
+              (object/update! this [:modules] conj new-mod)))))
 
 
 (object/behavior* ::save-template
   :triggers #{:save}
   :reaction (fn [this]
               (log "saving template...")
+              (log-obj @this)
               (let [mod-ids      (map #(:id @%) (:modules @this))
                     original-doc (first (:args @this))
                     doc-keys     (keys original-doc)
@@ -67,8 +84,11 @@
            [:div.fluid-row
             (bound (subatom this :modules)
                    (partial render-modules this))]
-           [:div.fluid-row
-            (add-module-btn this)]]))
+           [:div.fluid-row.template-tray
+            [:div.item
+              (delete-btn this)]
+            [:div.item
+              (edit-btn this)]]]))
 
 
 (defn single-column-template-doc

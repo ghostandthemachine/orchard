@@ -48,7 +48,6 @@
   (object/raise think.objects.workspace/workspace :show-document new-document))
 
 
-
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
   (fn [e]
     (.preventDefault e)
@@ -57,13 +56,15 @@
           $title-input (dom/$ :#new-document-title)
           title        (.-value $title-input)
           id           (str (util/uuid) "-" (clojure.string/replace title #" " "-"))
+          md-mod       {:id (util/uuid)
+                        :type :markdown-module
+                        :text "[home](::home)"}
           tpl          {:type tpl-type
                         :id (util/uuid)
-                        :modules []}
-          ndoc         {:type :wiki-document
+                        :modules [(:id md-mod)]}
+          new-doc      {:type :wiki-document
                         :id id
                         :title title
                         :template (:id tpl)}]
-      (let-realised [tpl-doc (model/save-document tpl)]
-        (let-realised [new-doc (model/save-document ndoc)]
-          (think.objects.app/open-document (:id ndoc)))))))
+      (let-realised [docs (util/await (map model/save-document [md-mod tpl new-doc]))]
+        (think.objects.app/open-document (:id new-doc))))))

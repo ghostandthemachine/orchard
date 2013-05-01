@@ -176,3 +176,7 @@ video {
 .media-module-content {
   text-align: center;
 }
+
+.delete-btn {
+  margin-left: 5px;
+}
