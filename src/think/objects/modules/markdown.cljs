@@ -4,46 +4,13 @@
             [crate.core :as crate]
             [think.util :refer [bound-do]]
             [think.util.dom :as dom]
+            [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]
             [dommy.core :as dommy]))
 
-(def default-opts
-  (clj->js
-    {:mode "markdown"
-     :theme "default"
-     :lineNumbers true
-     :tabMode "indent"
-     :autofocus true
-     :linewrapping true
-     :matchBrackets true
-     :viewportMargin js/Infinity}))
 
-
-(defn edit-module-btn-icon
-  [mode]
-  (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
-
-(defui delete-btn
-  [this]
-  [:i.icon-trash.module-btn]
-  :click (fn [e]
-            (let [msg "Are you sure you want to delete this module?"
-                  delete? (js/confirm msg)]
-              (when delete?
-                (dom/remove (:content @this))))))
-
-(defui edit-btn
-  [this]
-  [:i {:class (bound (subatom this [:mode]) edit-module-btn-icon)}]
-  :click (fn [e]
-            (object/assoc! this :mode
-              (if (= (:mode @this) :present)
-                :edit
-                :present))))
 
 (defui render-present
   [this]
@@ -88,7 +55,6 @@
                         (bound-do (subatom this :text)
                                   (fn [_]
                                     (object/raise this :save)))
-
                         [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable true}
                           [:div.module-tray (delete-btn this) (edit-btn this)]
                           [:div.module-element (render-present this)]]))

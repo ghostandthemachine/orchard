@@ -4,35 +4,11 @@
             [crate.core :as crate]
             [think.util.dom :as dom]
             [think.util :refer [bound-do]]
+            [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))
 
-(def default-opts
-  (clj->js
-    {:mode "html"
-     :theme "default"
-     :lineNumbers true
-     :tabMode "indent"
-     :autofocus true
-     :linewrapping true
-     :viewportMargin js/Infinity}))
-
-
-(defn module-btn-icon
-  [mode]
-  (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
-
-(defui module-btn
-  [this]
-  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
-  :click (fn [e]
-            (object/assoc! this :mode
-              (if (= (:mode @this) :present)
-                :edit
-                :present))))
 
 (defui render-present
   [this]
@@ -72,7 +48,7 @@
                         (bound-do (subatom this [:mode]) (partial render-module this))
                         (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
                         [:div.span12.module.html-module {:id (str "module-" (:id @this)) :draggable true}
-                          [:div.module-tray (module-btn this)]
+                          [:div.module-tray (delete-btn this) (edit-btn this)]
                           [:div.module-element
                             (render-present this)]]))
 
