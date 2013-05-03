@@ -12,9 +12,9 @@
 
 (defn render-modules
   [this modules]
-  [:div.modules
+  [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
     (for [module modules]
-      [:div.row-fluid
+      [:li.row-fluid.modules-item
         (:content @module)])])
 
 
@@ -66,29 +66,58 @@
                 (model/save-document new-doc))))
 
 
+(object/behavior* ::remove-module
+  :triggers #{:remove-module}
+  :reaction (fn [this child]
+              (log "remove child")
+              (object/update! this [:modules]
+                (fn [mods]
+                  (filter #(not= (:id @%) (:id @child)) mods)))
+              (dom/remove (:content @child))))
+
+
+(object/behavior* ::post-init
+  :triggers #{:post-init}
+  :reaction (fn [this id]
+              (log "post-init id " id)
+              (log "Init after creating template. Content " (str "#sortable-" id))
+              (log-obj (js/$ (str "#sortable-" id)))
+              (log
+                (-> (js/$ (str "#sortable-" id))
+                  (.sortable (clj->js {:connectWith ".connected-sortable"}))))))
+
+  ; $(function() {
+    ; $( "#sortable-0c07772f-0b9c-4c90-92f4-fb27264f7e1e-wweg").sortable({
+    ;   connectWith: ".connected-sortable"
+    ; }).disableSelection();
+  ; });
+
 (object/object* :single-column-template
-  :triggers #{:save}
-  :behaviors [::save-template]
+  :triggers #{:save :post-init :remove-module}
+  :tags #{:template}
+  :behaviors [::save-template ::post-init ::remove-module]
   :init (fn [this tpl]
           ; (log "creating single column template with modules: " (:modules tpl))
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
+              (doseq [mod module-objs]
+                (object/parent! this mod))
               (util/bound-do (subatom this :modules)
-                (fn [_]
-                  ; (log "template modules save fired")
+                (fn [mods]
+                  (object/parent! this (first mods))
                   (object/raise this :save)))))
-
+          ; (object/merge! this tpl)
           [:div.template.single-column-template
-           [:div.fluid-row
-            (bound (subatom this :modules)
-                   (partial render-modules this))]
-           [:div.fluid-row.template-tray
-            [:div.item
-              (delete-btn this)]
-            [:div.item
-              (edit-btn this)]]]))
+            [:div.modules-container
+              (bound (subatom this :modules)
+                (partial render-modules this))]
+            [:div.fluid-row.template-tray
+              [:div.item
+                (delete-btn this)]
+              [:div.item
+                (edit-btn this)]]]))
 
 
 (defn single-column-template-doc

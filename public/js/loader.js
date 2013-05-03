@@ -5,7 +5,8 @@
 var css_files = [
     "css/codemirror.css",
     "css/thinker.css",
-    "bootstrap/css/bootstrap.min.css"];
+    "bootstrap/css/bootstrap.min.css",
+    "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css"];
 
 var js_files = [
     "js/markdown_parser.js",
@@ -17,6 +18,7 @@ var js_files = [
 
     "js/jquery-1.9.0.js",
     "js/jquery.sortable.min.js",
+    "http://code.jquery.com/ui/1.10.2/jquery-ui.js",
     "js/throttle.js",
 
     // "js/pdf/compatibility.js",

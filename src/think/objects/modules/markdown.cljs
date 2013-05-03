@@ -44,8 +44,8 @@
 
 (object/object* :markdown-module
                 :tags #{}
-                :triggers #{:save}
-                :behaviors [:think.objects.modules/save-module]
+                :triggers #{:delete-module :save}
+                :behaviors [:think.objects.modules/delete-module :think.objects.modules/save-module]
                 :mode :present
                 :editor nil
                 :init (fn [this record]
@@ -55,7 +55,7 @@
                         (bound-do (subatom this :text)
                                   (fn [_]
                                     (object/raise this :save)))
-                        [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable true}
+                        [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable "true"}
                           [:div.module-tray (delete-btn this) (edit-btn this)]
                           [:div.module-element (render-present this)]]))
 

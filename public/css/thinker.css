@@ -111,6 +111,14 @@ video {
   to { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
 }
 
+ul.modules {
+  list-style-type: none;
+  margin: 0;
+}
+
+li.modules-item {
+}
+
 
 .module {
   border-color: transparent;
@@ -119,9 +127,11 @@ video {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 5px;
+  background-color: rgb(248, 248, 248);
   -webkit-mouseover-transition:.4s;
   mouseover-transition: border-color .4s ease-out;
 }
+
 
 .module:hover {
   border-color: rgb(225, 225, 225);
@@ -180,3 +190,4 @@ video {
 .delete-btn {
   margin-left: 5px;
 }
+

@@ -1,21 +1,10 @@
 (ns think.objects.modules
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
+            [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]))
-
-
-;; TODO: rather than using the (first (:args this)) to get the original record,
-;; we should probably keep it around explicitly, or else just save the keys on load.
-(object/behavior* ::save-module
-                  :triggers #{:save}
-                  :reaction (fn [this]
-                              (let [original-doc (first (:args @this))
-                                    doc-keys     (keys original-doc)
-                                    new-doc      (select-keys @this doc-keys)]
-                                (model/save-document new-doc))))
-
 
 
 (def default-opts
@@ -41,10 +30,12 @@
   [this]
   [:i.icon-trash.module-btn]
   :click (fn [e]
+            (log "Delete module btn hit " (:id @this))
+            (log-obj @this)
             (let [msg "Are you sure you want to delete this module?"
-                  delete? (js/confirm msg)]
-              (when delete?
-                (dom/remove (:content @this))))))
+                   delete? (js/confirm msg)]
+                (when delete?
+                  (object/raise (object/parent this) :remove-module this)))))
 
 (defui edit-btn
   [this]
@@ -54,3 +45,18 @@
               (if (= (:mode @this) :present)
                 :edit
                 :present))))
+
+
+
+;; TODO: rather than using the (first (:args this)) to get the original record,
+;; we should probably keep it around explicitly, or else just save the keys on load.
+(object/behavior* ::save-module
+  :triggers #{:save}
+  :reaction (fn [this]
+              (log "Save module")
+              (let [original-doc (first (:args @this))
+                    doc-keys     (keys original-doc)
+                    new-doc      (select-keys @this doc-keys)]
+                (model/save-document new-doc))))
+
+

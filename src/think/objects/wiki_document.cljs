@@ -20,11 +20,13 @@
   :triggers #{:save}
   :behaviors [::save-document]
   :init (fn [this document]
+          (log "save wiki-document")
           (let-realised [template (model/get-document (:template document))]
             (log "template for wiki doc")
             (log-obj @template)
             (let [tpl-obj  (object/create (keyword (:type @template)) @template)]
-              (object/assoc! this :template tpl-obj)))
+              (object/assoc! this :template tpl-obj)
+              (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
           [:div.document
            [:div.row-fluid
