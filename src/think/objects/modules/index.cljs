@@ -33,7 +33,7 @@
     [:ul
       (for [doc docs]
         [:li
-          [:a {:href (:id doc)} (str (:title doc) " (" (:type doc) ")")]])]])
+          [:a {:href (:id doc)} (:title doc)]])]])
 
 
 (defui render-edit
@@ -50,7 +50,8 @@
 (defn load-index
   [this]
   (let-realised [docs (model/all-documents)]
-    (dom/replace-with ($module this) (render-present @docs))))
+    (log (:type (first @docs)))
+    (dom/replace-with ($module this) (render-present (filter #(= (:type %) "wiki-document") @docs)))))
 
 
 (defn render-module

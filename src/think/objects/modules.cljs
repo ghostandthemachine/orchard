@@ -1,5 +1,6 @@
 (ns think.objects.modules
-  (:use-macros [think.macros :only [defui]])
+  (:use-macros [think.macros :only [defui]]
+               [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
@@ -24,6 +25,11 @@
   (if (= mode :present)
     "icon-pencil module-btn"
     "icon-ok module-btn"))
+
+
+(defn $module
+  [this]
+  (dom/$ (str "#module-" (:id @this) " .module-content")))
 
 
 (defui delete-btn
@@ -58,5 +64,56 @@
                     doc-keys     (keys original-doc)
                     new-doc      (select-keys @this doc-keys)]
                 (model/save-document new-doc))))
+
+
+(defn swap-modules
+  [parent mod-a mod-b]
+  (when (= (count (some #{(:id @mod-a) (:id @mod-b)} (:modules @parent))) 2)
+    (let [id-a (:id @mod-a)
+          id-b (:id @mod-b)]
+      (object/update! parent [:modules]
+        #(reduce
+          (fn [mods mod]
+            (conj mods
+              (case (:id mod)
+                id-a mod-b
+                id-b mod-a
+                mod)))
+          %)))))
+
+
+
+(defn replace-module
+  [parent mod-a mod-b]
+  (let [id-a (:id @mod-a)
+        id-b (:id @mod-b)]
+    (log (str "replace mods " id-a ", " id-b))
+
+    (object/update! parent [:modules]
+      #(reduce
+        (fn [mods mod]
+          (conj mods
+            (if (= (:id @mod) id-a)
+              mod-b
+              mod)))
+        []
+        %))))
+
+
+(defui render-icon
+  [selector icon create-fn doc]
+  [:div.module-selector-icon
+    icon]
+  :click (fn [e]
+          (log "save new mod ")
+          (log-obj doc)
+          (let-realised [new-doc (model/save-document doc)]
+            (log "saved new mod")
+            (let [parent  (object/parent selector)
+                  new-mod (create-fn doc)]
+              (log "parent of selector")
+              (log-obj parent)
+              (object/parent! parent new-mod)
+              (replace-module parent selector new-mod)))))
 
 

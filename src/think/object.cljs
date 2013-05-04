@@ -138,8 +138,6 @@
             (throw (js/Error. "Recursive sub-objects are not allowed"))))))
 
 (defn update! [obj & r]
-  (log "update! obj: ")
-  (log-obj obj)
   (swap! obj #(apply update-in % r)))
 
 (defn assoc! [obj & args]

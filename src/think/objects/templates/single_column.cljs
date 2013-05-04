@@ -6,6 +6,7 @@
             [think.util :as util]
             [think.util.dom :as dom]
             [think.model :as model]
+            [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
 
@@ -33,25 +34,18 @@
             (let [msg "Are you sure you want to delete this module?"
                   delete? (js/confirm msg)]
               (when delete?
-                (dom/remove this)
-                ; (object/update! this [:modules]
-                ;   (fn [mods]
-                ;     (filter #(not= % this) mods)))
-                ))))
+                ; (dom/remove this)
+                (log "Delete template ")
+                (log-obj this)))))
 
-(defui edit-btn
+(defui add-module-btn
   [this]
-  [:button.btn.btn-small.btn-primary.pull-right.edit-btn
+  [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
     [:i.icon-plus-sign.icon-white]]
   :click (fn [e]
-          (let [md-doc  (markdown-doc)
-                new-mod (object/create :markdown-module md-doc)]
-            (log "add module button")
-            (let-realised [doc (model/save-document md-doc)]
-              (log "save new module")
-              (log-obj @doc)
-              (object/merge! new-mod @doc)
-              (object/update! this [:modules] conj new-mod)))))
+          (log "add module button")
+          (object/parent! this selector/module-selector-module)
+          (object/update! this [:modules] conj selector/module-selector-module)))
 
 
 (object/behavior* ::save-template
@@ -59,10 +53,12 @@
   :reaction (fn [this]
               (log "saving template...")
               (log-obj @this)
-              (let [mod-ids      (map #(:id @%) (:modules @this))
-                    original-doc (first (:args @this))
-                    doc-keys     (keys original-doc)
-                    new-doc      (assoc (select-keys @this doc-keys) :modules mod-ids)]
+              (let [mod-ids       (map #(:id @%)
+                                    (filter
+                                      #(not= (:type @%) "module-selector-module") (:modules @this)))
+                    original-doc  (first (:args @this))
+                    doc-keys      (keys original-doc)
+                    new-doc       (assoc (select-keys @this doc-keys) :modules mod-ids)]
                 (model/save-document new-doc))))
 
 
@@ -73,7 +69,8 @@
               (object/update! this [:modules]
                 (fn [mods]
                   (filter #(not= (:id @%) (:id @child)) mods)))
-              (dom/remove (:content @child))))
+              ; (dom/remove (:content @child))
+              ))
 
 
 (object/behavior* ::post-init
@@ -117,7 +114,7 @@
               [:div.item
                 (delete-btn this)]
               [:div.item
-                (edit-btn this)]]]))
+                (add-module-btn this)]]]))
 
 
 (defn single-column-template-doc

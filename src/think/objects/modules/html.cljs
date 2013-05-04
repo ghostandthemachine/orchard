@@ -3,12 +3,19 @@
   (:require [think.object :as object]
             [crate.core :as crate]
             [think.util.dom :as dom]
-            [think.util :refer [bound-do]]
+            [think.util :refer [bound-do uuid]]
             [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))
 
+
+
+(defn html-doc
+  []
+  {:type :html-module
+   :text "<h3>HTML here... </h3>"
+   :id   (uuid)})
 
 (defui render-present
   [this]
@@ -17,8 +24,10 @@
 
 
 (defui render-edit
-  [this]
+  []
   [:div.module-content.html-module-editor])
+
+(def icon [:span.btn.btn-primary.html-icon "<html>"])
 
 
 (defn render-module
@@ -26,7 +35,7 @@
   (dom/replace-with (dom/$ (str "#module-" (:id @this) " .module-content"))
     (case mode
       :present (render-present this)
-      :edit    (render-edit this)))
+      :edit    (render-edit)))
   (if (= mode :edit)
     (let [cm (js/CodeMirror
               (fn [elem]
@@ -53,6 +62,10 @@
                           [:div.module-element
                             (render-present this)]]))
 
+
+(defn create-module
+  [doc]
+  (object/create :html-module doc))
 
 
 (dommy/listen! [(dom/$ :body) :.html-module-content :a] :click

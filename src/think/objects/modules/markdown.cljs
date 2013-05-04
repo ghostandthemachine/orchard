@@ -2,7 +2,7 @@
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
             [crate.core :as crate]
-            [think.util :refer [bound-do]]
+            [think.util :refer [bound-do uuid]]
             [think.util.dom :as dom]
             [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
@@ -11,6 +11,11 @@
             [dommy.core :as dommy]))
 
 
+(defn markdown-doc
+  []
+  {:type :markdown-module
+   :text "## Markdown module"
+   :id   (uuid)})
 
 (defui render-present
   [this]
@@ -21,6 +26,9 @@
 (defui render-edit
   [this]
   [:div.module-content.markdown-module-editor])
+
+
+(def icon [:span.btn.btn-primary.markdown-icon ".md"])
 
 
 (defn render-module
@@ -42,6 +50,7 @@
     (log (dom/$ (str "#module-" (:id @this) " .module-content a"))))
 
 
+
 (object/object* :markdown-module
                 :tags #{}
                 :triggers #{:delete-module :save}
@@ -58,6 +67,11 @@
                         [:div.span12.module.markdown-module {:id (str "module-" (:id @this)) :draggable "true"}
                           [:div.module-tray (delete-btn this) (edit-btn this)]
                           [:div.module-element (render-present this)]]))
+
+
+(defn create-module
+  [doc]
+  (object/create :markdown-module doc))
 
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click
