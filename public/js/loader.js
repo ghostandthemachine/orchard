@@ -10,7 +10,7 @@ var css_files = [
 
 var js_files = [
     "js/markdown_parser.js",
-
+    "http://d3js.org/d3.v3.min.js",
     "js/codemirror.js",
     "js/cm/clojure.js",
     "js/cm/markdown.js",

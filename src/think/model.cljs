@@ -158,7 +158,7 @@
 (defn media-module
   []
   {:type :media-module
-   :path "test.media"
+   :path "test.pdf"
    :id (util/uuid)})
 
 
@@ -208,19 +208,17 @@
     (doseq [doc [md-doc ht-doc tpl-doc test-doc]]
       (save-document doc))))
 
-(defn create-media-test
-  [id]
-  (let [mod1 (media-module)
-        mod2 (markdown-module)
-        mod3 (html-module)
 
-        media-test-doc {:type :wiki-document
-                      :id id
-                      :template {:type :single-column-template
-                                 :modules [(:id mod1) (:id mod2) (:id mod3)]}
-                      :title "media Test doc"}]
-    (doseq [doc [mod1 mod2 mod3 media-test-doc]]
+(defn create-media-doc
+  []
+  (let [md-doc     (markdown-module)
+        media-doc  (media-module)
+        tpl-doc    (single-column-template (:id md-doc) (:id media-doc))
+        test-doc   (test-doc :test-doc1 (:id tpl-doc))]
+    (doseq [doc [md-doc media-doc tpl-doc test-doc]]
       (save-document doc))))
+
+
 
 (defn reset-home
   []

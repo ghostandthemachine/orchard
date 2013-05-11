@@ -17,7 +17,8 @@
 (def closing true)
 
 (declare app)
-(declare windows)
+
+(def windows js/global.windows)
 
 ;(.Window.open gui "index.html" (clj->js {:toolbar false}))
 
@@ -36,7 +37,7 @@
   (let [id (swap! js/global.windowsId inc)
         w (.Window.open gui "index.html" (clj->js {:toolbar false
                                                    :show false}))]
-    (set! (.-ltid w) id)
+    (set! (.-window_id w) id)
     (swap! windows assoc id w)))
 
 (defn ready? [this]

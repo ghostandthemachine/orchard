@@ -48,19 +48,19 @@
 
 
 (object/object* :html-module
-                :tags #{}
-                :triggers #{:save :delete}
-                :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
-                :mode :present
-                :editor nil
-                :init (fn [this record]
-                        (object/merge! this record)
-                        (bound-do (subatom this [:mode]) (partial render-module this))
-                        (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
-                        [:div.span12.module.html-module {:id (str "module-" (:id @this)) :draggable "true"}
-                          [:div.module-tray (delete-btn this) (edit-btn this)]
-                          [:div.module-element
-                            (render-present this)]]))
+  :tags #{}
+  :triggers #{:save :delete}
+  :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
+  :mode :present
+  :editor nil
+  :init (fn [this record]
+          (object/merge! this record)
+          (bound-do (subatom this [:mode]) (partial render-module this))
+          (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
+          [:div.span12.module.html-module {:id (str "module-" (:id @this)) :draggable "true"}
+            [:div.module-tray (delete-btn this) (edit-btn this)]
+            [:div.module-element
+              (render-present this)]]))
 
 
 (defn create-module

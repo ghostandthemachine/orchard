@@ -13,7 +13,3 @@
        (doseq [[ev# func#] (partition 2 ~(vec events))]
          (think.util.dom/on e# ev# func#))
        e#)))
-
-
-
-

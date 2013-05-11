@@ -1,4 +1,4 @@
-(ns think.modules.media
+(ns think.objects.modules.media
   (:use [think.util :only [log]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
@@ -66,9 +66,14 @@
     "icon-ok module-btn"))
 
 
-(defn $media-canvas
+(defn prepare-media-canvas
   [this]
-  (dom/$ (str "#media-canvas-" (:id @this))))
+  (let [$content (dom/$ (str "#media-content-" (:id @this)))
+        canvas   (.createElement js/document "canvas")]
+  (dom/empty $content)
+  (aset canvas "id" (str "#media-canvas-" (:id @this)))
+  (dom/append $content canvas)))
+
 
 
 (defn $media-module-content
@@ -85,10 +90,11 @@
                 :edit
                 :present))))
 
-(defn load-media
+(defn load-pdf
   [this file-path]
   (log "load media file " (:path @this))
-  (let [$canvas ($media-canvas this)]
+  (prepare-media-canvas this)
+  (let [canvas (dom/$ (str "#media-canvas-" (:id @this)))]
     (when (nil? (.-workerSrc js/PDFJS))
       (set! (.-workerSrc js/PDFJS) "js/media.js"))
     (.then (js/PDFJS.getDocument (:path @this))
@@ -100,9 +106,9 @@
             (log "page loaded")
             (log-obj page)
             (let [viewport (.getViewport page 0.15)
-                  context  (.getContext $canvas "2d")]
-              (set! (.-height $canvas)  (.-height viewport))
-              (set! (.-width $canvas)   (.-width viewport))
+                  context  (.getContext canvas "2d")]
+              (set! (.-height canvas)  (.-height viewport))
+              (set! (.-width canvas)   (.-width viewport))
               (.render page
                 (clj->js
                   {:canvasContext context
@@ -113,8 +119,9 @@
   [this file-path]
   (let [type (last (clojure.string/split file-path #"\."))]
     (log "update media for file: " type)
-    ; (object/assoc! this :path file-path)
-    ))
+    (case type
+      "pdf" (load-pdf this file-path)
+      (log "Can't read file of type: " type))))
 
 
 (defui load-file-button
@@ -137,8 +144,9 @@
 (defui render-media
   [this]
   [:div.module-content.media-module-content
-    [:canvas {:id (str "media-canvas-" (:id @this))
-              :style {:border "1px solid black"}}]])
+    ; [:canvas {:id (str "media-content-" (:id @this))
+    ;           :style {:border "1px solid black"}}]
+              ])
 
 (defui render-edit
   [this]
@@ -147,7 +155,7 @@
       (edit-toolbar this)
       [:input#file-dialog {:style "display:none;" :type "file"}]]
     [:div.row-fluid
-      [:canvas {:id (str "media-canvas-" (:id @this))
+      [:canvas {:id (str "media-content-" (:id @this))
                 :style {:border "1px solid black"}}]]])
 
 
@@ -159,7 +167,7 @@
       :edit    (render-edit this)))
   (case mode
     :present nil
-    :edit    (make-dropable (dom/$ (str "media-canvas-" (:id @this))) #(log %))))
+    :edit    (make-dropable (dom/$ (str "media-content-" (:id @this))) #(log %))))
 
 
 (object/object* :media-module
@@ -174,7 +182,7 @@
                         (bound-do (subatom this :mode)
                           (partial render-module this))
                         (bound-do (subatom this :path)
-                          (partial load-media this))
+                          (partial update-media this))
                         [:div.span12.module.media-module {:id (str "media-module-" (:id @this))}
                           [:div.module-tray (module-btn this)]
                           [:div.module-element (render-media this)]]))
