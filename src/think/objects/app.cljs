@@ -104,8 +104,7 @@
   (think.util/start-repl-server)
   (object/raise app :init-home)
   ; (setup-tray)
-  (set! (.-workerSrc js/PDFJS) "js/pdf.js")
-  )
+  (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
 
 (react-to #{:db-loaded} load-home)

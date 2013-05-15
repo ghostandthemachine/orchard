@@ -5,6 +5,7 @@
             [think.util :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
+(js/require "pouchdb")
 (def ^:private pouch (js/require "pouchdb"))
 
 
@@ -117,6 +118,7 @@
   or remote locations, i.e. URLs."
   [src tgt]
   (defer-node (.replicate js/Pouch src tgt (clj->js {})) util/js->clj))
+
 
 ;; SQL Database API
 
