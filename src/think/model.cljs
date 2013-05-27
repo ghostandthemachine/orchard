@@ -5,7 +5,7 @@
                [think.macros :only [defui]])
   (:require [think.util         :as util]
             [think.dispatch     :refer [fire react-to]]
-            [think.db           :as db]
+            [think.couchdb      :as db]
             [think.object       :as object]
             [redlobster.promise :as p]
             [dommy.template :as tpl]))
@@ -13,14 +13,14 @@
 
 
 
-(def DB-PATH "data/document.db")
+(def DB "projects")
 
 
 (object/behavior* ::init-db
                   :triggers #{:init-db}
                   :reaction (fn [this]
                               (log "Initialize db.. ")
-                              (let-realised [db-promise (db/open DB-PATH)]
+                              (let-realised [db-promise (db/open DB)]
                                 (object/merge! this
                                   {:ready? true
                                    :document-db* @db-promise})
@@ -29,7 +29,7 @@
 (object/behavior* ::db-loaded
                   :triggers #{:db-loaded}
                   :reaction (fn [this]
-                              (log "PouchDB loaded...")
+                              (log "DB loaded...")
                               (fire :db-loaded)))
 
 
@@ -60,10 +60,16 @@
                    doc)))
 
 
-(defn docs-of-type
+(comment defn docs-of-type
   [doc-type]
-  (let [doc-type (if (keyword? doc-type) (name doc-type) (str doc-type))]
-    (db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)})))
+  (let [doc-type (if (keyword? doc-type) (name doc-type) (str doc-type))
+        mapper (fn [doc]
+                 (log-obj doc)
+                 (when (= doc-type (:type (js->clj doc)))
+                   (emit (.-:id doc) doc)))]
+    (db/map-reduce (:document-db* @model) mapper)))
+
+    ;(db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)})))
 
 
 (defn get-document

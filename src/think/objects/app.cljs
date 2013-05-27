@@ -109,5 +109,3 @@
 
 (react-to #{:db-loaded} load-home)
 
-
-

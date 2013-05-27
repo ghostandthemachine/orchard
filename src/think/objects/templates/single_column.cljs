@@ -59,7 +59,10 @@
                     original-doc  (first (:args @this))
                     doc-keys      (keys original-doc)
                     new-doc       (assoc (select-keys @this doc-keys) :modules mod-ids)]
-                (model/save-document new-doc))))
+                (let-realised [doc (model/save-document new-doc)]
+                  (log "realised doc returned...")
+                  (log (:rev @doc))
+                  (object/assoc! this :rev (:rev @doc))))))
 
 
 (object/behavior* ::remove-module
@@ -103,6 +106,7 @@
                 (object/parent! this mod))
               (util/bound-do (subatom this :modules)
                 (fn [mods]
+                  (log "modules modified in single-col-template, updating and saving")
                   (object/parent! this (first mods))
                   (object/raise this :save)))))
           ; (object/merge! this tpl)
