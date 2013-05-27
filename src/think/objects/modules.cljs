@@ -61,9 +61,12 @@
   :reaction (fn [this]
               (log "Save module")
               (let [original-doc (first (:args @this))
-                    doc-keys     (keys original-doc)
+                    doc-keys     (conj (keys original-doc) :rev)
                     new-doc      (select-keys @this doc-keys)]
-                (model/save-document new-doc))))
+                (let-realised [doc (model/save-document new-doc)]
+                  (log "save handler...")
+                  (log-obj doc)
+                  (object/assoc! this :rev (:rev @doc))))))
 
 
 (defn swap-modules
@@ -108,13 +111,10 @@
           (log "save new mod ")
           (log-obj doc)
           (let-realised [new-doc (model/save-document doc)]
-            (log "saved new mod")
-            (log-obj create-fn)
-            (let [parent  (object/parent module)
-                  new-mod (create-fn @new-doc)]
-              (log "parent of module")
-              (log-obj parent)
-              (log-obj new-mod)
+            (log "saved new mod - new-doc: ")
+            (log-obj @new-doc)
+            (let [parent  (object/parent selector)
+                  new-mod (create-fn doc)]
               (object/parent! parent new-mod)
               (replace-module parent module new-mod)))))
 

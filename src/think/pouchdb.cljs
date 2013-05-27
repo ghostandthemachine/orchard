@@ -1,10 +1,13 @@
-(ns think.db
+(ns think.pouchdb
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.util :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
+(comment
+
+(js/require "pouchdb")
 (def ^:private pouch (js/require "pouchdb"))
 
 
@@ -100,12 +103,13 @@
   (defer-node (.put db (clj->js (pouch-ids doc))) util/js->clj))
 
 
-(defn view
+(defn map-reduce
   "Generate a DB view using a mapping function, and optionally a reduce function."
   [db map-fn & [reduce-fn]]
-  (if reduce-fn
-    (defer-node (.query db {:map map-fn} {:reduce reduce-fn}) util/js->clj)
-    (defer-node (.query db {:map map-fn}) util/js->clj)))
+  (let [mapper (fn [doc emit] (map-fn (js->clj doc) emit))]
+    (if reduce-fn
+      (defer-node (.query db (clj->js {:map mapper}) (clj->js {:reduce reduce-fn})) util/js->clj)
+      (defer-node (.query db (clj->js {:map mapper})) util/js->clj))))
 
 (defn query
   "Run a GQL query against the database."
@@ -118,38 +122,4 @@
   [src tgt]
   (defer-node (.replicate js/Pouch src tgt (clj->js {})) util/js->clj))
 
-;; SQL Database API
-
-(def DEFAULT-SQL-DB-SIZE (* 1024 1024))
-
-(defn sql-store
-  "Returns a named, local WebSQL database."
-  ([db-name] (sql-store db-name "1.0" db-name DEFAULT-SQL-DB-SIZE))
-  ([db-name version description size]
-   (js/openDatabase db-name version description size)))
-
-(defn sql-exec
-  "Execute a SQL statement on the db."
-  [db stmt]
-  (let [res-promise (p/promise)]
-    (.transaction db
-      (fn [tx]
-        (.executeSql tx stmt (clj->js [])
-          (fn [tx results]
-            (p/realise res-promise results)))))
-    res-promise))
-
-
-;; Local Key-Value Store API
-
-(defn local-set
-  "Set a key/value pair in the persistent local storage."
-  [k v]
-  (aset js/localStorage k v)
-  v)
-
-
-(defn local-get
-  "Get a value in the persistent local storage by key."
-  [k]
-  (aget js/localStorage k))
+)

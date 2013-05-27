@@ -248,8 +248,6 @@
           (log-obj this)
           (log-obj record)
           (object/merge! this record)
-          (bound-do (subatom this [:mode]) (partial render-module this))
-          (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
           [:div.span12.module.media-module {:id (str "module-" (:id @this)) :draggable "true"}
             [:div.module-tray (delete-btn this) (edit-btn this)]
             [:div.module-element
