@@ -433,3 +433,17 @@
   (add-watch a* :mode-toggle-watch
     (fn [k elem* ov nv]
       (handler nv))))
+
+
+; (defn mixin
+;   [obj & objs]
+;   (let [js-mixin js/mixin]
+;     (reduce
+;       (fn [_ o]
+;         (js-mixin obj (clj->js o)))
+;       objs)))
+
+(defn mixin
+  [obj obj2]
+  (let [mix js/mixin]
+    (mix obj (clj->js obj2))))

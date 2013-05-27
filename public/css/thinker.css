@@ -191,3 +191,12 @@ li.modules-item {
   margin-left: 5px;
 }
 
+
+.media-place-holder {
+  width: 150px;
+  height: 250px;
+}
+
+.media-content {
+  border-style: 1px solid black;
+}

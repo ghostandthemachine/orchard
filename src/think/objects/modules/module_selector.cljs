@@ -6,29 +6,16 @@
             [redlobster.promise :as p]
             [think.util.dom :as dom]
             [think.model :as model]
+            [think.objects.modules :refer [module-btn module-btn-icon]]
             [think.objects.modules :as modules]
             [think.objects.modules.markdown :as md]
+            [think.objects.modules.media :as media]
+            [think.objects.modules.visualizer :as viz]
             [think.objects.modules.html :as html]
             [think.util :refer [bound-do uuid]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))
-
-
-(defn module-btn-icon
-  [mode]
-  (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
-
-(defui module-btn
-  [this]
-  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
-  :click (fn [e]
-            (object/assoc! this :mode
-              (if (= (:mode @this) :present)
-                :edit
-                :present))))
 
 
 (object/object* :module-selector-module
@@ -41,14 +28,22 @@
             [:div.module-tray (module-btn this)]
             [:div.module-content.module-selector-module-content
               [:div.row-fluid
-                (for [icon [(modules/render-icon
-                              this md/icon
+                (for [icon [(modules/render-icon this
+                              md/icon
                               md/create-module
                               (md/markdown-doc))
-                            (modules/render-icon
-                              this html/icon
+                            (modules/render-icon this
+                              html/icon
                               html/create-module
-                              (html/html-doc))]]
+                              (html/html-doc))
+                            (modules/render-icon this
+                              media/icon
+                              media/create-module
+                              (media/media-doc))
+                            (modules/render-icon this
+                              viz/icon
+                              viz/create-module
+                              (viz/visualizer-doc))]]
                   [:div.span1
                     icon])]]]))
 

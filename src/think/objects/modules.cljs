@@ -101,7 +101,7 @@
 
 
 (defui render-icon
-  [selector icon create-fn doc]
+  [module icon create-fn doc]
   [:div.module-selector-icon
     icon]
   :click (fn [e]
@@ -109,11 +109,28 @@
           (log-obj doc)
           (let-realised [new-doc (model/save-document doc)]
             (log "saved new mod")
-            (let [parent  (object/parent selector)
-                  new-mod (create-fn doc)]
-              (log "parent of selector")
+            (log-obj create-fn)
+            (let [parent  (object/parent module)
+                  new-mod (create-fn @new-doc)]
+              (log "parent of module")
               (log-obj parent)
+              (log-obj new-mod)
               (object/parent! parent new-mod)
-              (replace-module parent selector new-mod)))))
+              (replace-module parent module new-mod)))))
 
+
+(defn module-btn-icon
+  [mode]
+  (if (= mode :present)
+    "icon-pencil module-btn"
+    "icon-ok module-btn"))
+
+(defui module-btn
+  [this]
+  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
+  :click (fn [e]
+            (object/assoc! this :mode
+              (if (= (:mode @this) :present)
+                :edit
+                :present))))
 

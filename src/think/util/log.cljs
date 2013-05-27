@@ -26,3 +26,68 @@
 (defn log-err
   [v & [text]]
   (log v text))
+
+
+
+
+
+
+
+
+
+
+
+
+
+;; logging with flags
+
+
+(def log-flags* (atom #{:global}))
+
+
+(defn in?
+  ([x]
+    (in? @log-flags* x))
+  ([coll x]
+  (if (some #{x} @log-flags*)
+    true
+    false)))
+
+
+(defn set-flags
+  [flags]
+  (reset! log-flags* (into #{} flags)))
+
+
+(defn add-flags
+  [& flags]
+  (swap! log-flags* #(into #{} (concat % flags))))
+
+
+(defn remove-flags
+  [flags]
+  (swap! log-flags*
+    (fn [fs]
+      (remove #(in? flags %) fs))))
+
+
+(defn flagged?
+  [flag]
+  (not (nil?
+    (some #{flag} @log-flags*))))
+
+
+(defn log$
+  ([arg & args]
+    (log$ :global arg args))
+  ([flags & args]
+    (let [flags (flatten [flags])
+          flagged? (reduce #(or %1 (in? %2)) false flags)
+          args (flatten args)]
+      (println flags flagged? args)
+      (when flagged?
+        (log "LOG: flags = " flags)
+        (log args)))))
+
+
+

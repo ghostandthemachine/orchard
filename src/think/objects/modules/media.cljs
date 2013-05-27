@@ -1,10 +1,11 @@
 (ns think.objects.modules.media
-  (:use [think.util :only [log]])
+  (:use [think.util :only [log log-obj uuid]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [crate.core :as crate]
+            [think.objects.modules :refer [module-btn-icon module-btn]]
             [think.util :refer [bound-do]]
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
@@ -59,12 +60,6 @@
   (dommy/listen! $dropzone :dragover handle-drag-over)
   (dommy/listen! $dropzone :drop (partial handle-file-select handler)))
 
-(defn module-btn-icon
-  [mode]
-  (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
-
 
 (defn prepare-media-canvas
   [this]
@@ -81,14 +76,7 @@
   (dom/$ (str "#media-module-" (:id @this) " .media-module-content")))
 
 
-(defui module-btn
-  [this]
-  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
-  :click (fn [e]
-            (object/assoc! this :mode
-              (if (= (:mode @this) :present)
-                :edit
-                :present))))
+
 
 (defn load-pdf
   [this file-path]
@@ -115,13 +103,21 @@
                    :viewport viewport})))))))))
 
 
-(defn update-media
-  [this file-path]
-  (let [type (last (clojure.string/split file-path #"\."))]
+(defn update-path   [this file-path]
+  (let [type (keyword (last (clojure.string/split file-path #"\.")))]
     (log "update media for file: " type)
-    (case type
-      "pdf" (load-pdf this file-path)
-      (log "Can't read file of type: " type))))
+    (object/assoc! this
+      :path file-path
+      :type (case type
+              (:jpg :jpeg :tif :tiff :png :gif)
+                :img
+              (:MP4 :mp4 :WebM :webm :Ogg :ogg)
+                :video
+              :pdf
+                :pdf
+              (log "Unsupported file type: " type)))))
+
+
 
 
 (defui load-file-button
@@ -138,15 +134,42 @@
 (defn edit-toolbar
   [this]
   [:div.row-fluid.button-bar {:id "main-toolbar-row"}
-    (load-file-button (partial update-media this))])
+    (load-file-button (partial update-path this))])
+
+
+;; Media renderers
+
+(defn render-img
+  [path]
+  [:img.media-content {:src path}])
+
+
+(defn render-video
+  [path]
+  [:video.media-content {:src path}])
+
+
+(defn render-pdf
+  [path]
+  [:canvas.media-content])
+
+
+(defn render-place-holder
+  []
+  [:div.media-place-holder])
 
 
 (defui render-media
   [this]
   [:div.module-content.media-module-content
-    ; [:canvas {:id (str "media-content-" (:id @this))
-    ;           :style {:border "1px solid black"}}]
-              ])
+    (let [type (:type @this)]
+      (case type
+        :img   (render-img   (:path @this))
+        :video (render-video (:path @this))
+        :pdf   (render-pdf   (:path @this))
+        (render-place-holder)))])
+
+
 
 (defui render-edit
   [this]
@@ -170,19 +193,69 @@
     :edit    (make-dropable (dom/$ (str "media-content-" (:id @this))) #(log %))))
 
 
+(def icon [:span.btn.btn-primary.html-icon "media"])
+
+; (object/object* :media-module
+;                 :tags #{}
+;                 :triggers #{:save :delete}
+;                 :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
+;                 :mode :present
+;                 :editor nil
+;                 :type nil
+;                 :init (fn [this record]
+;                         (log "init media module")
+;                         (log-obj this)
+;                         (log-obj record)
+;                         (object/merge! this record)
+;                         (bound-do (subatom this :mode)
+;                           (partial render-module this))
+;                         (bound-do (subatom this :path)
+;                           (partial update-path this))
+;                         [:div.span12.module.media-module {:id (str "media-module-" (:id @this))}
+;                           [:div.module-tray (module-btn this)]
+;                           [:div.module-element (render-media this)]]))
+
+
+; (defn create-module
+;   [doc]
+;   (object/create :media-module doc))
+
+
+
+; (defn media-doc
+;   []
+;   {:type :media-module
+;    :path ""
+;    :id   (uuid)})
+
+
+
+(defn media-doc
+  []
+  {:type :media-module
+   :path nil
+   :id   (uuid)})
+
+
 (object/object* :media-module
-                :tags #{}
-                :triggers #{:save}
-                :behaviors [:think.objects.modules/save-module]
-                :mode :present
-                :editor nil
-                :init (fn [this doc]
-                        (log "media path: " (:path @this))
-                        (object/merge! this doc)
-                        (bound-do (subatom this :mode)
-                          (partial render-module this))
-                        (bound-do (subatom this :path)
-                          (partial update-media this))
-                        [:div.span12.module.media-module {:id (str "media-module-" (:id @this))}
-                          [:div.module-tray (module-btn this)]
-                          [:div.module-element (render-media this)]]))
+  :tags #{}
+  :triggers #{:save :delete}
+  :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
+  :mode :present
+  :editor nil
+  :init (fn [this record]
+          (log "init media module")
+          (log-obj this)
+          (log-obj record)
+          (object/merge! this record)
+          (bound-do (subatom this [:mode]) (partial render-module this))
+          (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
+          [:div.span12.module.media-module {:id (str "module-" (:id @this)) :draggable "true"}
+            [:div.module-tray (delete-btn this) (edit-btn this)]
+            [:div.module-element
+              [:h1 "wkejgbnkwg"]]]))
+
+
+(defn create-module
+  [doc]
+  (object/create :media-module doc))
