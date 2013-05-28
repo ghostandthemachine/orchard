@@ -195,65 +195,34 @@
 
 (def icon [:span.btn.btn-primary.html-icon "media"])
 
-; (object/object* :media-module
-;                 :tags #{}
-;                 :triggers #{:save :delete}
-;                 :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
-;                 :mode :present
-;                 :editor nil
-;                 :type nil
-;                 :init (fn [this record]
-;                         (log "init media module")
-;                         (log-obj this)
-;                         (log-obj record)
-;                         (object/merge! this record)
-;                         (bound-do (subatom this :mode)
-;                           (partial render-module this))
-;                         (bound-do (subatom this :path)
-;                           (partial update-path this))
-;                         [:div.span12.module.media-module {:id (str "media-module-" (:id @this))}
-;                           [:div.module-tray (module-btn this)]
-;                           [:div.module-element (render-media this)]]))
-
-
-; (defn create-module
-;   [doc]
-;   (object/create :media-module doc))
-
-
-
-; (defn media-doc
-;   []
-;   {:type :media-module
-;    :path ""
-;    :id   (uuid)})
-
-
-
-(defn media-doc
-  []
-  {:type :media-module
-   :path nil
-   :id   (uuid)})
-
-
 (object/object* :media-module
-  :tags #{}
-  :triggers #{:save :delete}
-  :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
-  :mode :present
-  :editor nil
-  :init (fn [this record]
-          (log "init media module")
-          (log-obj this)
-          (log-obj record)
-          (object/merge! this record)
-          [:div.span12.module.media-module {:id (str "module-" (:id @this)) :draggable "true"}
-            [:div.module-tray (delete-btn this) (edit-btn this)]
-            [:div.module-element
-              [:h1 "wkejgbnkwg"]]]))
+                :tags #{}
+                :triggers #{:save :delete}
+                :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
+                :mode :present
+                :editor nil
+                :type nil
+                :init (fn [this record]
+                        (log "init media module")
+                        (log-obj this)
+                        (log-obj record)
+                        (object/merge! this record)
+                        (object/raise this :save)
+                        (bound-do (subatom this :mode)
+                          (partial render-module this))
+                        (bound-do (subatom this :path)
+                          (partial update-path this))
+                        [:div.span12.module.media-module {:id (str "media-module-" (:id @this))}
+                          [:div.module-tray (module-btn this)]
+                          [:div.module-element (render-media this)]]))
 
 
 (defn create-module
   [doc]
   (object/create :media-module doc))
+
+(defn media-doc
+  []
+  {:type :media-module
+   :path ""
+   :id   (uuid)})

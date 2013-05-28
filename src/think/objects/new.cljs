@@ -3,13 +3,15 @@
                [redlobster.macros :only [let-realised when-realised]])
   (:require [think.object :as object]
             [think.model :as model]
-            [think.util.dom :as dom]
             [dommy.core :as dommy]
-            [think.util :as util]
             [think.objects.templates.single-column :as single-column]
+            [think.objects.modules.markdown :as markdown]
+            [think.objects.wiki-document :as wiki-doc]
+            [think.objects.workspace :as workspace]
             [think.objects.modules :as modules]
             [crate.binding :refer [subatom bound]]
-            [think.util.log :refer [log log-obj]]))
+            [think.util.log :refer [log log-obj]]
+            [think.util.dom :as dom]))
 
 
 ;TODO: once finer grain pouch queries are working the templates should be loaded not hard coded
@@ -48,23 +50,20 @@
   (object/raise think.objects.workspace/workspace :show-document new-document))
 
 
+(defn create-document
+  [title tpl]
+  (let-realised [md-doc (markdown/markdown-doc)]
+    (let-realised [tpl-doc (case tpl
+                            :single-column (single-column/single-column-template-doc @md-doc))]
+      (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
+        (object/raise workspace/workspace :show-document @wiki-doc)))))
+
+
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
   (fn [e]
     (.preventDefault e)
     (let [$tpl-input   (dom/$ :#new-document-template)
-          tpl-type     (str (.-value (aget (.-options $tpl-input) (.-selectedIndex $tpl-input))) "-template")
+          tpl-type     (keyword (.-value (aget (.-options $tpl-input) (.-selectedIndex $tpl-input))))
           $title-input (dom/$ :#new-document-title)
-          title        (.-value $title-input)
-          id           (str (util/uuid) "-" (clojure.string/replace title #" " "-"))
-          md-mod       {:id (util/uuid)
-                        :type :markdown-module
-                        :text "[home](::home)"}
-          tpl          {:type tpl-type
-                        :id (util/uuid)
-                        :modules [(:id md-mod)]}
-          new-doc      {:type :wiki-document
-                        :id id
-                        :title title
-                        :template (:id tpl)}]
-      (let-realised [docs (util/await (map model/save-document [md-mod tpl new-doc]))]
-        (think.objects.app/open-document (:id new-doc))))))
+          title        (.-value $title-input)]
+      (create-document title tpl-type))))

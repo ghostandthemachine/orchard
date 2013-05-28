@@ -28,22 +28,18 @@
             [:div.module-tray (module-btn this)]
             [:div.module-content.module-selector-module-content
               [:div.row-fluid
-                (for [icon [(modules/render-icon this
+                (for [icon [(modules/create-module-icon this
                               md/icon
-                              md/create-module
-                              (md/markdown-doc))
-                            (modules/render-icon this
+                              md/create-module)
+                            (modules/create-module-icon this
                               html/icon
-                              html/create-module
-                              (html/html-doc))
-                            (modules/render-icon this
+                              html/create-module)
+                            (modules/create-module-icon this
                               media/icon
-                              media/create-module
-                              (media/media-doc))
-                            (modules/render-icon this
+                              media/create-module)
+                            (modules/create-module-icon this
                               viz/icon
-                              viz/create-module
-                              (viz/visualizer-doc))]]
+                              viz/create-module)]]
                   [:div.span1
                     icon])]]]))
 

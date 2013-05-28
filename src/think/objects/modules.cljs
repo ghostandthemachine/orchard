@@ -87,36 +87,39 @@
 
 
 (defn replace-module
-  [parent mod-a mod-b]
-  (let [id-a (:id @mod-a)
-        id-b (:id @mod-b)]
-    (log (str "replace mods " id-a ", " id-b))
-
+  [parent old-mod new-mod]
+  (log "replace-module")
+  (log-obj old-mod)
+  (log-obj new-mod)
+  (let [new-id (:id @old-mod)
+        old-id (:id @new-mod)]
+    (log (str "replace mods " new-id ", " old-id))
+    (object/parent! parent new-mod)
+    (object/destroy! old-mod)
     (object/update! parent [:modules]
       #(reduce
         (fn [mods mod]
           (conj mods
-            (if (= (:id @mod) id-a)
-              mod-b
+            (if (= (:id @mod) new-id)
+              new-mod
               mod)))
         []
         %))))
 
 
-(defui render-icon
-  [module icon create-fn doc]
+(defn add-module
+  [parent new-mod]
+  (object/raise! parent :add-module new-mod))
+
+
+(defui create-module-icon
+  [selector-module icon create-fn]
   [:div.module-selector-icon
     icon]
   :click (fn [e]
-          (log "save new mod ")
-          (log-obj doc)
-          (let-realised [new-doc (model/save-document doc)]
-            (log "saved new mod - new-doc: ")
-            (log-obj @new-doc)
-            (let [parent  (object/parent selector)
-                  new-mod (create-fn doc)]
-              (object/parent! parent new-mod)
-              (replace-module parent module new-mod)))))
+          (let [parent  (object/parent selector-module)]
+            (let-realised [mod (create-fn)]
+              (replace-module parent selector-module @mod)))))
 
 
 (defn module-btn-icon

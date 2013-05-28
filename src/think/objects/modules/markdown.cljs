@@ -1,7 +1,9 @@
 (ns think.objects.modules.markdown
-  (:use-macros [think.macros :only [defui]])
+  (:use-macros [think.macros :only [defui]]
+               [redlobster.macros :only [when-realised let-realised defer-node]])
   (:require [think.object :as object]
             [crate.core :as crate]
+            [redlobster.promise :as p]
             [think.util :refer [bound-do uuid]]
             [think.util.dom :as dom]
             [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
@@ -13,9 +15,11 @@
 
 (defn markdown-doc
   []
-  {:type :markdown-module
-   :text "## Markdown module"
-   :id   (uuid)})
+  (model/save-document
+    {:type :markdown-module
+     :text "## Markdown module...\n[home](::home)"
+     :id   (uuid)}))
+
 
 (defui render-present
   [this]
@@ -70,8 +74,15 @@
 
 
 (defn create-module
-  [doc]
-  (object/create :markdown-module doc))
+  []
+  (let [mod-promise (p/promise)]
+    (let-realised [doc (markdown-doc)]
+      (log "create-module MARKDOWN")
+      (log-obj @doc)
+      (let [obj (object/create :markdown-module @doc)]
+        (log "new markdown-module")
+        (log-obj obj)
+        (p/realise mod-promise obj)))))
 
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click

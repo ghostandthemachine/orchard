@@ -67,8 +67,8 @@
 
 
 (defn create-module
-  [doc]
-  (object/create :html-module doc))
+  []
+  (object/create :html-module))
 
 
 (dommy/listen! [(dom/$ :body) :.html-module-content :a] :click

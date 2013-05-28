@@ -19,11 +19,6 @@
         (:content @module)])])
 
 
-(defn markdown-doc
-  []
-  {:type :markdown-module
-   :text "## Markdown module"
-   :id   (util/uuid)})
 
 
 (defui delete-btn
@@ -46,6 +41,10 @@
           (log "add module button")
           (object/parent! this selector/module-selector-module)
           (object/update! this [:modules] conj selector/module-selector-module)))
+
+
+(defn insert-at [vec pos item]
+  (apply merge (subvec vec 0 pos) item (subvec vec pos)))
 
 
 (object/behavior* ::save-template
@@ -71,9 +70,7 @@
               (log "remove child")
               (object/update! this [:modules]
                 (fn [mods]
-                  (filter #(not= (:id @%) (:id @child)) mods)))
-              ; (dom/remove (:content @child))
-              ))
+                  (filter #(not= (:id @%) (:id @child)) mods)))))
 
 
 (object/behavior* ::post-init
@@ -92,12 +89,18 @@
     ; }).disableSelection();
   ; });
 
+(object/behavior* ::add-module
+  :triggers #{:add-module}
+  :reaction (fn [this new-mod index]
+              (object/parent! this mod)
+              (object/update! [:modules] insert-at index new-mod)))
+
+
 (object/object* :single-column-template
   :triggers #{:save :post-init :remove-module}
   :tags #{:template}
   :behaviors [::save-template ::post-init ::remove-module]
   :init (fn [this tpl]
-          ; (log "creating single column template with modules: " (:modules tpl))
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
@@ -106,10 +109,7 @@
                 (object/parent! this mod))
               (util/bound-do (subatom this :modules)
                 (fn [mods]
-                  (log "modules modified in single-col-template, updating and saving")
-                  (object/parent! this (first mods))
                   (object/raise this :save)))))
-          ; (object/merge! this tpl)
           [:div.template.single-column-template
             [:div.modules-container
               (bound (subatom this :modules)
@@ -123,6 +123,7 @@
 
 (defn single-column-template-doc
   [& mod-ids]
-  {:type :single-column-template
-   :modules mod-ids
-   :id (util/uuid)})
+  (model/save-document
+    {:type :single-column-template
+     :modules mod-ids
+     :id (util/uuid)}))
