@@ -80,9 +80,8 @@
       (log "create-module MARKDOWN")
       (log-obj @doc)
       (let [obj (object/create :markdown-module @doc)]
-        (log "new markdown-module")
-        (log-obj obj)
-        (p/realise mod-promise obj)))))
+        (p/realise mod-promise obj)))
+    mod-promise))
 
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click

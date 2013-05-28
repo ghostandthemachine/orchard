@@ -87,15 +87,15 @@
 
 
 (defn replace-module
-  [parent old-mod new-mod]
+  [old-mod new-mod]
   (log "replace-module")
   (log-obj old-mod)
   (log-obj new-mod)
   (let [new-id (:id @old-mod)
-        old-id (:id @new-mod)]
+        old-id (:id @new-mod)
+        parent (object/parent old-mod)]
     (log (str "replace mods " new-id ", " old-id))
     (object/parent! parent new-mod)
-    (object/destroy! old-mod)
     (object/update! parent [:modules]
       #(reduce
         (fn [mods mod]
@@ -104,7 +104,10 @@
               new-mod
               mod)))
         []
-        %))))
+        %))
+    (object/raise parent :save)
+    (log "new mod list")
+    (log (first (:modules @parent)))))
 
 
 (defn add-module
@@ -117,9 +120,8 @@
   [:div.module-selector-icon
     icon]
   :click (fn [e]
-          (let [parent  (object/parent selector-module)]
-            (let-realised [mod (create-fn)]
-              (replace-module parent selector-module @mod)))))
+          (let-realised [mod (create-fn)]
+            (replace-module selector-module @mod))))
 
 
 (defn module-btn-icon

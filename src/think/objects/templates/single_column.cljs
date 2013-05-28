@@ -76,12 +76,13 @@
 (object/behavior* ::post-init
   :triggers #{:post-init}
   :reaction (fn [this id]
-              (log "post-init id " id)
-              (log "Init after creating template. Content " (str "#sortable-" id))
-              (log-obj (js/$ (str "#sortable-" id)))
-              (log
-                (-> (js/$ (str "#sortable-" id))
-                  (.sortable (clj->js {:connectWith ".connected-sortable"}))))))
+              ; (log "post-init id " id)
+              ; (log "Init after creating template. Content " (str "#sortable-" id))
+              ; (log-obj (js/$ (str "#sortable-" id)))
+              ; (log
+              ;   (-> (js/$ (str "#sortable-" id))
+              ;     (.sortable (clj->js {:connectWith ".connected-sortable"}))))
+              ))
 
   ; $(function() {
     ; $( "#sortable-0c07772f-0b9c-4c90-92f4-fb27264f7e1e-wweg").sortable({

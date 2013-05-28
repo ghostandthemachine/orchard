@@ -1,8 +1,11 @@
 (ns think.objects.modules.html
-  (:use-macros [think.macros :only [defui]])
+  (:use-macros [think.macros :only [defui]]
+               [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [crate.core :as crate]
+            [redlobster.promise :as p]
             [think.util.dom :as dom]
+            [think.model :as model]
             [think.util :refer [bound-do uuid]]
             [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
@@ -13,9 +16,10 @@
 
 (defn html-doc
   []
-  {:type :html-module
-   :text "<h3>HTML here... </h3>"
-   :id   (uuid)})
+  (model/save-document
+    {:type :html-module
+     :text "<h3>HTML here... </h3>"
+     :id   (uuid)}))
 
 (defui render-present
   [this]
@@ -68,7 +72,12 @@
 
 (defn create-module
   []
-  (object/create :html-module))
+  (let [mod-promise (p/promise)]
+    (let-realised [doc (html-doc)]
+      (let [obj (object/create :html-module @doc)]
+        (p/realise mod-promise obj)))
+    mod-promise))
+
 
 
 (dommy/listen! [(dom/$ :body) :.html-module-content :a] :click
