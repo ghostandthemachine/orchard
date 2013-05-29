@@ -56,7 +56,7 @@
                                     (filter
                                       #(not= (:type @%) "module-selector-module") (:modules @this)))
                     original-doc  (first (:args @this))
-                    doc-keys      (keys original-doc)
+                    doc-keys      (conj (keys original-doc) :id :rev)
                     new-doc       (assoc (select-keys @this doc-keys) :modules mod-ids)]
                 (let-realised [doc (model/save-document new-doc)]
                   (log "realised doc returned...")
