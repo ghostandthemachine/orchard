@@ -211,3 +211,6 @@
 (defn ready [func]
   (on js/document :DOMContentLoaded func))
 
+(defn module-element
+  [module]
+  ($ (str "#module-" (:id @module))))

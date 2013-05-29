@@ -94,8 +94,9 @@
     (object/raise workspace/workspace :show-document @doc)))
 
 
-(defn load-home
+(defn start-app
   []
+  (object/raise app :ready)
   (open-document :home))
 
 
@@ -107,5 +108,6 @@
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
 
-(react-to #{:db-loaded} load-home)
+(react-to #{:db-loaded} start-app)
 
+(object/raise app :ready)

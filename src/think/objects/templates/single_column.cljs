@@ -6,6 +6,7 @@
             [think.util :as util]
             [think.util.dom :as dom]
             [think.model :as model]
+            [think.objects.modules :refer [spacer]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
@@ -15,32 +16,10 @@
   [this modules]
   [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
     (for [module modules]
-      [:li.row-fluid.modules-item
-        (:content @module)])])
-
-
-
-
-(defui delete-btn
-  [this]
-  [:button.btn.btn-small.btn-primary.pull-right.delete-btn
-    [:i.icon-trash.icon-white]]
-  :click (fn [e]
-            (let [msg "Are you sure you want to delete this module?"
-                  delete? (js/confirm msg)]
-              (when delete?
-                ; (dom/remove this)
-                (log "Delete template ")
-                (log-obj this)))))
-
-(defui add-module-btn
-  [this]
-  [:button.btn.btn-small.btn-primary.pull-right.add-module-btn
-    [:i.icon-plus-sign.icon-white]]
-  :click (fn [e]
-          (log "add module button")
-          (object/parent! this selector/module-selector-module)
-          (object/update! this [:modules] conj selector/module-selector-module)))
+      [:li.modules-item
+        [:div.row-fluid
+          (:content @module)]
+        (spacer module)])])
 
 
 (defn insert-at [vec pos item]
@@ -103,23 +82,23 @@
   :behaviors [::save-template ::post-init ::remove-module]
   :init (fn [this tpl]
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
-            (let [module-objs (map #(object/create (keyword (:type %)) %) @mods)
+            (let [module-objs (map
+                                #(object/create
+                                  (keyword (:type %)) %)
+                                @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
               (doseq [mod module-objs]
                 (object/parent! this mod))
               (util/bound-do (subatom this :modules)
                 (fn [mods]
+                  (log "update single column template modules")
+                  (log-obj mods)
                   (object/raise this :save)))))
           [:div.template.single-column-template
             [:div.modules-container
               (bound (subatom this :modules)
-                (partial render-modules this))]
-            [:div.fluid-row.template-tray
-              [:div.item
-                (delete-btn this)]
-              [:div.item
-                (add-module-btn this)]]]))
+                (partial render-modules this))]]))
 
 
 (defn single-column-template-doc

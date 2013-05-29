@@ -3,9 +3,23 @@
                [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.util.dom :as dom]
+            [crate.core :as crate]
             [think.util.log :refer [log log-obj]]
+            [think.util :refer [index-of]]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]))
+
+
+
+(defn index-of-module
+  [module]
+  (log-obj (into [] (map #(:id @%)
+      (:modules @(object/parent module)))))
+  (log-obj @(object/parent module))
+  (index-of
+    (:id @module)
+    (map #(:id @%)
+      (:modules @(object/parent module)))))
 
 
 (def default-opts
@@ -65,7 +79,7 @@
                     new-doc      (select-keys @this doc-keys)]
                 (let-realised [doc (model/save-document new-doc)]
                   (log "save handler...")
-                  (log-obj doc)
+                  (log-obj @doc)
                   (object/assoc! this :rev (:rev @doc))))))
 
 
@@ -85,29 +99,21 @@
           %)))))
 
 
-
 (defn replace-module
   [old-mod new-mod]
-  (log "replace-module")
-  (log-obj old-mod)
-  (log-obj new-mod)
   (let [new-id (:id @old-mod)
         old-id (:id @new-mod)
-        parent (object/parent old-mod)]
-    (log (str "replace mods " new-id ", " old-id))
-    (object/parent! parent new-mod)
-    (object/update! parent [:modules]
-      #(reduce
-        (fn [mods mod]
-          (conj mods
-            (if (= (:id @mod) new-id)
-              new-mod
-              mod)))
-        []
-        %))
-    (object/raise parent :save)
-    (log "new mod list")
-    (log (first (:modules @parent)))))
+        parent (object/parent old-mod)
+        mods   (reduce
+                  (fn [mods mod]
+                    (conj mods
+                      (if (= (:id @mod) new-id)
+                        new-mod
+                        mod)))
+                  []
+                  (:modules @parent))]
+    (object/assoc! parent :modules mods)
+    (object/parent! parent new-mod)))
 
 
 (defn add-module
@@ -116,12 +122,12 @@
 
 
 (defui create-module-icon
-  [selector-module icon create-fn]
+  [template index icon create-fn]
   [:div.module-selector-icon
     icon]
   :click (fn [e]
           (let-realised [mod (create-fn)]
-            (replace-module selector-module @mod))))
+            (add-module template mod))))
 
 
 (defn module-btn-icon
@@ -129,6 +135,7 @@
   (if (= mode :present)
     "icon-pencil module-btn"
     "icon-ok module-btn"))
+
 
 (defui module-btn
   [this]
@@ -138,4 +145,72 @@
               (if (= (:mode @this) :present)
                 :edit
                 :present))))
+
+
+(defn popover
+  [module]
+  (log "popover for " (:id @module))
+  (log "index: " (index-of-module module))
+  (let [index (index-of-module module)
+        template (object/parent module)]
+    [:div.container.add-module-popover
+      (for [icon [(create-module-icon template index
+                    think.objects.modules.markdown/icon
+                    think.objects.modules.markdown/create-module)
+                  (create-module-icon template index
+                    think.objects.modules.html/icon
+                    think.objects.modules.html/create-module)]]
+        [:div.row-fluid
+          [:div.span2
+            icon]])]))
+
+
+
+(def clicked-away* (atom false))
+(def is-visible*   (atom false))
+
+
+(.click (js/$ js/document)
+  (fn [e]
+    (if (and @is-visible* @clicked-away*)
+      (do
+        (.popover (js/$ ".popover-trigger") "hide")
+        (reset! clicked-away*
+          (reset! is-visible* false)))
+      (reset! clicked-away* true))))
+
+
+(defui create-module-btn
+  [prev-mod]
+  [:span.btn.btn-mini.btn-primary.popover-trigger
+    {:data-title     "Add New Module"
+     :data-placement "right"
+     :data-html      "true"
+     :data-trigger   "manual"}
+    "add"]
+  :click (fn [e]
+          (this-as this
+            (.popover (js/$ this)
+              (clj->js {:content (crate/html (popover prev-mod))}))
+            (.popover (js/$ this) "show")
+            (reset! clicked-away* false)
+            (reset! is-visible* true)
+            (.preventDefault e))))
+
+
+(defn spacer-nav$
+  [module]
+  (js/$ (str "#spacer-nav-" (:id @module))))
+
+
+(defui spacer
+  [module]
+  [:div.row-fluid.spacer-tray
+    [:ul.spacer-nav {:id (str "spacer-nav-" (:id @module))}
+      [:li.active.spacer-item
+        (create-module-btn module)]]]
+  :mouseover (fn []
+              (.show (spacer-nav$ module)))
+  :mouseout  (fn []
+              (.hide (spacer-nav$ module))))
 

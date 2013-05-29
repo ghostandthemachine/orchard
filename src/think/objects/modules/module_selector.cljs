@@ -28,18 +28,20 @@
             [:div.module-tray (module-btn this)]
             [:div.module-content.module-selector-module-content
               [:div.row-fluid
-                (for [icon [(modules/create-module-icon this
-                              md/icon
-                              md/create-module)
-                            (modules/create-module-icon this
-                              html/icon
-                              html/create-module)
-                            (modules/create-module-icon this
-                              media/icon
-                              media/create-module)
-                            (modules/create-module-icon this
-                              viz/icon
-                              viz/create-module)]]
+                (for [icon [
+                            ; (modules/create-module-icon this
+                            ;   md/icon
+                            ;   md/create-module)
+                            ; (modules/create-module-icon this
+                            ;   html/icon
+                            ;   html/create-module)
+                            ; (modules/create-module-icon this
+                            ;   media/icon
+                            ;   media/create-module)
+                            ; (modules/create-module-icon this
+                            ;   viz/icon
+                            ;   viz/create-module)
+                            ]]
                   [:div.span1
                     icon])]]]))
 

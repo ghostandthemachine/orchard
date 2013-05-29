@@ -7,7 +7,7 @@
         "title": "Thinker",
         "width": 600,
         "height": 400,
-        "show":   true,
+        "show":   false,
         "frame":  true,
         "toolbar": true,
         "resizable": true,

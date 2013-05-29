@@ -50,31 +50,31 @@ end
 
 
 task :kill_node do
-    kill_node
+  kill_node
 end
 
 
 task :run do
-    unless node_running?
-        start_node
-    end
-    start_app
+  kill_node
+  start_node
+  start_app
 end
 
 
 task :dev do
-    unless node_running?
-        start_node
-    end
+  unless node_running?
+      start_node
+  end
 
-    clean
-    start_cljsbuild
-    start_app
+  # clean
+  start_cljsbuild
+  kill_node
+  start_app
 end
 
 
 task :deploy do
-    system "zip -r #{APP_NAME} #{APP_SOURCES}"
+  system "zip -r #{APP_NAME} #{APP_SOURCES}"
 end
 
 
