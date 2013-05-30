@@ -97,15 +97,15 @@
   (log-obj (clj->js doc))
   (let [doc-promise (p/promise)
         cb (fn [err res]
-             (log "update-doc callback: ")
-             (log-obj res)
              (if err
+             (log "think.couchdb/update-doc - error: ")
+             (log-obj err)
                (p/realise-error doc-promise (util/js->clj err))
                (p/realise doc-promise (assoc doc :rev (.-rev res)))))]
     (if-let [doc-id (:id doc)]
-                  (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
-                  (.insert db (clj->js (couch-ids doc)) cb))
-      doc-promise))
+      (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
+      (.insert db (clj->js (couch-ids doc)) cb))
+    doc-promise))
 
 
 
