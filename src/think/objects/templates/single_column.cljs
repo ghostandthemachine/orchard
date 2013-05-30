@@ -6,7 +6,7 @@
             [think.util :as util]
             [think.util.dom :as dom]
             [think.model :as model]
-            [think.objects.modules :refer [spacer]]
+            [think.objects.modules :refer [spacer insert-at]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
@@ -20,10 +20,6 @@
         [:div.row-fluid
           (:content @module)]
         (spacer module)])])
-
-
-(defn insert-at [vec pos item]
-  (apply merge (subvec vec 0 pos) item (subvec vec pos)))
 
 
 (object/behavior* ::save-template
@@ -71,15 +67,16 @@
 
 (object/behavior* ::add-module
   :triggers #{:add-module}
-  :reaction (fn [this new-mod index]
-              (object/parent! this mod)
-              (object/update! [:modules] insert-at index new-mod)))
+  :reaction (fn [this template new-mod index]
+              (log "single-column-template add module")
+              (object/parent! template new-mod)
+              (object/update! template [:modules] #(insert-at % index new-mod))))
 
 
 (object/object* :single-column-template
-  :triggers #{:save :post-init :remove-module}
+  :triggers #{:save :post-init :remove-module :add-module}
   :tags #{:template}
-  :behaviors [::save-template ::post-init ::remove-module]
+  :behaviors [::save-template ::post-init ::remove-module ::add-module]
   :init (fn [this tpl]
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map

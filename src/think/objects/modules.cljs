@@ -116,9 +116,10 @@
     (object/parent! parent new-mod)))
 
 
-(defn add-module
-  [parent new-mod]
-  (object/raise! parent :add-module new-mod))
+
+(defn insert-at [coll pos item]
+  (let [vec (into [] coll)]
+    (apply merge (subvec vec 0 pos) item (subvec vec pos))))
 
 
 (defui create-module-icon
@@ -127,7 +128,10 @@
     icon]
   :click (fn [e]
           (let-realised [mod (create-fn)]
-            (add-module template mod))))
+            (log "adding new module")
+            (log-obj @mod)
+            (log-obj template)
+            (object/raise template :add-module template @mod index))))
 
 
 (defn module-btn-icon
@@ -149,8 +153,6 @@
 
 (defn popover
   [module]
-  (log "popover for " (:id @module))
-  (log "index: " (index-of-module module))
   (let [index (index-of-module module)
         template (object/parent module)]
     [:div.container.add-module-popover
@@ -163,7 +165,6 @@
         [:div.row-fluid
           [:div.span2
             icon]])]))
-
 
 
 (def clicked-away* (atom false))
@@ -190,12 +191,13 @@
     "add"]
   :click (fn [e]
           (this-as this
-            (.popover (js/$ this)
-              (clj->js {:content (crate/html (popover prev-mod))}))
-            (.popover (js/$ this) "show")
-            (reset! clicked-away* false)
-            (reset! is-visible* true)
-            (.preventDefault e))))
+            (let [popover-html (crate/html (popover prev-mod))]
+              (.popover (js/$ this)
+                (clj->js {:content popover-html}))
+              (.popover (js/$ this) "show")
+              (reset! clicked-away* false)
+              (reset! is-visible* true)
+              (.preventDefault e)))))
 
 
 (defn spacer-nav$
