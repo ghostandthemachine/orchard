@@ -6,7 +6,7 @@
             [think.util :as util]
             [think.util.dom :as dom]
             [think.model :as model]
-            [think.objects.modules :refer [spacer insert-at]]
+            [think.objects.modules :refer [top-spacer spacer insert-at]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]))
@@ -15,6 +15,8 @@
 (defn render-modules
   [this modules]
   [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
+    [:li.modules-item
+      (top-spacer this)]
     (for [module modules]
       [:li.modules-item
         [:div.row-fluid

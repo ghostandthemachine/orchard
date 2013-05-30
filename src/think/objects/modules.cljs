@@ -152,9 +152,13 @@
 
 
 (defn popover
-  [module]
-  (let [index (index-of-module module)
-        template (object/parent module)]
+  [module type]
+  (let [index (case type
+                :top     0
+                :content (+ (index-of-module module) 1))
+        template (case type
+                  :top     module
+                  :content (object/parent module))]
     [:div.container.add-module-popover
       (for [icon [(create-module-icon template index
                     think.objects.modules.markdown/icon
@@ -182,22 +186,39 @@
 
 
 (defui create-module-btn
-  [prev-mod]
-  [:span.btn.btn-mini.btn-primary.popover-trigger
+  [module popover-type]
+  [:span.badge.popover-trigger
     {:data-title     "Add New Module"
-     :data-placement "right"
+     :data-placement "bottom"
      :data-html      "true"
      :data-trigger   "manual"}
-    "add"]
+    [:i.icon-plus.icon-white]]
   :click (fn [e]
           (this-as this
-            (let [popover-html (crate/html (popover prev-mod))]
+            (let [popover-html (crate/html (popover module popover-type))]
               (.popover (js/$ this)
                 (clj->js {:content popover-html}))
               (.popover (js/$ this) "show")
               (reset! clicked-away* false)
               (reset! is-visible* true)
               (.preventDefault e)))))
+
+
+(defn top-spacer-nav$
+  [template]
+  (js/$ (str "#top-spacer-nav-" (:id @template))))
+
+
+(defui top-spacer
+  [template]
+  [:div.row-fluid.spacer-tray
+    [:ul.spacer-nav.pagination-centered {:id (str "top-spacer-nav-" (:id @template))}
+      [:li.active.spacer-item
+        (create-module-btn template :top)]]]
+  :mouseover (fn []
+              (.show (top-spacer-nav$ template)))
+  :mouseout  (fn []
+              (.hide (top-spacer-nav$ template))))
 
 
 (defn spacer-nav$
@@ -208,9 +229,9 @@
 (defui spacer
   [module]
   [:div.row-fluid.spacer-tray
-    [:ul.spacer-nav {:id (str "spacer-nav-" (:id @module))}
+    [:ul.spacer-nav.pagination-centered {:id (str "spacer-nav-" (:id @module))}
       [:li.active.spacer-item
-        (create-module-btn module)]]]
+        (create-module-btn module :content)]]]
   :mouseover (fn []
               (.show (spacer-nav$ module)))
   :mouseout  (fn []
