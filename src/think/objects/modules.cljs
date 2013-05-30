@@ -75,7 +75,7 @@
   :reaction (fn [this]
               (log "Save module")
               (let [original-doc (first (:args @this))
-                    doc-keys     (conj (keys original-doc) :rev)
+                    doc-keys     (conj (keys original-doc) :id :rev)
                     new-doc      (select-keys @this doc-keys)]
                 (let-realised [doc (model/save-document new-doc)]
                   (log "save handler...")
@@ -165,7 +165,10 @@
                     think.objects.modules.markdown/create-module)
                   (create-module-icon template index
                     think.objects.modules.html/icon
-                    think.objects.modules.html/create-module)]]
+                    think.objects.modules.html/create-module)
+                  (create-module-icon template index
+                    think.objects.modules.media/icon
+                    think.objects.modules.media/create-module)]]
         [:div.row-fluid
           [:div.span2
             icon]])]))

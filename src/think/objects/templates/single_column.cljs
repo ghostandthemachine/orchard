@@ -33,7 +33,7 @@
                                     (filter
                                       #(not= (:type @%) "module-selector-module") (:modules @this)))
                     original-doc  (first (:args @this))
-                    doc-keys      (keys original-doc)
+                    doc-keys      (conj (keys original-doc) :id :rev)
                     new-doc       (assoc (select-keys @this doc-keys) :modules mod-ids)]
                 (let-realised [doc (model/save-document new-doc)]
                   (log "realised doc returned...")
@@ -61,18 +61,17 @@
               ;     (.sortable (clj->js {:connectWith ".connected-sortable"}))))
               ))
 
-  ; $(function() {
-    ; $( "#sortable-0c07772f-0b9c-4c90-92f4-fb27264f7e1e-wweg").sortable({
-    ;   connectWith: ".connected-sortable"
-    ; }).disableSelection();
-  ; });
 
 (object/behavior* ::add-module
   :triggers #{:add-module}
   :reaction (fn [this template new-mod index]
               (log "single-column-template add module")
+              (log-obj template)
+              (log-obj @new-mod)
               (object/parent! template new-mod)
-              (object/update! template [:modules] #(insert-at % index new-mod))))
+              (object/update! template [:modules] #(insert-at % index new-mod))
+              ; (object/raise template :save)
+              ))
 
 
 (object/object* :single-column-template

@@ -13,14 +13,6 @@
             [dommy.core :as dommy]))
 
 
-
-(defn html-doc
-  []
-  (model/save-document
-    {:type :html-module
-     :text "<h3>HTML here... </h3>"
-     :id   (uuid)}))
-
 (defui render-present
   [this]
   [:div.module-content.html-module-content
@@ -68,6 +60,14 @@
             [:div.module-tray (delete-btn this) (edit-btn this)]
             [:div.module-element
               (render-present this)]]))
+
+
+(defn html-doc
+  []
+  (model/save-document
+    {:type :html-module
+     :text "<h3>HTML here... </h3>"
+     :id   (uuid)}))
 
 
 (defn create-module

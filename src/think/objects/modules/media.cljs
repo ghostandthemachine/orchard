@@ -4,13 +4,14 @@
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
-            [crate.core :as crate]
             [think.objects.modules :refer [module-btn-icon module-btn]]
             [think.util :refer [bound-do]]
             [think.util.dom :as dom]
-            [think.util.log :refer [log log-obj]]
-            [crate.binding :refer [bound subatom]]
             [think.model :as model]
+            [think.util.log :refer [log log-obj]]
+            [redlobster.promise :as p]
+            [crate.core :as crate]
+            [crate.binding :refer [bound subatom]]
             [clojure.string :as string]
             [dommy.core :as dommy]))
 
@@ -156,18 +157,21 @@
 
 (defn render-place-holder
   []
-  [:div.media-place-holder])
+  [:div.media-place-holder
+    [:img {:src "images/missing-file.jpeg"}]])
 
 
 (defui render-media
   [this]
   [:div.module-content.media-module-content
     (let [type (:type @this)]
-      (case type
-        :img   (render-img   (:path @this))
-        :video (render-video (:path @this))
-        :pdf   (render-pdf   (:path @this))
-        (render-place-holder)))])
+      ; (case type
+      ;   :img   (render-img   (:path @this))
+      ;   :video (render-video (:path @this))
+      ;   :pdf   (render-pdf   (:path @this))
+      ;   (render-place-holder))
+      (render-place-holder)
+      )])
 
 
 
@@ -207,7 +211,6 @@
                         (log-obj this)
                         (log-obj record)
                         (object/merge! this record)
-                        (object/raise this :save)
                         (bound-do (subatom this :mode)
                           (partial render-module this))
                         (bound-do (subatom this :path)
@@ -216,13 +219,20 @@
                           [:div.module-tray (module-btn this)]
                           [:div.module-element (render-media this)]]))
 
-
-(defn create-module
-  [doc]
-  (object/create :media-module doc))
-
 (defn media-doc
   []
-  {:type :media-module
-   :path ""
-   :id   (uuid)})
+  (model/save-document
+    {:type :media-module
+     :path ""
+     :id   (uuid)}))
+
+
+(defn create-module
+  []
+  (let [mod-promise (p/promise)]
+    (let-realised [doc (media-doc)]
+      (let [obj (object/create :media-module @doc)]
+        (p/realise mod-promise obj)))
+    mod-promise))
+
+
