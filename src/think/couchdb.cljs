@@ -98,8 +98,6 @@
   (let [doc-promise (p/promise)
         cb (fn [err res]
              (if err
-             (log "think.couchdb/update-doc - error: ")
-             (log-obj err)
                (p/realise-error doc-promise (util/js->clj err))
                (p/realise doc-promise (assoc doc :rev (.-rev res)))))]
     (if-let [doc-id (:id doc)]

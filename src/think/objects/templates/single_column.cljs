@@ -28,7 +28,6 @@
   :triggers #{:save}
   :reaction (fn [this]
               (log "saving template...")
-              (log-obj @this)
               (let [mod-ids       (map #(:id @%)
                                     (filter
                                       #(not= (:type @%) "module-selector-module") (:modules @this)))
@@ -41,15 +40,14 @@
                     										(keys original-doc)
                     										:id :rev)))
                     orig-vals     (select-keys @this doc-keys)
-                    new-doc       (assoc orig-vals :modules mod-ids)]
-                (log "new doc to save")
-                (log-obj doc-keys)
-                (log-obj orig-vals)
-                (log-obj original-doc)
-                (log-obj new-doc)
+                    ;; TODO This should not need to be done so explicitly but
+                    ;; is not working without out associating the id and rev
+                    ;; specifically
+                    new-doc       (assoc orig-vals
+                    								:modules mod-ids
+                    								:rev     (:rev original-doc)
+                    								:id      (:id original-doc))]
                 (let-realised [doc (model/save-document new-doc)]
-                  (log "realised doc returned...")
-                  (log (:rev @doc))
                   (object/assoc! this :rev (:rev @doc))))))
 
 
@@ -78,8 +76,6 @@
   :triggers #{:add-module}
   :reaction (fn [this template new-mod index]
               (log "single-column-template add module")
-              (log-obj template)
-              (log-obj @new-mod)
               (object/parent! template new-mod)
               (object/update! template [:modules] #(insert-at % index new-mod))))
 
@@ -90,7 +86,6 @@
   :behaviors [::save-template ::post-init ::remove-module ::add-module]
   :init (fn [this tpl]
   				(log "init new single column template")
-  				(log-obj this)
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map
                                 #(object/create
@@ -99,13 +94,11 @@
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
               (log "new merged tempalte")
-              (log-obj this)
               (doseq [mod module-objs]
                 (object/parent! this mod))))
          	(util/bound-do (subatom this :modules)
 						(fn [mods]
 						  (log "update single column template modules")
-						  (log-obj mods)
 						  (object/raise this :save)))
           [:div.template.single-column-template
             [:div.modules-container
