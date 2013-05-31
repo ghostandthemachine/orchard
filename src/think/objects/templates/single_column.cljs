@@ -12,7 +12,7 @@
             [think.model :as model]))
 
 
-(defn render-modules
+(defui render-modules
   [this modules]
   [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
     [:li.modules-item
