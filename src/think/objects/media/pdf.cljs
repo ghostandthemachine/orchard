@@ -52,7 +52,7 @@
                 :tags #{}
                 :triggers #{}
                 :behaviors [::load]
-                :editor path
+                :editor nil
                 :init (fn [this]
                         [:canvas {:id (str "pdf-canvas-" (:id @this))
                                   :style {:border "1px solid gray"}}]))

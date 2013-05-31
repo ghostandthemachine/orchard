@@ -3,7 +3,7 @@
   :min-lein-version "2.0.0"
 
   :dependencies [[node-webkit-cljs "0.1.4"]
-                 [prismatic/dommy "0.1.0"]
+                 [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]

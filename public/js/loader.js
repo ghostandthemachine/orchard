@@ -4,9 +4,9 @@
 
 var css_files = [
     "css/codemirror.css",
-    "css/thinker.css",
     "bootstrap/css/bootstrap.min.css",
-    "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css"];
+    "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css",
+    "css/thinker.css"];
 
 var js_files = [
     "js/markdown_parser.js",

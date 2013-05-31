@@ -211,7 +211,6 @@ li.modules-item {
 .spacer-tray {
   position: relative;
   top: -13px;
-  left: 200px;
   height: 15px;
   margin-bottom: -10px;
 }
@@ -219,4 +218,20 @@ li.modules-item {
 .spacer-nav {
   display: none;
   list-style: none;
+}
+
+.popover-trigger {
+  padding: 1px;
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 0px;
+  border-radius: 10px;
+}
+
+.popover-container {
+	padding: 2px;
+}
+
+.popover-icon {
+	padding: 2px;
 }

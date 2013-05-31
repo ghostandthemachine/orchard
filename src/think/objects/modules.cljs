@@ -1,5 +1,5 @@
 (ns think.objects.modules
-  (:use-macros [think.macros :only [defui]]
+  (:use-macros [think.macros :only [defui defgui]]
                [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.util.dom :as dom]
@@ -13,9 +13,6 @@
 
 (defn index-of-module
   [module]
-  (log-obj (into [] (map #(:id @%)
-      (:modules @(object/parent module)))))
-  (log-obj @(object/parent module))
   (index-of
     (:id @module)
     (map #(:id @%)
@@ -50,8 +47,6 @@
   [this]
   [:i.icon-trash.module-btn]
   :click (fn [e]
-            (log "Delete module btn hit " (:id @this))
-            (log-obj @this)
             (let [msg "Are you sure you want to delete this module?"
                    delete? (js/confirm msg)]
                 (when delete?
@@ -79,7 +74,7 @@
                     new-doc      (select-keys @this doc-keys)]
                 (let-realised [doc (model/save-document new-doc)]
                   (log "save handler...")
-                  (log-obj @doc)
+                  ;; (log-obj @doc)
                   (object/assoc! this :rev (:rev @doc))))))
 
 
@@ -128,9 +123,6 @@
     icon]
   :click (fn [e]
           (let-realised [mod (create-fn)]
-            (log "adding new module")
-            (log-obj @mod)
-            (log-obj template)
             (object/raise template :add-module template @mod index))))
 
 
@@ -159,7 +151,7 @@
         template (case type
                   :top     module
                   :content (object/parent module))]
-    [:div.container.add-module-popover
+    [:div.popover-container
       (for [icon [(create-module-icon template index
                     think.objects.modules.markdown/icon
                     think.objects.modules.markdown/create-module)
@@ -169,9 +161,7 @@
                   (create-module-icon template index
                     think.objects.modules.media/icon
                     think.objects.modules.media/create-module)]]
-        [:div.row-fluid
-          [:div.span2
-            icon]])]))
+        	[:div.popover-icon icon])]))
 
 
 (def clicked-away* (atom false))
@@ -182,13 +172,17 @@
   (fn [e]
     (if (and @is-visible* @clicked-away*)
       (do
+        (.data (js/$ ".popover-trigger") "visible" "true")
         (.popover (js/$ ".popover-trigger") "hide")
+        (.hide (js/$ ".spacer-nav"))
         (reset! clicked-away*
           (reset! is-visible* false)))
-      (reset! clicked-away* true))))
+      (do
+        ; (.hide (js/$ ".spacer-nav"))
+        (reset! clicked-away* true)))))
 
 
-(defui create-module-btn
+(defgui create-module-btn
   [module popover-type]
   [:span.badge.popover-trigger
     {:data-title     "Add New Module"
@@ -196,15 +190,14 @@
      :data-html      "true"
      :data-trigger   "manual"}
     [:i.icon-plus.icon-white]]
-  :click (fn [e]
-          (this-as this
-            (let [popover-html (crate/html (popover module popover-type))]
-              (.popover (js/$ this)
-                (clj->js {:content popover-html}))
-              (.popover (js/$ this) "show")
-              (reset! clicked-away* false)
-              (reset! is-visible* true)
-              (.preventDefault e)))))
+  :click (fn [this e]
+          (let [popover-html (crate/html (popover module popover-type))]
+            (.data (js/$ this) "content" popover-html)
+            (.popover (js/$ this) "show")
+            (.data (js/$ this) "visible" "true")
+            (reset! clicked-away* false)
+            (reset! is-visible* true)
+            (.preventDefault e))))
 
 
 (defn top-spacer-nav$
@@ -219,9 +212,11 @@
       [:li.active.spacer-item
         (create-module-btn template :top)]]]
   :mouseover (fn []
+
               (.show (top-spacer-nav$ template)))
   :mouseout  (fn []
-              (.hide (top-spacer-nav$ template))))
+              (when-not @is-visible*
+                (.hide (top-spacer-nav$ template)))))
 
 
 (defn spacer-nav$
