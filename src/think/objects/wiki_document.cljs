@@ -25,9 +25,35 @@
                                     :template (:id @(:template @this))))))
 
 
+
+
+(defui delete-doc-btn
+	[this]
+	[:span.label.label-important.header-label
+		[:i.icon-trash.icon-white.header-icon]]
+	:click (fn [e]
+            (let [msg "Are you sure you want to delete this document?\nThis will permanently delete this document."
+                  delete? (js/confirm msg)]
+              (when delete?
+                (model/delete-document @this)
+                (think.objects.app/open-document :home)))))
+
+
+(defui lock-doc-btn
+	[this locked?]
+	(if locked?
+		[:span.label.label-info.header-label "locked"
+			[:i.icon-lock.icon-white.header-icon]]
+		[:span.label.label-warning.header-label "unlocked"
+			[:i.icon-lock.icon-white.header-icon]])
+	:click (fn [e] (object/update! this [:locked?] #(not %))))
+
+
+
 (object/object* :wiki-document
   :triggers #{:save}
   :behaviors [::save-document]
+  :locked? true
   :init (fn [this document]
           (log "save wiki-document")
           (let-realised [template (model/get-document (:template document))]
@@ -40,7 +66,12 @@
           [:div.document
            [:div.row-fluid
             [:div.span12
-             [:h4 (:title @this)]]]
+             [:h4 (:title @this)
+             [:div.pull-right
+             		(delete-doc-btn this)]
+             	[:div.pull-right
+	             	(bound (subatom this [:locked?])
+	             		(partial lock-doc-btn this))]]]]
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))

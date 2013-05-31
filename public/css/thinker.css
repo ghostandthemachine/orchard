@@ -235,3 +235,13 @@ li.modules-item {
 .popover-icon {
 	padding: 2px;
 }
+
+
+.header-label {
+	margin-left: 5px;
+}
+
+.header-icon {
+	margin-left: 4px;
+	margin-right: 4px;
+}
