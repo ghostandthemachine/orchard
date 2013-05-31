@@ -33,8 +33,20 @@
                                     (filter
                                       #(not= (:type @%) "module-selector-module") (:modules @this)))
                     original-doc  (first (:args @this))
-                    doc-keys      (conj (keys original-doc) :id :rev)
-                    new-doc       (assoc (select-keys @this doc-keys) :modules mod-ids)]
+                    rev           (:rev original-doc)
+                    id            (:id original-doc)
+                    doc-keys      (into []
+                    								(distinct
+                    									(conj
+                    										(keys original-doc)
+                    										:id :rev)))
+                    orig-vals     (select-keys @this doc-keys)
+                    new-doc       (assoc orig-vals :modules mod-ids)]
+                (log "new doc to save")
+                (log-obj doc-keys)
+                (log-obj orig-vals)
+                (log-obj original-doc)
+                (log-obj new-doc)
                 (let-realised [doc (model/save-document new-doc)]
                   (log "realised doc returned...")
                   (log (:rev @doc))
@@ -69,9 +81,7 @@
               (log-obj template)
               (log-obj @new-mod)
               (object/parent! template new-mod)
-              (object/update! template [:modules] #(insert-at % index new-mod))
-              ; (object/raise template :save)
-              ))
+              (object/update! template [:modules] #(insert-at % index new-mod))))
 
 
 (object/object* :single-column-template
@@ -79,6 +89,8 @@
   :tags #{:template}
   :behaviors [::save-template ::post-init ::remove-module ::add-module]
   :init (fn [this tpl]
+  				(log "init new single column template")
+  				(log-obj this)
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map
                                 #(object/create
@@ -86,13 +98,15 @@
                                 @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
+              (log "new merged tempalte")
+              (log-obj this)
               (doseq [mod module-objs]
-                (object/parent! this mod))
-              (util/bound-do (subatom this :modules)
-                (fn [mods]
-                  (log "update single column template modules")
-                  (log-obj mods)
-                  (object/raise this :save)))))
+                (object/parent! this mod))))
+         	(util/bound-do (subatom this :modules)
+						(fn [mods]
+						  (log "update single column template modules")
+						  (log-obj mods)
+						  (object/raise this :save)))
           [:div.template.single-column-template
             [:div.modules-container
               (bound (subatom this :modules)

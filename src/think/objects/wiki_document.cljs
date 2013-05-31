@@ -10,15 +10,6 @@
             [think.util.log :refer [log log-obj]]))
 
 
-(defn wiki-doc
-  [title tpl]
-  (model/save-document
-    {:type :wiki-document
-     :id (util/uuid)
-     :title title
-     :template (:id tpl)}))
-
-
 (defui render-template
   [this template]
   [:div.document-content
@@ -53,3 +44,13 @@
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))
+
+
+(defn wiki-doc
+  [title tpl]
+  (model/save-document
+    {:type :wiki-document
+     :id (util/uuid)
+     :title title
+     :template (:id tpl)}))
+

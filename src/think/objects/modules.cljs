@@ -10,7 +10,6 @@
             [think.model :as model]))
 
 
-
 (defn index-of-module
   [module]
   (index-of

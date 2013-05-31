@@ -18,6 +18,7 @@
     "icon-pencil module-btn"
     "icon-ok module-btn"))
 
+
 (defui module-btn
   [this]
   [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
@@ -26,6 +27,7 @@
               (if (= (:mode @this) :present)
                 :edit
                 :present))))
+
 
 (defui render-present
   [docs]

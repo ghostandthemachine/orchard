@@ -56,7 +56,8 @@
     (let-realised [tpl-doc (case tpl
                             :single-column (single-column/single-column-template-doc @md-doc))]
       (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
-        (object/raise workspace/workspace :show-document @wiki-doc)))))
+      	(let-realised [wiki-obj (model/load-document (:id @wiki-doc))]
+	        (object/raise workspace/workspace :show-document @wiki-obj))))))
 
 
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
@@ -67,3 +68,4 @@
           $title-input (dom/$ :#new-document-title)
           title        (.-value $title-input)]
       (create-document title tpl-type))))
+
