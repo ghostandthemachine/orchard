@@ -16,17 +16,20 @@
 
 (object/behavior* ::show-document
                   :triggers #{:show-document}
-                  :reaction (fn [this doc]
+                  :reaction (fn [this doc-obj]
+                  						(log-obj doc-obj)
                               (dom/empty (:content @this))
-                              (dom/append (:content @this) (:content @doc))))
+                              (dom/append (:content @this) (:content @doc-obj))))
 
 
 (defn active-content [active]
   (when active
     (object/->content active)))
 
+
 (defn ->width [width]
   (str (or width 0) "px"))
+
 
 (object/object* ::workspace
                 :triggers  #{:show-document}
@@ -37,6 +40,8 @@
                 :init (fn [this]
                         [:div#workspace.container-fluid]))
 
+
 (def workspace (object/create ::workspace))
+
 
 (canvas/add! workspace)

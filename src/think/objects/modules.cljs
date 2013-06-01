@@ -7,7 +7,8 @@
             [think.util.log :refer [log log-obj]]
             [think.util :refer [index-of]]
             [crate.binding :refer [bound subatom]]
-            [think.model :as model]))
+            [think.model :as model]
+            [dommy.core :as dommy]))
 
 
 (defn index-of-module
@@ -33,8 +34,8 @@
 (defn edit-module-btn-icon
   [mode]
   (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
+    "module-btn icon-pencil module-btn"
+    "module-btn icon-ok module-btn"))
 
 
 (defn $module
@@ -199,6 +200,20 @@
             (.preventDefault e))))
 
 
+(defn parent-val
+	[module type k]
+	(loop [p (object/parent module)]
+		(when p
+			(if (= (:type @p) type)
+				(k @p)
+				(recur (object/parent p))))))
+
+
+(defn document-locked?
+	[module]
+	(parent-val module "wiki-document" :locked?))
+
+
 (defn top-spacer-nav$
   [template]
   (js/$ (str "#top-spacer-nav-" (:id @template))))
@@ -211,8 +226,8 @@
       [:li.active.spacer-item
         (create-module-btn template :top)]]]
   :mouseover (fn []
-
-              (.show (top-spacer-nav$ template)))
+							(when-not (document-locked? template)
+              	(.show (top-spacer-nav$ template))))
   :mouseout  (fn []
               (when-not @is-visible*
                 (.hide (top-spacer-nav$ template)))))
@@ -230,7 +245,40 @@
       [:li.active.spacer-item
         (create-module-btn module :content)]]]
   :mouseover (fn []
-              (.show (spacer-nav$ module)))
+  						(when-not (document-locked? module)
+	              (.show (spacer-nav$ module))))
   :mouseout  (fn []
               (.hide (spacer-nav$ module))))
+
+
+(defn hide
+	[module]
+	(let [tray (js/$ (str "#module-" (:id @module) " .module-tray"))
+				mod  (js/$ (str "#module-" (:id @module)))]
+		(.css tray "visibility" "hidden")
+		(.css tray "opacity" 0)))
+
+
+(defn show
+	[module]
+	(let [tray (js/$ (str "#module-" (:id @module) " .module-tray"))
+				mod  (js/$ (str "#module-" (:id @module)))]
+		(.css tray "visibility" "visible")
+		(.css tray "opacity" 1)))
+
+
+(defgui module-view
+	[module body & handlers]
+	[:div {:class (str "span12 module " (:type @module))
+				 :id (str "module-" (:id @module))}
+	[:div.module-tray (delete-btn module) (edit-btn module)]
+		body]
+	:mouseout (fn [this e]
+							(when-not (document-locked? module)
+								(hide module)))
+	:mouseover (fn [this e]
+							(when-not (document-locked? module)
+		 						(show module)))
+	handlers)
+
 

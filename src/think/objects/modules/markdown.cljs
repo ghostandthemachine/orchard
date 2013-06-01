@@ -6,7 +6,7 @@
             [redlobster.promise :as p]
             [think.util :refer [bound-do uuid]]
             [think.util.dom :as dom]
-            [think.objects.modules :refer [spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
+            [think.objects.modules :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]
@@ -68,9 +68,8 @@
                         (bound-do (subatom this :text)
                                   (fn [_]
                                     (object/raise this :save)))
-                        [:div.span12.module.markdown-module {:id (str "module-" (:id @this))}
-                          [:div.module-tray (delete-btn this) (edit-btn this)]
-                          [:div.module-element (render-present this)]]))
+                        (module-view this
+                          [:div.module-element (render-present this)])))
 
 
 (defn create-module

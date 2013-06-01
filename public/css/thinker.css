@@ -127,14 +127,13 @@ li.modules-item {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 5px;
-  background-color: rgb(248, 248, 248);
-  -webkit-mouseover-transition:.4s;
-  mouseover-transition: border-color .4s ease-out;
+  background-color: rgb(255, 255, 255);
 }
 
 
-.module:hover {
-  border-color: rgb(225, 225, 225);
+.module-tray {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .module .module-btn {
@@ -145,19 +144,7 @@ li.modules-item {
   right: -12px;
   float: right;
   top: -6px;
-  visibility: hidden;
-  opacity: 0;
   -webkit-transition: .4s;
-}
-
-.module:hover .module-btn {
-    /*background-image: -webkit-radial-gradient(center, circle closest-side, #1271FF 0%, #81DDEF 100%);*/
-    opacity: 1;
-    visibility: visible;
-}
-
-.module .module-btn:hover {
-
 }
 
 

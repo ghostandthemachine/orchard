@@ -1,5 +1,5 @@
 (ns think.object
-  (:refer-clojure :exclude [set! assoc! dissoc!])
+  (:refer-clojure :exclude [set! assoc! dissoc! children])
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
@@ -220,6 +220,9 @@
 (defn child [obj k]
   ((:children @obj) k))
 
+(defn children [obj]
+  (:children @obj))
+
 (defn ->content [obj]
   (:content @obj))
 
@@ -269,3 +272,12 @@
   (add-watch obj (gensym change) (fn [_ _ _ v]
                                    (func v))))
 
+
+(defn object-by-id
+	[id]
+	(->
+		(filter
+			#(= (:id @(second %)) id)
+			@instances)
+		first
+		last))

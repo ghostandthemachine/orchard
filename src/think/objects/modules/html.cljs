@@ -7,7 +7,7 @@
             [think.util.dom :as dom]
             [think.model :as model]
             [think.util :refer [bound-do uuid]]
-            [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
+            [think.objects.modules :refer [module-view default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))
@@ -56,10 +56,8 @@
           (object/merge! this record)
           (bound-do (subatom this [:mode]) (partial render-module this))
           (bound-do (subatom this :text) (fn [_] (object/raise this :save)))
-          [:div.span12.module.html-module {:id (str "module-" (:id @this)) :draggable "true"}
-            [:div.module-tray (delete-btn this) (edit-btn this)]
-            [:div.module-element
-              (render-present this)]]))
+          (module-view this
+            [:div.module-element (render-present this)])))
 
 
 (defn html-doc

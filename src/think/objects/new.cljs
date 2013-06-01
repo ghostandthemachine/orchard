@@ -56,8 +56,13 @@
     (let-realised [tpl-doc (case tpl
                             :single-column (single-column/single-column-template-doc @md-doc))]
       (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
-      	(let-realised [wiki-obj (model/load-document (:id @wiki-doc))]
-	        (object/raise workspace/workspace :show-document @wiki-obj))))))
+      	(let-realised [new-document-obj (model/load-document (:id @wiki-doc))]
+      		(log "new docing it")
+      		;; BUG
+      		;; For some reason the new-document-obj promise does not realize unless
+      		;; it is (redlobster) derefed with @
+      		;; (log-obj @new-document-obj)
+	        (object/raise workspace/workspace :show-document @new-document-obj))))))
 
 
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click

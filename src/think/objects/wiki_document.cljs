@@ -1,5 +1,5 @@
 (ns think.objects.wiki-document
-  (:use-macros [think.macros :only [defui]]
+  (:use-macros [think.macros :only [defui defgui]]
                [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.model :as model]
@@ -25,6 +25,30 @@
                                     :template (:id @(:template @this))))))
 
 
+(object/behavior* ::lock-document
+  :triggers #{:lock-document}
+  :reaction (fn [this]
+              (log "Lock document")
+              (object/update! this [:locked?]
+              	(fn [_]
+              		true))
+              (.css (js/$ ".module")
+  							"background-color"
+  							"rgb(255, 255, 255)")))
+
+
+(object/behavior* ::unlock-document
+  :triggers #{:unlock-document}
+  :reaction (fn [this]
+              (log "Unlock document")
+              (object/update! this [:locked?]
+              	(fn [_]
+              		false))
+              (.css (js/$ ".module")
+  							"background-color"
+  							"rgb(247, 247, 247)")))
+
+
 
 
 (defui delete-doc-btn
@@ -46,21 +70,22 @@
 			[:i.icon-lock.icon-white.header-icon]]
 		[:span.label.label-warning.header-label "unlocked"
 			[:i.icon-lock.icon-white.header-icon]])
-	:click (fn [e] (object/update! this [:locked?] #(not %))))
-
+	:click (fn [e]
+					(let [lock (if (:locked? @this)
+												:unlock-document
+												:lock-document)]
+						(object/raise this lock))))
 
 
 (object/object* :wiki-document
-  :triggers #{:save}
-  :behaviors [::save-document]
+  :triggers #{:save :lock-document :unlock-document}
+  :behaviors [::save-document ::lock-document ::unlock-document]
   :locked? true
   :init (fn [this document]
-          (log "save wiki-document")
           (let-realised [template (model/get-document (:template document))]
-            (log "template for wiki doc")
-            (log-obj @template)
             (let [tpl-obj (object/create (keyword (:type @template)) @template)]
               (object/assoc! this :template tpl-obj)
+              (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
           [:div.document

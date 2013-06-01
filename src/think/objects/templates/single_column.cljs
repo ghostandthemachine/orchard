@@ -77,7 +77,10 @@
   :reaction (fn [this template new-mod index]
               (log "single-column-template add module")
               (object/parent! template new-mod)
-              (object/update! template [:modules] #(insert-at % index new-mod))))
+              (object/update! template [:modules] #(insert-at % index new-mod))
+              (.css (js/$ ".module")
+  							"background-color"
+  							"rgb(247, 247, 247)")))
 
 
 (object/object* :single-column-template
