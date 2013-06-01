@@ -49,11 +49,22 @@
   							"rgb(247, 247, 247)")))
 
 
+(object/behavior* ::ready
+  :triggers #{:ready}
+  :reaction (fn [this]
+              (.tooltip
+								(js/$ ".header-label")
+								(clj->js
+									{:delay 100
+									 :placement "bottom"}))
+              (object/raise (:template @this) :ready)))
 
 
 (defui delete-doc-btn
 	[this]
 	[:span.label.label-important.header-label
+		{:data-toggle "tooltip"
+		 :title "delete this document"}
 		[:i.icon-trash.icon-white.header-icon]]
 	:click (fn [e]
             (let [msg "Are you sure you want to delete this document?\nThis will permanently delete this document."
@@ -63,12 +74,20 @@
                 (think.objects.app/open-document :home)))))
 
 
+
+			
 (defui lock-doc-btn
 	[this locked?]
 	(if locked?
-		[:span.label.label-info.header-label "locked"
+		[:span.label.label-info.header-label
+			{:data-toggle "tooltip"
+ 			:title "unlock document editing"}
+ 			"locked"
 			[:i.icon-lock.icon-white.header-icon]]
-		[:span.label.label-warning.header-label "unlocked"
+		[:span.label.label-warning.header-label
+			{:data-toggle "tooltip"
+			 :title "lock document editing"}
+			 "unlocked"
 			[:i.icon-lock.icon-white.header-icon]])
 	:click (fn [e]
 					(let [lock (if (:locked? @this)
@@ -77,9 +96,25 @@
 						(object/raise this lock))))
 
 
+(defn copy-to-clipboard-prompt
+	[text]
+	(.prompt js/window "Copy to clipboard: cmd + c, Enter", text))
+
+
+(defui id-btn
+	[this]
+	[:span.label.label-info.header-label
+		{:data-toggle "tooltip"
+		 :title "document hyperlink tag"}
+		[:i.icon-barcode.icon-white]]
+	:click (fn [e]
+						(copy-to-clipboard-prompt
+							(str "[" (:title @this) "](" (:id @this) ")"))))
+
+
 (object/object* :wiki-document
-  :triggers #{:save :lock-document :unlock-document}
-  :behaviors [::save-document ::lock-document ::unlock-document]
+  :triggers #{:save :lock-document :unlock-document :ready}
+  :behaviors [::save-document ::lock-document ::unlock-document ::ready]
   :locked? true
   :init (fn [this document]
           (let-realised [template (model/get-document (:template document))]
@@ -93,6 +128,8 @@
             [:div.span12
              [:h4 (:title @this)
              [:div.pull-right
+             	(id-btn this)]
+             [:div.pull-right
              		(delete-doc-btn this)]
              	[:div.pull-right
 	             	(bound (subatom this [:locked?])
@@ -100,6 +137,7 @@
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))
+
 
 
 (defn wiki-doc

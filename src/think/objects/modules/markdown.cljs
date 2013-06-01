@@ -17,7 +17,7 @@
   []
   (model/save-document
     {:type :markdown-module
-     :text "## Markdown module...\n[home](::home)"
+     :text "## Markdown module...\n[home](:home)"
      :id   (uuid)}))
 
 
@@ -76,8 +76,6 @@
   []
   (let [mod-promise (p/promise)]
     (let-realised [doc (markdown-doc)]
-      (log "create-module MARKDOWN")
-      (log-obj @doc)
       (let [obj (object/create :markdown-module @doc)]
         (p/realise mod-promise obj)))
     mod-promise))
@@ -85,8 +83,13 @@
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click
   (fn [e]
-    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/"))))
     (think.objects.app/open-document
-      (keyword
-        (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+      (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
+
+
+
+
+
+

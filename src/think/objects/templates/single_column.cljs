@@ -12,6 +12,18 @@
             [think.model :as model]))
 
 
+(object/behavior* ::ready
+  :triggers #{:ready}
+  :reaction (fn [this id]
+              ; (log "ready id " id)
+              ; (log "Init after creating template. Content " (str "#sortable-" id))
+              ; (log-obj (js/$ (str "#sortable-" id)))
+              ; (log
+              ;   (-> (js/$ (str "#sortable-" id))
+              ;     (.sortable (clj->js {:connectWith ".connected-sortable"}))))
+              ))
+
+
 (defui render-modules
   [this modules]
   [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
@@ -47,7 +59,11 @@
                     								:modules mod-ids
                     								:rev     (:rev original-doc)
                     								:id      (:id original-doc))]
+                (log "doc to save")
+                (log-obj new-doc)
                 (let-realised [doc (model/save-document new-doc)]
+                	(log "saved doc")
+                	(log-obj @doc)
                   (object/assoc! this :rev (:rev @doc))))))
 
 
@@ -58,18 +74,6 @@
               (object/update! this [:modules]
                 (fn [mods]
                   (filter #(not= (:id @%) (:id @child)) mods)))))
-
-
-(object/behavior* ::post-init
-  :triggers #{:post-init}
-  :reaction (fn [this id]
-              ; (log "post-init id " id)
-              ; (log "Init after creating template. Content " (str "#sortable-" id))
-              ; (log-obj (js/$ (str "#sortable-" id)))
-              ; (log
-              ;   (-> (js/$ (str "#sortable-" id))
-              ;     (.sortable (clj->js {:connectWith ".connected-sortable"}))))
-              ))
 
 
 (object/behavior* ::add-module
@@ -84,9 +88,9 @@
 
 
 (object/object* :single-column-template
-  :triggers #{:save :post-init :remove-module :add-module}
+  :triggers #{:save :ready :remove-module :add-module}
   :tags #{:template}
-  :behaviors [::save-template ::post-init ::remove-module ::add-module]
+  :behaviors [::save-template ::ready ::remove-module ::add-module]
   :init (fn [this tpl]
   				(log "init new single column template")
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
@@ -96,7 +100,6 @@
                                 @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
               (object/merge! this new-tpl)
-              (log "new merged tempalte")
               (doseq [mod module-objs]
                 (object/parent! this mod))))
          	(util/bound-do (subatom this :modules)

@@ -19,7 +19,8 @@
                   :reaction (fn [this doc-obj]
                   						(log-obj doc-obj)
                               (dom/empty (:content @this))
-                              (dom/append (:content @this) (:content @doc-obj))))
+                              (dom/append (:content @this) (:content @doc-obj))
+															(object/raise doc-obj :ready)))
 
 
 (defn active-content [active]
