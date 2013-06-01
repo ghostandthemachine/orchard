@@ -103,6 +103,9 @@
     (if-let [doc-id (:id doc)]
       (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
       (.insert db (clj->js (couch-ids doc)) cb))
+    ; (log "update promise")
+    ; (log-obj doc-promise)
+    ; (log-obj @doc-promise)
     doc-promise))
 
 

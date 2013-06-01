@@ -126,14 +126,15 @@
           [:div.document
            [:div.row-fluid
             [:div.span12
-             [:h4 (:title @this)
-             [:div.pull-right
-             	(id-btn this)]
-             [:div.pull-right
-             		(delete-doc-btn this)]
-             	[:div.pull-right
-	             	(bound (subatom this [:locked?])
-	             		(partial lock-doc-btn this))]]]]
+             [:h4
+	             [:div.pull-left.module-link-label
+	             		(id-btn this)]
+	             (:title @this)
+	             [:div.pull-right
+	             		(delete-doc-btn this)]
+	             	[:div.pull-right
+		             	(bound (subatom this [:locked?])
+		             		(partial lock-doc-btn this))]]]]
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))

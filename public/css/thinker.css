@@ -232,3 +232,9 @@ li.modules-item {
 	margin-left: 4px;
 	margin-right: 4px;
 }
+
+.module-link-label {
+	position: relative;
+	margin-right: 5px;
+	top: 1px;
+}

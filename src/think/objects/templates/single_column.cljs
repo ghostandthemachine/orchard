@@ -9,7 +9,8 @@
             [think.objects.modules :refer [top-spacer spacer insert-at]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
-            [think.model :as model]))
+            [think.model :as model]
+            [redlobster.promise :as p]))
 
 
 (object/behavior* ::ready
@@ -57,14 +58,14 @@
                     ;; specifically
                     new-doc       (assoc orig-vals
                     								:modules mod-ids
-                    								:rev     (:rev original-doc)
+                                    ;; get the most current rev,
+                                    ;; otherwise use the original one from laod time
+                    								:rev     (or (:rev @this) (:rev original-doc))
                     								:id      (:id original-doc))]
-                (log "doc to save")
-                (log-obj new-doc)
-                (let-realised [doc (model/save-document new-doc)]
-                	(log "saved doc")
-                	(log-obj @doc)
-                  (object/assoc! this :rev (:rev @doc))))))
+                (let [doc (model/save-document new-doc)]
+                  (p/on-realised doc
+                  	#(object/assoc! this :rev (:rev @doc))
+                  	#(log "error loading doc " %))))))
 
 
 (object/behavior* ::remove-module
