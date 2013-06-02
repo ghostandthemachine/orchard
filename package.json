@@ -21,6 +21,7 @@
   "dependencies": {
       "nano": "*"
   },
+
   "devDependencies": {
       "nw-gyp"  : "*",
       "connect" : "*"

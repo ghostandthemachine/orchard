@@ -70,14 +70,12 @@
 (object/behavior* ::ready
                   :triggers #{:ready}
                   :reaction (fn [this]
-                              (log "app ready")
                               (nw/show)
                               ; (restore-session)
                               ; (.on win "close"
                               ;      (fn []
                               ;        (save-session)
-                              ;        (this-as this
-                              ;          (.close this true))))
+                              ;        (this-as this (.close this true))))
                               ))
 
 (object/behavior* ::quit
@@ -105,17 +103,15 @@
 (def windows js/global.windows)
 
 (def app         (object/create ::app))
-(def note-editor (object/create :think.objects.note-editor/note-editor))
 
 (defn setup-tray
   []
   "Creates a tray menu in upper-right app tray."
-  (log "creating tray menu...")
-  (nw/tray! {:title "Thinker"
-             :menu (nw/menu [{:label "Take note..." :onclick (object/raise note-editor :take-note)}
-                             {:label "Show"         :onclick #(.show (nw/window))}
-                             {:type "separator"}
-                             {:label "Quit"         :onclick #(object/raise app :quit)}])}))
+    (log "creating tray menu...")
+    (nw/tray! {:title "Thinker"
+               :menu (nw/menu [{:label "Show"         :onclick #(.show (nw/window))}
+                               {:type "separator"}
+                               {:label "Quit"         :onclick #(object/raise app :quit)}])}))
 
 
 (defn open-document
@@ -127,15 +123,14 @@
 (defn start-app
   []
   (dom/append (dom/$ "body") (:content @nav/workspace-nav))
+  ; (setup-tray)
   (object/raise app :ready)
   (open-document :home))
 
 
 (defn init []
-  (log "Starting app...")
   (think.util/start-repl-server)
   (object/raise app :init-home)
-  ; (setup-tray)
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
 

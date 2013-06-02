@@ -28,14 +28,7 @@
                                 (object/merge! this
                                   {:ready? true
                                    :document-db* @db-promise})
-                                (object/raise this :db-loaded))))
-
-(object/behavior* ::db-loaded
-                  :triggers #{:db-loaded}
-                  :reaction (fn [this]
-                              (log "DB loaded...")
-                              (fire :db-loaded)))
-
+                                (fire :db-loaded))))
 
 
 (object/object* ::model
