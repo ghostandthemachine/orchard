@@ -123,8 +123,8 @@
               (refresh-btn)
               (text-input)
               (lock-btn this)
-              (dev-tools-btn)
-              (synch-btn)]]))
+              (synch-btn)
+              (dev-tools-btn)]]))
 
 
 (def workspace-nav (object/create :workspace-nav))
