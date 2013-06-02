@@ -28,7 +28,7 @@
 (object/behavior* ::lock-document
   :triggers #{:lock-document}
   :reaction (fn [this]
-              (log "Lock document")
+              ; (log "Lock document")
               (object/update! this [:locked?]
               	(fn [_]
               		true))
@@ -40,7 +40,7 @@
 (object/behavior* ::unlock-document
   :triggers #{:unlock-document}
   :reaction (fn [this]
-              (log "Unlock document")
+              ; (log "Unlock document")
               (object/update! this [:locked?]
               	(fn [_]
               		false))

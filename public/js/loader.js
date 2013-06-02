@@ -29,8 +29,7 @@ var js_files = [
     // "js/pdf/viewer.js",
 
     "bootstrap/js/bootstrap.min.js",
-    "js/thinker.js",
-    "js/account.js"]
+    "js/thinker.js"]
 
 
 function log_error(e) {

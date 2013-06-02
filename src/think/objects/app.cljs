@@ -71,12 +71,11 @@
                   :triggers #{:ready}
                   :reaction (fn [this]
                               (nw/show)
-                              ; (restore-session)
-                              ; (.on win "close"
-                              ;      (fn []
-                              ;        (save-session)
-                              ;        (this-as this (.close this true))))
-                              ))
+                              (restore-session)
+                              (.on win "close"
+                                   (fn []
+                                     (save-session)
+                                     (this-as this (.close this true))))))
 
 (object/behavior* ::quit
                   :triggers #{:quit}
@@ -130,7 +129,7 @@
 (defn start-app
   []
   (dom/append (dom/$ "body") (:content @nav/workspace-nav))
-  ; (setup-tray)
+  (setup-tray)
   (object/raise app :ready)
   (open-document :home))
 
