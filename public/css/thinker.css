@@ -209,10 +209,10 @@ li.modules-item {
 }
 
 .popover-trigger {
-  padding: 1px;
-  padding-left: 2px;
-  padding-bottom: 2px;
-  padding-top: 0px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-bottom: 1px;
+  padding-top: 2px;
   border-radius: 10px;
   box-shadow: 0px 0px 4px #999999;
 }
@@ -247,12 +247,12 @@ li.modules-item {
   background-repeat: repeat-x;
   position: fixed;
   width: 100%;
-  height: 33px;
-  bottom: -6px;
+  height: 27px;
+  bottom: -1px;
 }
 
 .nav-container {
-    margin-top: 1px;
+  margin-top: 1px;
   margin-left: 4px;
   margin-right: 4px;
 
@@ -270,12 +270,19 @@ li.modules-item {
 }
 
 .nav-btn {
+  position: relative;
+  top: -2px;
   margin: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
-/*.nav-icon {
+.lock-btn {
+  top: -2px;
+}
+
+.nav-input {
   position: relative;
-  margin: 0px;
-  padding: 0px;
-  left: -6px;
-}*/
+  top: 2px;
+  left: 15px;
+}

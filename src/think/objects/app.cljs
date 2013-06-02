@@ -7,7 +7,7 @@
             [think.util.js :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom :refer [$ html append] :as dom]
-            [think.objects.workspace-nav  :as nav]
+            [think.objects.nav :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
             think.objects.wiki-document
@@ -107,9 +107,6 @@
 
 (defn start-app
   []
-  ; (log "start app add nav")
-  ; (log-obj (dom/$ "body"))
-  ; (log-obj nav/workspace-nav)
   (dom/append (dom/$ "body") (:content @nav/workspace-nav))
   (object/raise app :ready)
   (open-document :home))

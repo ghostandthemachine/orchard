@@ -4,7 +4,6 @@
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
             [think.util.cljs :refer [->dottedkw]]
-            [think.objects.workspace-nav :as nav]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 
@@ -22,6 +21,7 @@
                               (let [workspace$ (dom/$ "#workspace")]
                                 (dom/empty workspace$)
                                 (dom/append workspace$ (:content @doc-obj))
+                                (object/assoc! this :wiki-document doc-obj)
 	   	  											  (object/raise doc-obj :ready))))
 
 
