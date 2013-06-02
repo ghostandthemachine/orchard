@@ -75,7 +75,7 @@
 
 
 
-			
+
 (defui lock-doc-btn
 	[this locked?]
 	(if locked?
@@ -131,14 +131,10 @@
 	             		(id-btn this)]
 	             (:title @this)
 	             [:div.pull-right
-	             		(delete-doc-btn this)]
-	             	[:div.pull-right
-		             	(bound (subatom this [:locked?])
-		             		(partial lock-doc-btn this))]]]]
+	             		(delete-doc-btn this)]]]]
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))
-
 
 
 (defn wiki-doc

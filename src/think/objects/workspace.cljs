@@ -4,10 +4,12 @@
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
             [think.util.cljs :refer [->dottedkw]]
+            [think.objects.workspace-nav :as nav]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 
 (def default-width 950)
+
 
 (defui render-document
   [this doc]
@@ -17,10 +19,10 @@
 (object/behavior* ::show-document
                   :triggers #{:show-document}
                   :reaction (fn [this doc-obj]
-                  						(log-obj doc-obj)
-                              (dom/empty (:content @this))
-                              (dom/append (:content @this) (:content @doc-obj))
-															(object/raise doc-obj :ready)))
+                              (let [workspace$ (dom/$ "#workspace")]
+                                (dom/empty workspace$)
+                                (dom/append workspace$ (:content @doc-obj))
+	   	  											  (object/raise doc-obj :ready))))
 
 
 (defn active-content [active]
@@ -39,7 +41,7 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                        [:div#workspace.container-fluid]))
+                       [:div#workspace.container-fluid]))
 
 
 (def workspace (object/create ::workspace))

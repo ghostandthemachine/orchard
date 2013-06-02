@@ -5,8 +5,9 @@
             [think.model :as model]
             [think.dispatch :refer [react-to]]
             [think.util.js :refer [now]]
-            [think.util.log :refer [log]]
+            [think.util.log :refer [log log-obj]]
             [think.util.dom :refer [$ html append] :as dom]
+            [think.objects.workspace-nav  :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
             think.objects.wiki-document
@@ -32,6 +33,16 @@
 
 (defn refresh []
   (js/window.location.reload true))
+
+
+(defn set-window-menu
+  []
+  (let [menu (.Menu gui
+                (clj->js
+                  {:type "menubar"}))
+        win (.Window.get gui)]
+    (set! (.-menu win) menu)))
+
 
 (defn open-window []
   (let [id (swap! js/global.windowsId inc)
@@ -96,6 +107,10 @@
 
 (defn start-app
   []
+  ; (log "start app add nav")
+  ; (log-obj (dom/$ "body"))
+  ; (log-obj nav/workspace-nav)
+  (dom/append (dom/$ "body") (:content @nav/workspace-nav))
   (object/raise app :ready)
   (open-document :home))
 
