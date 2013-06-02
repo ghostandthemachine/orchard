@@ -59,8 +59,7 @@
                     new-doc       (assoc orig-vals
                     								:modules mod-ids
                                     ;; get the most current rev,
-                                    ;; otherwise use the original one from laod time
-                    								:rev     (or (:rev @this) (:rev original-doc))
+                    								:rev     (:rev @this)
                     								:id      (:id original-doc))]
                 (let [doc (model/save-document new-doc)]
                   (p/on-realised doc
