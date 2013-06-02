@@ -85,10 +85,17 @@
                               (nw/quit)))
 
 
+(object/behavior* ::show-dev-tools
+                  :triggers #{:show-dev-tools}
+                  :reaction (fn [this]
+                              (log "Show Dev Tools")
+                              (.showDevTools win)))
+
+
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready]
-                :behaviors [::quit ::ready]
+                :triggers [:quit :ready :show-dev-tools]
+                :behaviors [::quit ::ready ::show-dev-tools]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))

@@ -28,10 +28,11 @@
     (fn [b] (not b))))
 
 
-(defn new-doc-btn
+(defui new-doc-btn
   []
   [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-plus.icon-white.nav-icon]])
+    [:i.icon-plus.icon-white.nav-icon]]
+  :click #(think.objects.new/load-new-doc))
 
 
 (defui home-btn
@@ -75,7 +76,7 @@
 
 (defn lock-btn
   [this]
-  [:span.btn.btn-small.btn-nav-dark.nav-btn.lock-btn.pull-right
+  [:span.btn.btn-small.btn-nav-dark.pull-right.nav-btn
     (bound (subatom this [:locked?]) (partial handle-lock-btn this))])
 
 
@@ -84,15 +85,25 @@
   [:span.btn.btn-small.btn-nav-dark.nav-btn
     [:i.icon-refresh.icon-white.nav-icon]]
   :click (fn [e]
-            (log "synch projects")
-            (let-realised [p (model/synch-documents)]
-              (log "Documents synched")
-              (log-obj @p))))
+            (js/window.location.reload true)
+            ; (log "synch projects")
+            ; (let-realised [p (model/synch-documents)]
+            ;   (log "Documents synched")
+            ;   (log-obj @p))
+            ))
+
+
+(defui dev-tools-btn
+  []
+  [:span.btn.btn-small.btn-nav-dark.pull-right.nav-btn
+    [:i.icon-asterisk.icon-white.nav-icon]]
+  :click (fn [e]
+            (object/raise think.objects.app/app :show-dev-tools)))
 
 
 (defn text-input
   []
-  [:input.span4.nav-input {:type "text"}])
+  [:input.span10.nav-input {:type "text"}])
 
 
 (object/object* :workspace-nav
@@ -106,7 +117,8 @@
               (new-doc-btn)
               (synch-btn)
               (text-input)
-              (lock-btn this)]]))
+              (lock-btn this)
+              (dev-tools-btn)]]))
 
 
 (def workspace-nav (object/create :workspace-nav))

@@ -11,7 +11,7 @@
       "height": 400,
       "show":   false,
       "frame":  true,
-      "toolbar": true,
+      "toolbar": false,
       "resizable": true,
       "icon": "thinker.png"
   },
