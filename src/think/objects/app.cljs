@@ -9,6 +9,7 @@
             [think.util.dom :refer [$ html append] :as dom]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
+            think.kv-store
             think.objects.wiki-document
             [redlobster.promise :as p]))
 
@@ -40,6 +41,17 @@
     (set! (.-window_id w) id)
     (swap! windows assoc id w)))
 
+
+(defn save-session []
+  (think.kv-store/local-set :session {:x (.-x win) :y (.-y win)
+                                      :width (.-width win) :height (.-height win)}))
+
+(defn restore-session []
+  (if-let [sesh (js->clj (think.kv-store/local-get :session))]
+    (let [sesh (into {} (for [[k v] sesh] [k (js/parseInt v)]))]
+      (.moveTo win (:x sesh) (:y sesh))
+      (.resizeTo win (:width sesh) (:height sesh)))))
+
 (defn ready? [this]
   (= 0 (:delays @this)))
 
@@ -48,7 +60,13 @@
                   :triggers #{:ready}
                   :reaction (fn [this]
                               (log "app ready")
-                              (nw/show)))
+                              (nw/show)
+                              (restore-session)
+                              (.on win "close" 
+                                   (fn [] 
+                                     (save-session)
+                                     (this-as this
+                                       (.close this true))))))
 
 (object/behavior* ::quit
                   :triggers #{:quit}

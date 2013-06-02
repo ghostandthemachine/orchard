@@ -1,5 +1,13 @@
 ## Setup
 
+To setup the native app do this:
+   $ cp nw.icns /Applications/node-webkit/Contents/Resources/nw.icns
+   $ mv /Applications/node-webkit /Applications/Thinker
+
+* edit the /Applications/node-webkit/Contents/Info.plist and change the CFbundlename from node-webkit to Thinker.
+
+-------------
+
 * install node and npm (install link on node.js homepage)
 * install node-cljs
     $ npm install -g clojure-script
