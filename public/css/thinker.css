@@ -121,7 +121,7 @@ li.modules-item {
 
 
 .module {
-  border-color: transparent;
+  border-color: #eee;
   border-width: 1px;
   border-style: solid;
   border-radius: 5px;
