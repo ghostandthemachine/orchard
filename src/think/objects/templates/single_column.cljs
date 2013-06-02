@@ -59,12 +59,15 @@
                     new-doc       (assoc orig-vals
                     								:modules mod-ids
                                     ;; get the most current rev,
-                    								:rev     (:rev @this)
+                    								:rev     (or (:rev @this) (:rev original-doc))
                     								:id      (:id original-doc))]
                 (let [doc (model/save-document new-doc)]
                   (p/on-realised doc
                   	#(object/assoc! this :rev (:rev @doc))
-                  	#(log "error loading doc " %))))))
+                  	(fn [err]
+                      (log "error loading doc " err)
+                      (log "initial rev: " (:rev (first (:args @this))))
+                      (log "current rev: " (:rev @this))))))))
 
 
 (object/behavior* ::remove-module

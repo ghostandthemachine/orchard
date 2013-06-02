@@ -72,12 +72,13 @@
                   :reaction (fn [this]
                               (log "app ready")
                               (nw/show)
-                              (restore-session)
-                              (.on win "close" 
-                                   (fn [] 
-                                     (save-session)
-                                     (this-as this
-                                       (.close this true))))))
+                              ; (restore-session)
+                              ; (.on win "close"
+                              ;      (fn []
+                              ;        (save-session)
+                              ;        (this-as this
+                              ;          (.close this true))))
+                              ))
 
 (object/behavior* ::quit
                   :triggers #{:quit}

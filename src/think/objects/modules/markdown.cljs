@@ -17,7 +17,7 @@
   []
   (model/save-document
     {:type :markdown-module
-     :text "## Markdown module...\n[home](:home)"
+     :text "## Markdown module..."
      :id   (uuid)}))
 
 

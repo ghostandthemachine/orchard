@@ -105,7 +105,7 @@
               (home-btn)
               (new-doc-btn)
               (synch-btn)
-              (text-input this)
+              (text-input)
               (lock-btn this)]]))
 
 
