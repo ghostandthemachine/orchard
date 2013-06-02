@@ -57,19 +57,25 @@
 
 ;; ## Tray
 
-(def ^:private ^:dynamic current-tray)
+(when-not js/global.app-tray
+  (set! js/global.app-tray (atom nil)))
+
+(def ^:private app-tray js/global.app-tray)
+
 
 (defn tray!
   "Create a new Tray, options is a map contains initial settings for the Tray.
   `options` can have following fields: `title`, `tooltip`, `icon` and `menu`.
   See [Tray documentation](https://github.com/rogerwang/node-webkit/wiki/Tray)."
   [options]
-  (when current-tray (.remove current-tray))
-  (let [ctor (.-Tray gui)]
-    (def current-tray (new ctor (clj->js options)))))
+  (when-let [tray @app-tray]
+    (.remove tray))
+  (let [tray-constructor (.-Tray gui)]
+    (reset! app-tray (new tray-constructor (clj->js options)))))
+
 
 (defn update-tray
   "Assigns new value to one of the following options: `title`, `tooltip`, `icon` and `menu`.
   See [Tray documentation](https://github.com/rogerwang/node-webkit/wiki/Tray)."
   [option value]
-  (aset current-tray (name option) value))
+  (aset @app-tray (name option) value))
