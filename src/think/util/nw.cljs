@@ -11,7 +11,9 @@
 
 (defn show
   []
-  (.show (window)))
+  (let [w (window)]
+    (.show w)
+    (.focus w)))
 
 
 (defn- append-menuitems [menu items]
@@ -45,6 +47,7 @@
   "Get the command line arguments when starting the app."
   []
   (seq (.-App.argv gui)))
+
 
 (defn quit
   "Quit current app. This method will not send close event
