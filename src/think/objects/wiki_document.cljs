@@ -62,7 +62,7 @@
 
 (defui delete-doc-btn
 	[this]
-	[:span.label.label-important.header-label
+	[:span.btn.btn-danger.header-btn
 		{:data-toggle "tooltip"
 		 :title "delete this document"}
 		[:i.icon-trash.icon-white.header-icon]]
@@ -75,27 +75,6 @@
 
 
 
-			
-(defui lock-doc-btn
-	[this locked?]
-	(if locked?
-		[:span.label.label-info.header-label
-			{:data-toggle "tooltip"
- 			:title "unlock document editing"}
- 			"locked"
-			[:i.icon-lock.icon-white.header-icon]]
-		[:span.label.label-warning.header-label
-			{:data-toggle "tooltip"
-			 :title "lock document editing"}
-			 "unlocked"
-			[:i.icon-lock.icon-white.header-icon]])
-	:click (fn [e]
-					(let [lock (if (:locked? @this)
-												:unlock-document
-												:lock-document)]
-						(object/raise this lock))))
-
-
 (defn copy-to-clipboard-prompt
 	[text]
 	(.prompt js/window "Copy to clipboard: cmd + c, Enter", text))
@@ -103,7 +82,7 @@
 
 (defui id-btn
 	[this]
-	[:span.label.label-info.header-label
+	[:span.btn.btn-info.header-btn
 		{:data-toggle "tooltip"
 		 :title "document hyperlink tag"}
 		[:i.icon-barcode.icon-white]]
@@ -131,14 +110,10 @@
 	             		(id-btn this)]
 	             (:title @this)
 	             [:div.pull-right
-	             		(delete-doc-btn this)]
-	             	[:div.pull-right
-		             	(bound (subatom this [:locked?])
-		             		(partial lock-doc-btn this))]]]]
+	             		(delete-doc-btn this)]]]]
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))
-
 
 
 (defn wiki-doc

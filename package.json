@@ -1,20 +1,22 @@
 {
-    "main": "http://localhost:3000/index.html",
-    "name": "Thinker",
-    "version": "0.1.0",
+  "main": "http://localhost:3000/index.html",
+  "name": "Thinker",
+  "version": "0.1.0",
 
-    "window": {
-        "title": "Thinker",
-        "width": 600,
-        "height": 400,
-        "show":   false,
-        "frame":  true,
-        "toolbar": true,
-        "resizable": true,
-        "icon": "thinker.png"
-    },
+  "chromium-args": "--disable-web-security",
 
-    "node-remote":  "<local>",
+  "window": {
+      "title": "Thinker",
+      "width": 600,
+      "height": 400,
+      "show":   false,
+      "frame":  true,
+      "toolbar": false,
+      "resizable": true,
+      "icon": "thinker.png"
+  },
+
+  "node-remote":  "<local>",
 
   "dependencies": {
       "nano": "*"

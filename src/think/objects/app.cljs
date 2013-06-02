@@ -5,8 +5,9 @@
             [think.model :as model]
             [think.dispatch :refer [react-to]]
             [think.util.js :refer [now]]
-            [think.util.log :refer [log]]
+            [think.util.log :refer [log log-obj]]
             [think.util.dom :refer [$ html append] :as dom]
+            [think.objects.nav :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
             think.kv-store
@@ -34,6 +35,16 @@
 (defn refresh []
   (js/window.location.reload true))
 
+
+(defn set-window-menu
+  []
+  (let [menu (.Menu gui
+                (clj->js
+                  {:type "menubar"}))
+        win (.Window.get gui)]
+    (set! (.-menu win) menu)))
+
+
 (defn open-window []
   (let [id (swap! js/global.windowsId inc)
         w (.Window.open gui "index.html" (clj->js {:toolbar false
@@ -60,11 +71,12 @@
                   :triggers #{:ready}
                   :reaction (fn [this]
                               (nw/show)
-                              (restore-session)
-                              (.on win "close"
-                                   (fn []
-                                     (save-session)
-                                     (this-as this (.close this true))))))
+                              ; (restore-session)
+                              ; (.on win "close"
+                              ;      (fn []
+                              ;        (save-session)
+                              ;        (this-as this (.close this true))))
+                              ))
 
 (object/behavior* ::quit
                   :triggers #{:quit}
@@ -73,10 +85,17 @@
                               (nw/quit)))
 
 
+(object/behavior* ::show-dev-tools
+                  :triggers #{:show-dev-tools}
+                  :reaction (fn [this]
+                              (log "Show Dev Tools")
+                              (.showDevTools win)))
+
+
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready]
-                :behaviors [::quit ::ready]
+                :triggers [:quit :ready :show-dev-tools]
+                :behaviors [::quit ::ready ::show-dev-tools]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
@@ -110,7 +129,8 @@
 
 (defn start-app
   []
-  (setup-tray)
+  (dom/append (dom/$ "body") (:content @nav/workspace-nav))
+  ; (setup-tray)
   (object/raise app :ready)
   (open-document :home))
 
