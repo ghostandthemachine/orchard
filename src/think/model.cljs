@@ -10,7 +10,11 @@
             [redlobster.promise :as p]
             [dommy.template :as tpl]))
 
-
+(def account
+ {:login    "jon"
+  :password "celerycatstick"
+  :url      "lifeisagraph.com:5984/"
+  :root     "projects"})
 
 
 (def DB "projects")
@@ -133,6 +137,30 @@
   []
   (let-realised [docs (all-documents)]
     (util/await (map #(db/delete-doc (:document-db* @model) %) @docs))))
+
+
+
+(defn format-request
+  [account]
+  (str
+    "http://"
+    (:login account)
+    ":"
+    (:password account)
+    "@"
+    (:url account)
+    (:root account)))
+
+
+(defn synch-documents
+  []
+  (log "synch-docs")
+  (let [target  (format-request account)
+        src     (:root account)
+        putp    (db/replicate-db target src)
+        getp    (db/replicate-db src target)]
+    (util/await [putp getp])))
+
 
 
 (defn media-document
