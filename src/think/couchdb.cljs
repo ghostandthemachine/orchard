@@ -45,6 +45,15 @@
    (defer-node (.list (.-db server)))))
 
 
+(defn replicate-db
+  "Replicate source to target. Source and target can be either local DB names
+  or remote locations, i.e. URLs."
+  ([src tgt]
+   (replicate-db nano src tgt))
+  ([server src tgt]
+   (defer-node (.replicate (.-db server) src tgt (clj->js {})))))
+
+
 (defn open
   ([db-name] (open nano db-name))
   ([server db-name]
@@ -109,6 +118,11 @@
     doc-promise))
 
 
+(defn view
+  "Return a view result."
+  [db design view-name]
+  (defer-node (.view db (name design) (name view-name)) #(util/js->clj % :keywordize-keys true)))
+
 
 (comment defn map-reduce
   "Generate a DB view using a mapping function, and optionally a reduce function."
@@ -119,9 +133,4 @@
       (defer-node (.query db (clj->js {:map mapper})) util/js->clj))))
 
 
-(defn replicate-docs
-  "Replicate source to target. Source and target can be either local DB names
-  or remote locations, i.e. URLs."
-  [src tgt]
-  (defer-node (.replicate js/couch src tgt (clj->js {})) util/js->clj))
 

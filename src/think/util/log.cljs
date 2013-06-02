@@ -5,7 +5,7 @@
   [v & text]
   (let [vs (if (string? v)
              (apply str v text)
-             v)]
+             (str v))]
     (.log js/console vs)))
 
 

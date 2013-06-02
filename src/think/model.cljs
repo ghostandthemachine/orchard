@@ -112,10 +112,12 @@
 
 (defn all-documents
   []
-  (let-realised [docs (db/all-docs (:document-db* @model))]
+  (let-realised [docs (db/view (:document-db* @model) :index :wiki-documents)]
+    (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
-      (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
+      (map :value (:rows @docs)))))
+      ;(util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
 
 
 (defn delete-all-documents
