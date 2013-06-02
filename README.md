@@ -1,10 +1,11 @@
 ## Setup
 
 To setup the native app do this:
-   $ cp nw.icns /Applications/node-webkit/Contents/Resources/nw.icns
    $ mv /Applications/node-webkit /Applications/Thinker
+   $ cp nw.icns /Applications/Thinker/Contents/Resources/nw.icns
+   $ ln -s /Users/rosejn/projects/thinker /Applications/Thinker/Contents/Resources/app.nw
 
-* edit the /Applications/node-webkit/Contents/Info.plist and change the CFbundlename from node-webkit to Thinker.
+* edit the /Applications/Thinker/Contents/Info.plist and change the CFbundlename from node-webkit to Thinker.
 
 -------------
 
