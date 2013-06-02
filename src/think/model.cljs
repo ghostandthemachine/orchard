@@ -112,11 +112,19 @@
 
 (defn all-documents
   []
+  (let-realised [docs (db/all-docs (:document-db* @model))]
+    (log (str (keys @docs)))
+    (if (= (:total_rows @docs) 0)
+      []
+      (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
+
+(defn all-wiki-documents
+  []
   (let-realised [docs (db/view (:document-db* @model) :index :wiki-documents)]
     (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
-      (map :value (:rows @docs)))))
+      (map #(assoc % :id (:_id %)) (map :value (:rows @docs))))))
       ;(util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
 
 

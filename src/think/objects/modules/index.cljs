@@ -51,9 +51,8 @@
 
 (defn load-index
   [this]
-  (let-realised [docs (model/all-documents)]
-    (log (:type (first @docs)))
-    (dom/replace-with ($module this) (render-present (filter #(= (:type %) "wiki-document") @docs)))))
+  (let-realised [docs (model/all-wiki-documents)]
+    (dom/replace-with ($module this) (render-present @docs))))
 
 
 (defn render-module
