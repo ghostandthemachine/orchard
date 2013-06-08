@@ -74,7 +74,7 @@
 
 (defn lock-btn
   [this]
-  [:span.btn.btn-small.btn-nav-dark.pull-right.nav-btn
+  [:span.btn.btn-small.btn-nav-dark.nav-btn
     (bound (subatom this [:locked?]) (partial handle-lock-btn this))])
 
 
@@ -88,7 +88,7 @@
 
 (defui synch-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.pull-right.nav-btn
+  [:span.btn.btn-small.btn-nav-dark.nav-btn
     [:i.icon-sitemap.icon-white.nav-icon]]
   :click (fn [e]
             (log "synch projects")
@@ -99,7 +99,7 @@
 
 (defui dev-tools-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.pull-right.nav-btn
+  [:span.btn.btn-small.btn-nav-dark.nav-btn
     [:i.icon-dashboard.icon-white.nav-icon]]
   :click (fn [e]
             (object/raise think.objects.app/app :show-dev-tools)))
@@ -107,7 +107,7 @@
 
 (defn text-input
   []
-  [:input.span9.nav-input {:type "text"}])
+  [:input.nav-input {:type "text"}])
 
 
 (object/object* :workspace-nav
@@ -116,14 +116,16 @@
   :locked? true
   :init (fn [this]
           [:div.top-nav
-            [:div.nav-container
-              (home-btn)
-              (new-doc-btn)
-              (refresh-btn)
-              (text-input)
-              (lock-btn this)
-              (synch-btn)
-              (dev-tools-btn)]]))
+            [:div.nav-container.row-fluid
+              [:div.span3.row
+               (home-btn)
+               (new-doc-btn)
+               (refresh-btn)]
+              [:div.span6.row (text-input)]
+              [:div.span3.row
+               (lock-btn this)
+               (synch-btn)
+               (dev-tools-btn)]]]))
 
 
 (def workspace-nav (object/create :workspace-nav))

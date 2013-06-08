@@ -10,4 +10,5 @@ else
     node app.js &
 fi
 
+couchdb -b
 ${nw} $(pwd) $@
