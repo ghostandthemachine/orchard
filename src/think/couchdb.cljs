@@ -59,6 +59,7 @@
   ([server db-name]
    (let [db-promise (p/promise)]
      (let-realised [dbs (list-all server)]
+       (log "open DB " db-name)
        (log-obj @dbs)
        (if (some #{db-name} @dbs)
          (p/realise db-promise (.use server db-name))
