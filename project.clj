@@ -6,15 +6,17 @@
                  [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
-                 ; [com.keminglabs/c2 "0.2.2"]
-                 [crate "0.2.4"]]
+                 [crate "0.2.4"]
+                 [com.keminglabs/c2 "0.2.2"]
+                 [org.clojure/clojurescript "0.0-1552"
+                  :exclusions [org.apache.ant/ant]
+                  ]]
 
-  :plugins [[lein-cljsbuild "0.3.2"]]
+  :plugins [[lein-cljsbuild "0.3.0"]]
+;  :source-paths ["compiler/clojurescript/src/clj"
+;                 "compiler/clojurescript/src/cljs"]
 
-  :cljsbuild {:builds [{:source-paths ["src"
-  ;                                     "compiler/clojurescript/src/clj"
-  ;                                     "compiler/clojurescript/src/cljs"
-                                       ]
+  :cljsbuild {:builds [{:source-paths ["src"]
                         :notify-command ["growlnotify" "-m"]
                         ;:incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
                         :compiler {:output-to     "public/js/thinker.js"

@@ -25,8 +25,6 @@
                   :reaction (fn [this]
                               (log "Initialize db.. ")
                               (let-realised [db-promise (db/open DB)]
-                                (log "db-promise")
-                                (log @db-promise)
                                 (object/merge! this
                                   {:ready? true
                                    :document-db* @db-promise})

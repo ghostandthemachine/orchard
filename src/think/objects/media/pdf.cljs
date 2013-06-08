@@ -1,10 +1,11 @@
 (ns think.objects.media.pdf
-  (:use [think.util :only [log bound-do]])
+  (:use [think.util :only [log]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [crate.core :as crate]
+            [think.util :refer [bound-do]]
             [think.util.dom :as dom]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]

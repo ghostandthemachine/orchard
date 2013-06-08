@@ -5,22 +5,8 @@
   ([nl] (lazy-nl-via-item nl 0))
   ([nl n] (when (< n (. nl -length))
             (lazy-seq
-             (cons (.item nl n)
+             (cons (. nl (item n))
                    (lazy-nl-via-item nl (inc n)))))))
-
-(defn arr-get
-  [arr n]
-  (.pop
-    (.slice arr
-      (- n 1)
-      n)))
-
-(defn- lazy-nl-via-arr-get
-  ([nl] (lazy-nl-via-arr-get nl 0))
-  ([nl n] (when (< n (. nl -length))
-            (lazy-seq
-             (cons (arr-get nl n)
-                   (lazy-nl-via-arr-get nl (inc n)))))))
 
 (extend-type js/HTMLCollection
   ISeqable
@@ -47,24 +33,6 @@
     (.item this n))
   (-nth [this n not-found]
         (or (.item this n) not-found)))
-
-
-
-;(extend-type js/Array
-;  ISeqable
-;  (-seq [this] (lazy-nl-via-arr-get this))
-;
-;  ICounted
-;  (-count [this] (.-length this))
-;
-;  IIndexed
-;  (-nth [this n]
-;    (arr-get this n))
-;  (-nth [this n not-found]
-;        (or (arr-get this n) not-found))
-;  )
-
-
 
 
 (defn $$ [query elem]

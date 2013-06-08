@@ -10,8 +10,8 @@
             [think.objects.nav :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
-            [think.kv-store]
-            [think.objects.wiki-document]
+            think.kv-store
+            think.objects.wiki-document
             [redlobster.promise :as p]))
 
 (def gui (js/require "nw.gui"))
@@ -135,7 +135,6 @@
 
 
 (defn init []
-  (object/raise app :show-dev-tools)
   (think.util/start-repl-server)
   (object/raise app :init-home)
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))

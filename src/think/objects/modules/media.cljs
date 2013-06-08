@@ -1,10 +1,11 @@
 (ns think.objects.modules.media
-  (:use [think.util :only [log log-obj uuid bound-do]])
+  (:use [think.util :only [log log-obj uuid]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [think.objects.modules :refer [module-btn-icon module-btn]]
+            [think.util :refer [bound-do]]
             [think.util.dom :as dom]
             [think.model :as model]
             [think.util.log :refer [log log-obj]]

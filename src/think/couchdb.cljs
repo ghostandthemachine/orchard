@@ -3,11 +3,11 @@
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.util :as util]
-            [think.util.dom :as dom]
             [think.util.log :refer (log log-obj log-err)]))
 
 (def ^:private couch-server (js/require "nano"))
 (def ^:private nano (couch-server "http://localhost:5984"))
+
 
 (defn couch-ids
   [x]
@@ -59,13 +59,13 @@
   ([server db-name]
    (let [db-promise (p/promise)]
      (let-realised [dbs (list-all server)]
-       (let [all-dbs @dbs]
-         (if (> (.indexOf all-dbs db-name) -1)
-           (p/realise db-promise (.use server db-name))
-           (let-realised [db-res (.create (.-db server) db-name)]
-             (log "created db...")
-             (log-obj @db-res)
-             (p/realise db-promise (.use server db-name)))))
+       (log-obj @dbs)
+       (if (some #{db-name} @dbs)
+         (p/realise db-promise (.use server db-name))
+         (let-realised [db-res (.create (.-db server) db-name)]
+           (log "created db...")
+           (log-obj @db-res)
+           (p/realise db-promise (.use server db-name))))
        db-promise))))
 
 
