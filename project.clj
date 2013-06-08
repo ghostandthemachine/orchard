@@ -12,9 +12,8 @@
   :plugins [[lein-cljsbuild "0.3.2"]]
 
   :cljsbuild {:builds [{:source-paths ["src"
-                                       ; "compiler/clojurescript/src/clj"
-                                       ; "compiler/clojurescript/src/cljs"
-                                       ]
+                                       "compiler/clojurescript/src/clj"
+                                       "compiler/clojurescript/src/cljs"]
                         :notify-command ["growlnotify" "-m"]
                         ;:incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
                         :compiler {:output-to     "public/js/thinker.js"
