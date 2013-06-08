@@ -50,19 +50,19 @@
 
 
 
-(extend-type js/Array
-  ISeqable
-  (-seq [this] (lazy-nl-via-arr-get this))
-
-  ICounted
-  (-count [this] (.-length this))
-
-  IIndexed
-  (-nth [this n]
-    (arr-get this n))
-  (-nth [this n not-found]
-        (or (arr-get this n) not-found))
-  )
+;(extend-type js/Array
+;  ISeqable
+;  (-seq [this] (lazy-nl-via-arr-get this))
+;
+;  ICounted
+;  (-count [this] (.-length this))
+;
+;  IIndexed
+;  (-nth [this n]
+;    (arr-get this n))
+;  (-nth [this n not-found]
+;        (or (arr-get this n) not-found))
+;  )
 
 
 

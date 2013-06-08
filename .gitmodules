@@ -1,3 +1,6 @@
 [submodule "compiler"]
 	path = compiler
 	url = git@github.com:clojure/clojurescript.git
+[submodule "compiler/clojurescript"]
+	path = compiler/clojurescript
+	url = git@github.com:clojure/clojurescript.git
