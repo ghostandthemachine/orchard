@@ -20,27 +20,33 @@
 (def DB "projects")
 
 
-(object/behavior* ::init-db
-                  :triggers #{:init-db}
-                  :reaction (fn [this]
-                              (log "Initialize db.. ")
-                              (let-realised [db-promise (db/open DB)]
-                                (object/merge! this
-                                  {:ready? true
-                                   :document-db* @db-promise})
-                                (fire :db-loaded))))
+(defn load-db
+  [this]
+  (if (:document-db* @this)
+    :stop
+    (p/on-realised (db/open DB)
+      (fn [db]
+        (log "DB Loaded")
+        (object/merge! this
+          {:ready? true
+           :document-db* db})
+        (object/raise think.objects.app/app :ready))
+      (fn [err]
+        (log "Error loading nano db")
+        (log-obj err)))))
+
 
 
 (object/object* ::model
-                :triggers  #{:db-loaded  :init-db}
-                :behaviors [::db-loaded ::init-db]
+                :triggers  #{:db-loaded}
+                :behaviors [::db-loaded]
                 :ready? false
                 :init (fn [this]
-                        (object/raise this :init-db)))
-
+                        (log "Initialize db.. ")
+                        (util/periodically 500 (partial load-db this))))
+ 
 
 (def model (object/create ::model))
-
 
 (defn delete-document
   [doc]

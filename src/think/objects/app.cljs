@@ -6,7 +6,7 @@
             [think.dispatch :refer [react-to]]
             [think.util.js :refer [now]]
             [think.util.log :refer [log log-obj]]
-            [think.util.dom :refer [$ html append] :as dom]
+            [think.util.dom  :as dom]
             [think.objects.nav :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
@@ -16,11 +16,39 @@
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
+
+(def shell (.-exec (js/require "child_process")))
+
 (def closing true)
 
 (declare app)
 
 (def windows js/global.windows)
+
+
+(defn start-couch-db
+  []
+  (shell "couchdb -b"))
+
+
+(defn stop-couch-db
+  []
+  (shell "couchdb -d"))
+
+
+(start-couch-db)
+
+
+(defn setup-tray
+  []
+  "Creates a tray menu in upper-right app tray."
+    (log "creating tray menu...")
+    (nw/tray! {:title "Thinker"
+               :menu (nw/menu [{:label "Show"         :onclick #(.show (nw/window))}
+                               {:type "separator"}
+                               {:label "Quit"         :onclick #(object/raise app :quit)}])}))
+
+
 
 ;(.Window.open gui "index.html" (clj->js {:toolbar false}))
 
@@ -68,20 +96,33 @@
 
 
 (object/behavior* ::ready
-                  :triggers #{:ready}
-                  :reaction (fn [this]
-                              (nw/show)
-                              (restore-session)
-                              (.on win "close"
-                                   (fn []
-                                     (save-session)
-                                     (this-as this (.close this true))))))
+  :triggers #{:ready}
+  :reaction (fn [this]
+              (log "App ready")
+              (object/raise think.objects.nav/workspace-nav :add!)
+              (open-document :home)))
+
+
+(object/behavior* ::init-window
+  :triggers #{:init-window}
+  :reaction (fn [this]
+              (log "Start App")
+              (setup-tray)
+              (restore-session)
+              (.on win "close"
+                   (fn []
+                     (save-session)
+                     (object/raise this :quit)
+                     (this-as this (.close this true))))
+              (nw/show)
+              (.showDevTools win)))
 
 (object/behavior* ::quit
-                  :triggers #{:quit}
-                  :reaction (fn [this]
-                              (log "Quitting...")
-                              (nw/quit)))
+  :triggers #{:quit}
+  :reaction (fn [this]
+              (log "Quitting...")
+              (stop-couch-db)
+              (nw/quit)))
 
 
 (object/behavior* ::show-dev-tools
@@ -93,8 +134,8 @@
 
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready :show-dev-tools]
-                :behaviors [::quit ::ready ::show-dev-tools]
+                :triggers [:quit :ready :show-dev-tools :init-window]
+                :behaviors [::quit ::ready ::show-dev-tools ::init-window]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
@@ -110,28 +151,12 @@
 
 (def app         (object/create ::app))
 
-(defn setup-tray
-  []
-  "Creates a tray menu in upper-right app tray."
-    (log "creating tray menu...")
-    (nw/tray! {:title "Thinker"
-               :menu (nw/menu [{:label "Show"         :onclick #(.show (nw/window))}
-                               {:type "separator"}
-                               {:label "Quit"         :onclick #(object/raise app :quit)}])}))
-
 
 (defn open-document
   [doc-id]
   (let-realised [doc (model/load-document doc-id)]
     (object/raise workspace/workspace :show-document @doc)))
 
-
-(defn start-app
-  []
-  (dom/append (dom/$ "body") (:content @nav/workspace-nav))
-  (setup-tray)
-  (object/raise app :ready)
-  (open-document :home))
 
 
 (defn init []
@@ -140,6 +165,6 @@
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
 
-(react-to #{:db-loaded} start-app)
 
-(object/raise app :ready)
+
+(object/raise app :init-window)

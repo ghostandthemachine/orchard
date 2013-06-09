@@ -467,3 +467,16 @@
 (defn index-of
   [v coll]
   (first (positions #{v} coll)))
+
+
+(defn periodically
+  "Call f on a given interval until f returns :stop."
+  [interval f]
+  (let [inter   (atom nil)
+        handler (fn []
+                  (if (= :stop (f))
+                    (js/clearInterval @inter)))]
+    (reset! inter (js/setInterval handler interval))
+    @inter))
+
+

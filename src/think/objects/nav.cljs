@@ -111,9 +111,19 @@
   [:input.nav-input {:type "text"}])
 
 
+
+
+(object/behavior* ::add!
+  :triggers #{:add!}
+  :reaction (fn [this]
+              (log "Add nav to workspace")
+              (dom/append (dom/$ "body") (:content @this))))
+
+
+
 (object/object* :workspace-nav
-  :triggers #{}
-  :behaviors []
+  :triggers #{:add!}
+  :behaviors [::add!]
   :locked? true
   :init (fn [this]
           [:div.top-nav
