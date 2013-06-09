@@ -304,3 +304,19 @@ li.modules-item {
 ul.log-list {
   list-style: none;
 }
+
+.log-row {
+  border-bottom-style: solid;
+  border-bottom-width: 1px; 
+}
+
+#logger-tabs {
+  position: fixed;
+  top: 0px;
+  background: white;
+}
+
+.logger-content-panes {
+  margin-top: 30px;
+  margin-left: 0px;
+}

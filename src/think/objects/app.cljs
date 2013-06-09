@@ -18,7 +18,24 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 
-(def shell (.-exec (js/require "child_process")))
+
+(def child-process (js/require "child_process"))
+
+(def shell (.-exec child-process))
+
+(def spawn (.-spawn child-process))
+
+
+(defn log-handler
+  [log-id msg]
+  (object/raise think.objects.logger/logger :post log-id msg))
+
+
+(def child-processes* (atom {}))
+
+(defn add-process
+  [child]
+  (swap! child-processes* assoc (.-pid child) child))
 
 (def closing true)
 
@@ -29,15 +46,13 @@
 
 (defn start-couch-db
   []
-  (shell "couchdb -b"))
+  (let [proc (spawn "couchdb")]
+    (add-process proc)
+    (log-obj proc)
+    (.on (.-stdout proc) "data" (partial log-handler :couchdb))))
 
 
-(defn stop-couch-db
-  []
-  (shell "couchdb -d"))
-
-
-(start-couch-db)
+(def couch (start-couch-db))
 
 
 (defn setup-tray
@@ -131,7 +146,11 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
-              (stop-couch-db)
+              (doseq [[pid child] @child-processes*]
+                (log "kill")
+                (log-obj pid)
+                (log-obj child)
+                (.kill child))
               (nw/quit)))
 
 

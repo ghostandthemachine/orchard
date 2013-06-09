@@ -5,6 +5,7 @@
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
             [think.util :as util]
+            [think.dispatch :as dispatch]
             [crate.core :as crate]
             [redlobster.promise :as p]))
 
@@ -47,7 +48,7 @@
 	[log-id msg]
 	(.append (tab-content$ log-id)
 		(crate/html
-			[:li.row-fluid.log-row
+			[:li.log-row
 				[:p (str msg)]])))
 
 
@@ -62,16 +63,14 @@
 (defui tabs
 	[]
 	[:div.loggger-element
-		[:ul#logger-tab.nav.nav-tabs
+		[:ul#logger-tabs.nav.nav-tabs
 			(tab "#log" "Log" :active)
 			(tab "#node" "Node.js")
 			(tab "#couchdb" "Couchdb")
 			(tab "#cljsbuild" "Cljsbuild")]
-		[:div.tab-content
+		[:div.tab-content.logger-content-panes
 			[:div.tab-pane.log-pane.active {:id "log"}
-				[:ul.log-list
-					[:li
-						[:h4 "Log"]]]]
+				[:ul.log-list]]
 			[:div.tab-pane.log-pane {:id "node"}
 				[:ul.log-list]]
 			[:div.tab-pane.log-pane  {:id "couchdb"}
@@ -90,8 +89,6 @@
 (object/behavior* ::post-message
   :triggers #{:post}
   :reaction (fn [this type msg & args]
-  						(log "post log message")
-  						(log type " " msg)
   						(case type
   							:log (append-message "log" msg)
   							:couchdb (append-message "couchdb" msg)
@@ -137,3 +134,7 @@
 
 (def logger (object/create :logger))
 
+
+(dispatch/react-to #{:log-message}
+  (fn [ev & [data]]
+    (object/raise logger :post :log data)))
