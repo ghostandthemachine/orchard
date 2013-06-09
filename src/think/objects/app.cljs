@@ -7,6 +7,7 @@
             [think.util.js :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
+            [think.util :as util]
             [think.objects.nav :as nav]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
@@ -95,12 +96,21 @@
   (= 0 (:delays @this)))
 
 
+(defn open-document
+  [doc-id]
+  (let-realised [doc (model/load-document doc-id)]
+    (object/raise workspace/workspace :show-document @doc)))
+
+
+
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
               (log "App ready")
               (object/raise think.objects.nav/workspace-nav :add!)
-              (open-document :home)))
+              (util/start-repl-server)
+              (open-document :home)
+              (object/raise think.objects.logger/logger :ready)))
 
 
 (object/behavior* ::init-window
@@ -150,13 +160,6 @@
 (def windows js/global.windows)
 
 (def app         (object/create ::app))
-
-
-(defn open-document
-  [doc-id]
-  (let-realised [doc (model/load-document doc-id)]
-    (object/raise workspace/workspace :show-document @doc)))
-
 
 
 (defn init []

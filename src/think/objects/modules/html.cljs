@@ -50,9 +50,6 @@
   :mode :present
   :editor nil
   :init (fn [this record]
-          (log "init html module")
-          (log-obj this)
-          (log-obj record)
           (object/merge! this record)
           (bound-do (subatom this [:mode]) (partial render-module this))
           (bound-do (subatom this :text) (fn [_] (object/raise this :save)))

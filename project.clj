@@ -7,10 +7,7 @@
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]
-                 [com.keminglabs/c2 "0.2.2"]
-                 [org.clojure/clojurescript "0.0-1552"
-                  :exclusions [org.apache.ant/ant]
-                  ]]
+                 [com.keminglabs/c2 "0.2.2"]]
 
   :plugins [[lein-cljsbuild "0.3.0"]]
 ;  :source-paths ["compiler/clojurescript/src/clj"
@@ -23,3 +20,4 @@
                                    :optimizations :whitespace
                                    :warnings true
                                    :pretty-print true}}]})
+ 

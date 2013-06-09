@@ -295,3 +295,12 @@ li.modules-item {
   margin-top: 5px;
   width: 100%;
 }
+
+
+.log-pane {
+  overflow: scroll;
+}
+
+ul.log-list {
+  list-style: none;
+}
