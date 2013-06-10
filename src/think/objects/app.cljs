@@ -41,6 +41,7 @@
 (defn stop-children
   []
   (doseq [[pid child] @child-processes*]
+    (log "kill pid" pid)
     (.kill child)))
 
 
@@ -170,6 +171,7 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
+              (stop-children)
               (nw/quit)))
 
 
