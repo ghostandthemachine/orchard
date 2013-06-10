@@ -136,6 +136,17 @@ li.modules-item {
 }
 
 
+.template {
+  border-color: #eee;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: rgb(255, 255, 255);
+}
+
+
 .module-tray {
   opacity: 0;
   visibility: hidden;
@@ -339,3 +350,58 @@ li.modules-item {
 .log-pane {
   overflow: scroll;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/*Sidebar*/
+
+#sidebar ::-webkit-scrollbar-thumb { background: #999; border:1px solid #999; }
+
+#sidebar-wrapper { background:transparent; }
+
+#sidebar li:hover, #sidebar .current { background:#ccc; color:#555; }
+
+#sidebar .content { background:#ccc; color:#555; }
+
+#sidebar .open { box-shadow:none; background:transparent; }
+#sidebar .open ul.files { color:#aaa; }
+#sidebar .open .files li.folder { color:#aaa; }
+#sidebar .open .files li:hover { background:#5d5e5c; color:#ddd; }
+#sidebar .open .segs { color:#aaa; }
+#sidebar .open .segs li { background:transparent; }
+#sidebar .open .segs li:hover { background:#7d7e7c; color:#eee; }
+
+#sidebar .command input { color: #555; background:#eee; }
+#sidebar .command em { border-bottom:1px solid #666; }
+
+.filter-list em { border-bottom:1px solid #666 }
+.filter-list .selected, .filter-list li:hover { color:#555; background: #eee; }
+
+#sidebar .navigate em { border-bottom:1px solid #777; }
+#sidebar .navigate .selected, #sidebar .navigate li:hover { color:#555; background: #eee; }
+#sidebar .navigate input { background:#eee; color:#555; }
+
+#sidebar .workspace ul.buttons li:hover { color:#555; background:#eee; }
+#sidebar .workspace li:hover > p { color:#111; background:transparent; }
+#sidebar .workspace li p:hover { background: #eee; color:#555; }
+
+#sidebar .clients > ul > li { background:#eee; color:#555; }
+#sidebar .clients h2 { color:#555; }
+#sidebar .clients td { color:#777; }
+#sidebar .clients td + td { color:#777; }
+#sidebar .clients .button { background:#ccc; color:#555; }
+#sidebar .clients .button:hover { background:#aaa; color:#fff; }
+
+
+
+
+

@@ -53,14 +53,27 @@
 (def windows js/global.windows)
 
 
-(defn start-couch-db
+(def couch-created* (atom false))
+
+(defn init-couch-db
   []
   (let [proc (spawn "couchdb")]
     (add-process proc)
     (.on (.-stdout proc) "data" (partial log-handler :couchdb))
     proc))
 
-(start-couch-db)
+
+(defn start-couch
+  []
+  (if-not @couch-created*
+    (do
+      (log "Couchdb does not exist, creating")
+      (init-couch-db)
+      (reset! couch-created* true))
+    (log "Couchdb exists, not creating new one")))
+
+
+(start-couch)
 
 
 (defn start-cljsbuild
@@ -70,7 +83,7 @@
     (.on (.-stdout proc) "data" (partial log-handler :cljsbuild))
     proc))
 
-(start-cljsbuild)
+; (start-cljsbuild)
 
 
 (defn setup-tray
@@ -140,6 +153,7 @@
   :reaction (fn [this]
               (log "App ready")
               (object/raise think.objects.nav/workspace-nav :add!)
+              ; (object/raise think.objects.sidebar/sidebar :add!)
               (util/start-repl-server)
               (open-document :home)
               (object/raise think.objects.logger/logger :ready)))

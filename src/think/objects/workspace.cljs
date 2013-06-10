@@ -18,9 +18,10 @@
 (object/behavior* ::show-document
                   :triggers #{:show-document}
                   :reaction (fn [this doc-obj]
-                              (let [workspace$ (dom/$ "#workspace")]
-                                (dom/empty workspace$)
-                                (dom/append workspace$ (:content @doc-obj))
+                              (let [workspace$ (dom/$ "#workspace")
+                                    active     (:wiki-document @this)]
+                                (when active
+                                  (dom/remove (:content @active)))                                
                                 (object/assoc! this :wiki-document doc-obj)
 	   	  											  (object/raise doc-obj :ready))))
 
@@ -34,6 +35,14 @@
   (str (or width 0) "px"))
 
 
+(defn render-wiki-doc
+  [wiki-document]
+  (log "render-wiki-doc")
+  (log-obj wiki-document)
+  (when wiki-document
+    (:content @wiki-document)))
+
+
 (object/object* ::workspace
                 :triggers  #{:show-document}
                 :behaviors [::show-document]
@@ -41,7 +50,8 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                       [:div#workspace.container-fluid]))
+                        [:div#workspace.container-fluid
+                          (bound (subatom this :wiki-document) render-wiki-doc)]))
 
 
 (def workspace (object/create ::workspace))

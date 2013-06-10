@@ -399,7 +399,6 @@
 
 (def serving-repl* (atom false))
 
-
 (defn start-repl-server
   []
   (if-not @serving-repl*
