@@ -35,13 +35,14 @@
 
 (defn add-process
   [child]
+  (log "Add child process with pid: " (.-pid child))
   (swap! child-processes* assoc (.-pid child) child))
 
 
 (defn stop-children
   []
   (doseq [[pid child] @child-processes*]
-    (log "kill pid" pid)
+    (log "kill pid " pid)
     (.kill child)))
 
 
@@ -59,8 +60,7 @@
     (.on (.-stdout proc) "data" (partial log-handler :couchdb))
     proc))
 
-
-(def couch (start-couch-db))
+(start-couch-db)
 
 
 (defn start-cljsbuild
@@ -70,7 +70,7 @@
     (.on (.-stdout proc) "data" (partial log-handler :cljsbuild))
     proc))
 
-(def cljsbuild (start-cljsbuild))
+(start-cljsbuild)
 
 
 (defn setup-tray
