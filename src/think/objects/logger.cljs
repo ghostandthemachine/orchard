@@ -9,9 +9,11 @@
             [crate.core :as crate]
             [redlobster.promise :as p]))
 
+(declare logger-win)
 
-(def logger-win (.open js/window
-			"http://localhost:3000/logger.html"))
+(when-not logger-win
+	(def logger-win (.open js/window
+			"http://localhost:3000/logger.html")))
 
 
 (defn log-doc
@@ -45,11 +47,11 @@
 
 
 (defn append-message
-	[log-id msg]
+	[log-id msg & args]
 	(.append (tab-content$ log-id)
 		(crate/html
 			[:li.log-row
-				[:p (str msg)]])))
+				[:p (str msg args)]])))
 
 
 (defgui tab
@@ -63,20 +65,18 @@
 (defui tabs
 	[]
 	[:div.loggger-element
-		[:ul#logger-tabs.nav.nav-tabs
-			(tab "#log" "Log" :active)
-			(tab "#node" "Node.js")
-			(tab "#couchdb" "Couchdb")
-			(tab "#cljsbuild" "Cljsbuild")]
-		[:div.tab-content.logger-content-panes
-			[:div.tab-pane.log-pane.active {:id "log"}
-				[:ul.log-list]]
-			[:div.tab-pane.log-pane {:id "node"}
-				[:ul.log-list]]
-			[:div.tab-pane.log-pane  {:id "couchdb"}
-				[:ul.log-list]]
-			[:div.tab-pane.log-pane {:id "cljsbuild"}
-				[:ul.log-list]]]])
+		[:div.tabs-container
+			[:ul#logger-tabs.nav.nav-tabs
+				(tab "#log" "Log" :active)
+				(tab "#couchdb" "Couchdb")
+				(tab "#cljsbuild" "Cljsbuild")]]
+			[:div.tab-content.logger-content-panes
+  			[:div.tab-pane.log-pane.active {:id "log"}
+  				[:ul.log-list]]
+  			[:div.tab-pane.log-pane  {:id "couchdb"}
+  				[:ul.log-list]]
+  			[:div.tab-pane.log-pane {:id "cljsbuild"}
+  				[:ul.log-list]]]])
 
 
 

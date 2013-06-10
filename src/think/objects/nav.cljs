@@ -84,7 +84,7 @@
   [:span.btn.btn-small.btn-nav-dark.nav-btn
     [:i.icon-refresh.icon-white.nav-icon]]
   :click (fn [e]
-            (js/window.location.reload true)))
+            (object/raise think.objects.app/app :refresh)))
 
 
 (defui synch-btn

@@ -37,6 +37,13 @@
   [child]
   (swap! child-processes* assoc (.-pid child) child))
 
+
+(defn stop-children
+  []
+  (doseq [[pid child] @child-processes*]
+    (.kill child)))
+
+
 (def closing true)
 
 (declare app)
@@ -48,11 +55,21 @@
   []
   (let [proc (spawn "couchdb")]
     (add-process proc)
-    (log-obj proc)
-    (.on (.-stdout proc) "data" (partial log-handler :couchdb))))
+    (.on (.-stdout proc) "data" (partial log-handler :couchdb))
+    proc))
 
 
 (def couch (start-couch-db))
+
+
+(defn start-cljsbuild
+  []
+  (let [proc (spawn "lein" (clj->js ["cljsbuild" "auto"]))]
+    (add-process proc)
+    (.on (.-stdout proc) "data" (partial log-handler :cljsbuild))
+    proc))
+
+(def cljsbuild (start-cljsbuild))
 
 
 (defn setup-tray
@@ -66,7 +83,6 @@
 
 
 
-;(.Window.open gui "index.html" (clj->js {:toolbar false}))
 
 (defn prevent-close []
   (set! closing false))
@@ -128,6 +144,14 @@
               (object/raise think.objects.logger/logger :ready)))
 
 
+(object/behavior* ::refresh
+  :triggers #{:refresh}
+  :reaction (fn [this]
+              (log "Refresh App")
+              (stop-children)
+              (refresh)))
+
+
 (object/behavior* ::init-window
   :triggers #{:init-window}
   :reaction (fn [this]
@@ -146,11 +170,6 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
-              (doseq [[pid child] @child-processes*]
-                (log "kill")
-                (log-obj pid)
-                (log-obj child)
-                (.kill child))
               (nw/quit)))
 
 
@@ -163,8 +182,8 @@
 
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready :show-dev-tools :init-window]
-                :behaviors [::quit ::ready ::show-dev-tools ::init-window]
+                :triggers [:quit :ready :show-dev-tools :init-window :refresh]
+                :behaviors [::quit ::ready ::show-dev-tools ::init-window ::refresh]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))

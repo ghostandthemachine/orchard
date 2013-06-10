@@ -297,26 +297,45 @@ li.modules-item {
 }
 
 
-.log-pane {
-  overflow: scroll;
-}
-
-ul.log-list {
+.log-list {
   list-style: none;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .log-row {
+  font-family: 'arial';
+  font-size: 12px;
+  font-weight: 'light';
+
   border-bottom-style: solid;
   border-bottom-width: 1px; 
+  border-bottom-color: lightgray;
+  
+  margin: 0px;
+  padding: 0px;
+}
+
+.log-row p {
+  margin: 0px;
+  padding: 0px;
 }
 
 #logger-tabs {
-  position: fixed;
-  top: 0px;
   background: white;
+  width: 100%;
 }
 
 .logger-content-panes {
-  margin-top: 30px;
-  margin-left: 0px;
+  margin-top: 40px;
+}
+
+.tabs-container {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+
+.log-pane {
+  overflow: scroll;
 }
