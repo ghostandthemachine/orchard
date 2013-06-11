@@ -12,14 +12,12 @@
 (declare logger-win)
 
 (when-not logger-win
-	(def logger-win (.open js/window
-			"http://localhost:3000/logger.html")))
-
+  (def logger-win (.open js/window "http://localhost:3000/logger.html"))
+  (.focus logger-win))
 
 (defn log-doc
 	[]
 	(.-document logger-win))
-
 
 (defn body
 	[]
@@ -27,9 +25,11 @@
 
 (defn body$ [] (js/$ (body)))
 
+
 (defn tab-content
 	[id]
 	(.getElementById (log-doc) id))
+
 
 (defn tab-content$
 	[id]
@@ -48,10 +48,9 @@
 
 (defn append-message
 	[log-id msg & args]
-	(.append (tab-content$ log-id)
-		(crate/html
-			[:li.log-row
-				[:p (str msg args)]])))
+  (let [tab (tab-content$ log-id)]
+	(.append tab (crate/html [:li.log-row [:p (str msg args)]]))
+    (set! (.-scrollTop tab) (.-scrollHeight tab))))
 
 
 (defgui tab
@@ -79,7 +78,6 @@
   				[:ul.log-list]]]])
 
 
-
 (defui logger-content
 	[]
   [:div.row-fluid
@@ -99,13 +97,12 @@
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
-  						(log "logger inint content")
-  						(log-obj (:content @this))
+              (log "logger init content")
+              (log-obj (:content @this))
               (dom/append
               	(body)
               	(:content @this))
               (.tab (js/$ "#logger-tabs a:last") "show")))
-
 
 
 (object/behavior* ::quit
