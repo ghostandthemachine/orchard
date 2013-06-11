@@ -9,6 +9,7 @@
             [think.util.dom  :as dom]
             [think.util :as util]
             [think.objects.nav :as nav]
+            [think.objects.sidebar :as sidebar]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
             think.kv-store
@@ -152,9 +153,8 @@
   :triggers #{:ready}
   :reaction (fn [this]
               (log "App ready")
-              (object/raise think.objects.nav/workspace-nav :add!)
-              ; (object/raise think.objects.sidebar/sidebar :add!)
               (util/start-repl-server)
+              (object/raise think.objects.nav/workspace-nav :add!)
               (open-document :home)
               (object/raise think.objects.logger/logger :ready)))
 

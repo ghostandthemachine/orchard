@@ -91,10 +91,18 @@
 							(str "[" (:title @this) "](" (:id @this) ")"))))
 
 
+
+(defn left-margin
+  [px]
+  (str (or px 0) "px"))
+
+
+
 (object/object* :wiki-document
   :triggers #{:save :lock-document :unlock-document :ready}
   :behaviors [::save-document ::lock-document ::unlock-document ::ready]
   :locked? true
+  :left 0
   :init (fn [this document]
           (let-realised [template (model/get-document (:template document))]
             (let [tpl-obj (object/create (keyword (:type @template)) @template)]
@@ -102,15 +110,14 @@
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div.document
-           [:div.row-fluid
-            [:div.span12
-             [:h4
-	             [:div.pull-left.module-link-label
-	             		(id-btn this)]
-	             (:title @this)
-	             [:div.pull-right
-	             		(delete-doc-btn this)]]]]
+          [:div.document {:style {:left (bound (subatom this :left) left-margin)}}
+          [:div.span12
+           [:h4
+             [:div.pull-left.module-link-label
+             		(id-btn this)]
+             (:title @this)
+             [:div.pull-right
+             		(delete-doc-btn this)]]]
             [:div.row-fluid
               (bound (subatom this [:template])
                 (partial render-template this))]]))

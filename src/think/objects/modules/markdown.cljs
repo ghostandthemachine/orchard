@@ -60,6 +60,8 @@
                 :triggers #{:delete-module :save}
                 :behaviors [:think.objects.modules/delete-module :think.objects.modules/save-module]
                 :mode :present
+                :label "Markdown"
+                :icon icon
                 :editor nil
                 :init (fn [this record]
                         (object/merge! this record)
@@ -87,7 +89,6 @@
     (think.objects.app/open-document
       (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
-
 
 
 

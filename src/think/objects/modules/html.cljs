@@ -49,6 +49,8 @@
   :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
   :mode :present
   :editor nil
+  :icon icon
+  :label "HTML"
   :init (fn [this record]
           (object/merge! this record)
           (bound-do (subatom this [:mode]) (partial render-module this))

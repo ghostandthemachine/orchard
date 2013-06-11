@@ -36,3 +36,5 @@ couchdb.stderr
 couchdb.stdout
 
 public/js/logger.js
+
+*.dump

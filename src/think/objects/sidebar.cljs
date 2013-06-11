@@ -11,7 +11,7 @@
             [think.objects.animations :as anim]
             [redlobster.promise :as p]))
 
-(def DEFAULT-WIDTH 280)
+(def DEFAULT-MAX-WIDTH 180)
 
 (defui grip
 	[this]
@@ -24,9 +24,33 @@
         			  (object/raise this :width! e)))
 
 
+(defui sidebar-item [this item]
+  (let [{:keys [label]} @item]
+    [:li {:class (bound this #(if (= item (:active %))
+                                "rotate-right current"
+                                "rotate-right"))}
+                        label])
+  :click (fn [e]
+           (object/raise this :toggle item)
+           (object/raise item :toggle e)))
+
+
+(defui sidebar-tabs
+  [this tabs]
+  [:ul#sidebar-tabs
+    (for [[_ t] tabs]
+      (sidebar-item this t))])
+
+
 (defn set-width
 	[width]
 	(str (or width 0) "px"))
+
+
+(defn active-content
+  [active]
+  (when active
+    (:content @active)))
 
 
 (object/behavior* ::no-anim-on-drag
@@ -51,24 +75,52 @@
                                                      :max-width (- (.-clientX e) 40)}))))
 
 
-(object/behavior* ::add!
-  :triggers #{:add!}
-  :reaction (fn [this]
-              (log "Add sidebar to workspace")
-              (dom/append (dom/$ "body") (:content @this))))
+(object/behavior* ::toggle
+                  :triggers #{:toggle}
+                  :reaction (fn [this item]
+                              (log "Toggle sidebar item " item)
+                              (if (not= item (:active @this))
+                                (do
+                                  (object/merge! this {:active item
+                                                       :prev (:active @this)})
+                                  (object/raise this :open!))
+                                (object/raise this :close!))
+                              ))
+
+
+(object/behavior* ::open!
+                  :triggers #{:open!}
+                  :reaction (fn [this]
+                              (object/merge! this {:width (:max-width @this)}) ;; set sidebar width
+                              (object/merge! (:wiki-document @think.objects.workspace/workspace) {:left (:max-width @this)}) ;; set doc container width
+                              ))
+
+
+(object/behavior* ::close!
+                  :triggers #{:close!}
+                  :reaction (fn [this]
+                              (object/merge! (:wiki-document @think.objects.workspace/workspace) {:left 0}) ;; reset doc container width
+                              (object/merge! this {:active nil
+                                                   :width 0})))
 
 
 (object/object* ::sidebar
                 :tags #{}
-                :triggers [:start-drag :end-drag :width! :add!]
-                :behaviors [::no-anim-on-drag ::reanim-on-drop ::width! ::add!]
-                :max-width DEFAULT-WIDTH
+                :triggers [:start-drag :end-drag :width! :toggle :open! :close!]
+                :behaviors [::no-anim-on-drag ::reanim-on-drop ::width! ::toggle ::open! ::close!]
+                :max-width DEFAULT-MAX-WIDTH
                 :init (fn [this]
                         [:div#sidebar
-                        	[:div.container {:style {:width (bound (subatom this :width) set-width)}}
+                          [:div#sidebar-wrapper
+                            (bound (subatom this [:items]) (partial sidebar-tabs this))]
+                          [:div.conent-wrapper {:style {:width (bound (subatom this :width) set-width)}}
                         		[:div.content
                         			(bound (subatom this :active) active-content)]
                         		(grip this)]]))
 
 
-; (def sidebar (object/create ::sidebar))
+(def sidebar (object/create ::sidebar))
+
+
+(defn add-item [item]
+  (object/update! sidebar [:items] assoc (:order @item) item))

@@ -353,6 +353,10 @@ li.modules-item {
 
 
 
+.document-container {
+  margin-left: 0px;
+  padding-left: 0px;
+}
 
 
 
@@ -361,6 +365,9 @@ li.modules-item {
 
 
 
+.document {
+  position: relative;
+}
 
 /*Sidebar*/
 
@@ -368,9 +375,18 @@ li.modules-item {
 
 #sidebar-wrapper { background:transparent; }
 
-#sidebar li:hover, #sidebar .current { background:#ccc; color:#555; }
+ul#sidebar-tabs {
+  list-style: none;
+  margin: 3px;
+  padding: 2px;
+  position: relative;
+  top: 20px;
+  left: -20px;
+}
 
-#sidebar .content { background:#ccc; color:#555; }
+#sidebar-tabs li:hover, #sidebar-tabs .current { background:#ccc; color:#555; }
+
+#sidebar-tabs .content { background:#ccc; color:#555; }
 
 #sidebar .open { box-shadow:none; background:transparent; }
 #sidebar .open ul.files { color:#aaa; }
@@ -405,3 +421,6 @@ li.modules-item {
 
 
 
+.rotate-right {
+  -webkit-transform: rotate(-90deg);
+}
