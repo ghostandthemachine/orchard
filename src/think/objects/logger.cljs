@@ -15,14 +15,10 @@
 	(def logger-win (.open js/window
 			"http://localhost:3000/logger.html")))
 
-
-
 ; (when-not (think.kv-store/local-get :logger-open?)
 ;   (def logger-win (.open js/window
 ;       "http://localhost:3000/logger.html"))
 ;   (think.kv-store/local-set :logger-open? true))
-
-
 
 (defn log-doc
 	[]

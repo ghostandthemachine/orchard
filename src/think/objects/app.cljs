@@ -7,7 +7,9 @@
             [think.util.js :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
+            [think.util :as util]
             [think.objects.nav :as nav]
+            [think.objects.sidebar :as sidebar]
             [think.util.nw  :as nw]
             [think.objects.workspace :as workspace]
             think.kv-store
@@ -17,7 +19,33 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 
-(def shell (.-exec (js/require "child_process")))
+
+(def child-process (js/require "child_process"))
+
+(def shell (.-exec child-process))
+
+(def spawn (.-spawn child-process))
+
+
+(defn log-handler
+  [log-id msg]
+  (object/raise think.objects.logger/logger :post log-id msg))
+
+
+(def child-processes* (atom {}))
+
+(defn add-process
+  [child]
+  (log "Add child process with pid: " (.-pid child))
+  (swap! child-processes* assoc (.-pid child) child))
+
+
+(defn stop-children
+  []
+  (doseq [[pid child] @child-processes*]
+    (log "kill pid " pid)
+    (.kill child)))
+
 
 (def closing true)
 
@@ -26,17 +54,37 @@
 (def windows js/global.windows)
 
 
-(defn start-couch-db
+(def couch-created* (atom false))
+
+(defn init-couch-db
   []
-  (shell "couchdb -b"))
+  (let [proc (spawn "couchdb")]
+    (add-process proc)
+    (.on (.-stdout proc) "data" (partial log-handler :couchdb))
+    proc))
 
 
-(defn stop-couch-db
+(defn start-couch
   []
-  (shell "couchdb -d"))
+  (if-not @couch-created*
+    (do
+      (log "Couchdb does not exist, creating")
+      (init-couch-db)
+      (reset! couch-created* true))
+    (log "Couchdb exists, not creating new one")))
 
 
-(start-couch-db)
+(start-couch)
+
+
+(defn start-cljsbuild
+  []
+  (let [proc (spawn "lein" (clj->js ["cljsbuild" "auto"]))]
+    (add-process proc)
+    (.on (.-stdout proc) "data" (partial log-handler :cljsbuild))
+    proc))
+
+; (start-cljsbuild)
 
 
 (defn setup-tray
@@ -50,7 +98,6 @@
 
 
 
-;(.Window.open gui "index.html" (clj->js {:toolbar false}))
 
 (defn prevent-close []
   (set! closing false))
@@ -95,12 +142,29 @@
   (= 0 (:delays @this)))
 
 
+(defn open-document
+  [doc-id]
+  (let-realised [doc (model/load-document doc-id)]
+    (object/raise workspace/workspace :show-document @doc)))
+
+
+
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
               (log "App ready")
+              (util/start-repl-server)
               (object/raise think.objects.nav/workspace-nav :add!)
-              (open-document :home)))
+              (open-document :home)
+              (object/raise think.objects.logger/logger :ready)))
+
+
+(object/behavior* ::refresh
+  :triggers #{:refresh}
+  :reaction (fn [this]
+              (log "Refresh App")
+              (stop-children)
+              (refresh)))
 
 
 (object/behavior* ::init-window
@@ -121,7 +185,7 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
-              (stop-couch-db)
+              (stop-children)
               (nw/quit)))
 
 
@@ -134,8 +198,8 @@
 
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready :show-dev-tools :init-window]
-                :behaviors [::quit ::ready ::show-dev-tools ::init-window]
+                :triggers [:quit :ready :show-dev-tools :init-window :refresh]
+                :behaviors [::quit ::ready ::show-dev-tools ::init-window ::refresh]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
@@ -150,13 +214,6 @@
 (def windows js/global.windows)
 
 (def app         (object/create ::app))
-
-
-(defn open-document
-  [doc-id]
-  (let-realised [doc (model/load-document doc-id)]
-    (object/raise workspace/workspace :show-document @doc)))
-
 
 
 (defn init []

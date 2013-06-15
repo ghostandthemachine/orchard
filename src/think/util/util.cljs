@@ -396,9 +396,18 @@
 (defn ready [func]
   (on js/document :DOMContentLoaded func))
 
+
+(def serving-repl* (atom false))
+
 (defn start-repl-server
   []
-  (repl/connect "http://127.0.0.1:9000/repl"))
+  (if-not @serving-repl*
+    (do
+      (log "Repl does not exist, creating")
+      (repl/connect "http://127.0.0.1:9000/repl")
+      (reset! serving-repl* true))
+    (log "Repl exists, not creating new one")))
+
 
 
 (defn await

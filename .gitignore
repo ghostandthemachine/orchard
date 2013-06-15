@@ -31,3 +31,10 @@ public/js/bootstrap.js
 public/images/OSX_bg.psd
 public/images/nav-bg.psd
 test/
+
+couchdb.stderr
+couchdb.stdout
+
+public/js/logger.js
+
+*.dump

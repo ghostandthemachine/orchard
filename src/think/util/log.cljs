@@ -1,4 +1,5 @@
-(ns think.util.log)
+(ns think.util.log
+  (:require [think.dispatch :as dispatch]))
 
 (defn log
   "Print a log message to the console."
@@ -6,6 +7,7 @@
   (let [vs (if (string? v)
              (apply str v text)
              (str v))]
+    (dispatch/fire :log-message vs)
     (.log js/console vs)))
 
 
