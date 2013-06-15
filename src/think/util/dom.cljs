@@ -214,3 +214,8 @@
 (defn module-element
   [module]
   ($ (str "#module-" (:id @module))))
+
+(defn scroll-to-end
+  [scrollable-elem]
+  (set! (.-scrollTop scrollable-elem)
+    (.-scrollHeight scrollable-elem)))
