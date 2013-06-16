@@ -115,11 +115,7 @@
                   (let [elem       (.get log-panes i)
                         height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-<<<<<<< HEAD
                     (log "set log pane top " height cur-scroll)
-=======
-                    ;(log "set log pane top " height cur)
->>>>>>> 89c30237c51e8b709f830a887694d0aa8becbd4c
                     (set! (.-scrollTop elem) height)
                     ;(log "scrollTop for elem " height)
                     ))

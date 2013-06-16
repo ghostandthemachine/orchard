@@ -6,7 +6,7 @@
             [think.util.core :as util]
             [think.util.dom :as dom]
             [think.model :as model]
-            [think.objects.modules :refer [top-spacer spacer insert-at]]
+            [think.objects.modules :refer [top-spacer spacer]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]
@@ -84,7 +84,7 @@
   :reaction (fn [this template new-mod index]
               (log "single-column-template add module")
               (object/parent! template new-mod)
-              (object/update! template [:modules] #(insert-at % index new-mod))
+              (object/update! template [:modules] #(util/insert-at % index new-mod))
               (.css (js/$ ".module")
   							"background-color"
   							"rgb(247, 247, 247)")))
