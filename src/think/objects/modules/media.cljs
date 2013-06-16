@@ -1,11 +1,11 @@
 (ns think.objects.modules.media
-  (:use [think.util :only [log log-obj uuid]])
+  (:use [think.util.core :only [log log-obj uuid]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [think.objects.modules :refer [module-btn-icon module-btn]]
-            [think.util :refer [bound-do]]
+            [think.util.core :refer [bound-do]]
             [think.util.dom :as dom]
             [think.model :as model]
             [think.util.log :refer [log log-obj]]
@@ -13,8 +13,7 @@
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string]
-            [dommy.core :as dommy]))
-
+            [dommy.core :as dom]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
@@ -44,10 +43,12 @@
         ; (.readAsText rdr the-file)
         ))))
 
+
 (defn handle-drag-over [evt]
   (.stopPropagation evt)
   (.preventDefault evt)
   (set! (.-dropEffect (.-dataTransfer evt)) "copy"))
+
 
 (defn setup-media-drop-zone
   [id]
@@ -56,10 +57,11 @@
       (dom/listen! elem :dragover handle-drag-over)
       (dom/listen! elem :drop     handle-file-select))))
 
+
 (defn make-dropable
   [$dropzone handler]
-  (dommy/listen! $dropzone :dragover handle-drag-over)
-  (dommy/listen! $dropzone :drop (partial handle-file-select handler)))
+  (dom/listen! $dropzone :dragover handle-drag-over)
+  (dom/listen! $dropzone :drop (partial handle-file-select handler)))
 
 
 (defn prepare-media-canvas
@@ -71,12 +73,9 @@
   (dom/append $content canvas)))
 
 
-
 (defn $media-module-content
   [this]
   (dom/$ (str "#media-module-" (:id @this) " .media-module-content")))
-
-
 
 
 (defn load-pdf
@@ -104,7 +103,8 @@
                    :viewport viewport})))))))))
 
 
-(defn update-path   [this file-path]
+(defn update-path
+  [this file-path]
   (let [type (keyword (last (clojure.string/split file-path #"\.")))]
     (log "update media for file: " type)
     (object/assoc! this
@@ -119,18 +119,17 @@
               (log "Unsupported file type: " type)))))
 
 
-
-
 (defui load-file-button
   [handler]
   [:a.btn.btn-small.view-btn-group {:href "#load-document"} "Open"]
   :click (fn [e]
           (let [$chooser (dom/$ :#file-dialog)]
             (.preventDefault e)
-            (dommy/fire! $chooser :click)
-            (dommy/listen! $chooser :change
+            (dom/fire! $chooser :click)
+            (dom/listen! $chooser :change
               (fn [ev]
                 (handler (.-value $chooser)))))))
+
 
 (defn edit-toolbar
   [this]
@@ -174,16 +173,15 @@
       )])
 
 
-
 (defui render-edit
   [this]
   [:div.module-content.media-module-content
-    [:div.row-fluid
-      (edit-toolbar this)
-      [:input#file-dialog {:style "display:none;" :type "file"}]]
-    [:div.row-fluid
-      [:canvas {:id (str "media-content-" (:id @this))
-                :style {:border "1px solid black"}}]]])
+   [:div.row-fluid
+    (edit-toolbar this)
+    [:input#file-dialog {:style "display:none;" :type "file"}]]
+   [:div.row-fluid
+    [:canvas {:id (str "media-content-" (:id @this))
+              :style {:border "1px solid black"}}]]])
 
 
 (defn render-module

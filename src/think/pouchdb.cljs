@@ -2,7 +2,7 @@
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
 (comment

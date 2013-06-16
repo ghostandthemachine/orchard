@@ -3,7 +3,7 @@
                [redlobster.macros :only [when-realised let-realised defer-node]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.util.dom :as dom]
             [think.model :as model]
             [think.objects.modules :refer [top-spacer spacer insert-at]]
@@ -95,24 +95,25 @@
   :tags #{:template}
   :behaviors [::save-template ::ready ::remove-module ::add-module]
   :init (fn [this tpl]
-  				(log "init new single column template")
           (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
             (let [module-objs (map
                                 #(object/create
-                                  (keyword (:type %)) %)
+                                   (keyword (:type %)) %)
                                 @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
+              (log "template modules:")
+              (log-obj (clj->js new-tpl))
               (object/merge! this new-tpl)
               (doseq [mod module-objs]
-                (object/parent! this mod))))
-         	(util/bound-do (subatom this :modules)
-						(fn [mods]
-						  (log "update single column template modules")
-						  (object/raise this :save)))
+                (object/parent! this mod)))
+            (util/bound-do (subatom this :modules)
+                           (fn [mods]
+                             (log "update single column template modules")
+                             (object/raise this :save))))
           [:div.template.single-column-template
-            [:div.modules-container
-              (bound (subatom this :modules)
-                (partial render-modules this))]]))
+           [:div.modules-container
+            (bound (subatom this :modules)
+                   (partial render-modules this))]]))
 
 
 (defn single-column-template-doc

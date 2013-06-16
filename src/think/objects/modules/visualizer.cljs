@@ -4,7 +4,7 @@
   (:require [c2.scale :as scale]
             [c2.core :refer [unify]]
             [think.object :as object]
-            [think.util :refer [uuid]]
+            [think.util.core :refer [uuid]]
             [think.objects.modules :refer [module-btn-icon module-btn]]))
 
 

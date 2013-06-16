@@ -15,11 +15,14 @@
 
 (declare change)
 
+
 (defn add [obj]
   (swap! object-defs assoc (:type obj) obj))
 
+
 (defn add-b [obj]
   (swap! behaviors assoc (:name obj) obj))
+
 
 (defn ->triggers [obj behs]
   (let [listeners (reduce
@@ -33,42 +36,51 @@
                    behs)]
     listeners))
 
+
 (defn ->id [obj]
   (if (deref? obj)
     (::id @obj)
     (::id obj)))
 
+
 (defn merge! [obj & m]
   (swap! obj #(apply merge % m)))
+
 
 (defn instances-by-type [type]
   (filter #(= type (:type (deref %))) (vals @instances)))
 
+
 (defn by-type [type]
   (instances-by-type type))
 
+
 (defn tags->behaviors [ts]
   (apply concat (map @tags ts)))
+
 
 (defn raise [obj k & args]
   (let [reactions (map #(-> (% @behaviors) :reaction) (-> @obj :listeners k))]
     (doseq [r reactions
             :when r]
-      (apply r obj args)
-      )))
+      (apply r obj args))))
+
 
 (defn update-listeners [obj]
   (let [behs (set (concat (:behaviors obj) (tags->behaviors (:tags obj))))]
     (assoc obj :listeners (->triggers obj behs))))
+
 
 (defn make-object* [name & r]
   (let [obj (merge {:behaviors #{} :tags #{} :triggers [] :listeners {} :type name :children {}}
                    (apply hash-map r))]
     obj))
 
+
 (defn store-object* [obj]
   (add obj)
   obj)
+
 
 (defn handle-redef [odef]
   (let [id (:type odef)]
@@ -163,7 +175,7 @@
   inst)
 
 (defn create [obj-name & args]
-  ;(log "Creating object: " (str obj-name))
+  (log "Creating object: " (str obj-name))
   (let [obj (if (keyword? obj-name)
               (@object-defs obj-name)
               obj-name)

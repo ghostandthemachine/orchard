@@ -3,7 +3,7 @@
                [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
             [think.model :as model]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.objects.templates.single-column :as single-column]
             [think.objects.modules :as modules]
             [crate.binding :refer [subatom bound]]

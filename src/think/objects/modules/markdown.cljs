@@ -4,7 +4,7 @@
   (:require [think.object :as object]
             [crate.core :as crate]
             [redlobster.promise :as p]
-            [think.util :refer [bound-do uuid]]
+            [think.util.core :refer [bound-do uuid]]
             [think.util.dom :as dom]
             [think.objects.modules :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]

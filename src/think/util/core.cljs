@@ -1,4 +1,4 @@
-(ns think.util
+(ns think.util.core
   (:refer-clojure :exclude [js->clj clj->js])
   (:use-macros [dommy.macros :only (sel sel1)])
   (:use [think.util.log :only (log log-obj)])
@@ -68,40 +68,6 @@
      :host (get raw "hostname")
      :port (js/parseInt (get raw "port"))
      :path (get raw "pathname")}))
-
-
-(defn set-interval
-  "Invoke the given function after and every delay milliseconds."
-  [delay f]
-  (js/setInterval f delay))
-
-
-(defn clear-interval
-  "Cancel the periodic invokation specified by the given interval id."
-  [interval-id]
-  (js/clearInterval interval-id))
-
-
-(defn env
-  "Returns the value of the environment variable k,
-   or raises if k is missing from the environment."
-  [k]
-  (let [e (js->clj (.env node/process))]
-    (or (get e k) (throw (str "missing key " k)))))
-
-
-(defn trap
-  "Trap the Unix signal sig with the given function."
-  [sig f]
-  (.on node/process (str "SIG" sig) f))
-
-
-(defn exit
-  "Exit with the given status."
-  [status]
-  (.exit node/process status))
-
-
 (def DATE-FORMATS
   (let [f date-format/Format]
     {:full-date       (.-FULL_DATE f)
@@ -265,8 +231,6 @@
 ;  (.writeFile fs path string))
 
 
-;(defn on-ready [func]
-;  (on js/document :DOMContentLoaded func))
 (defn data
   ([elem attr]
     (.getAttribute elem attr))
@@ -357,14 +321,23 @@
 ;   (-nth [this n not-found]
 ;         (or (.item this n) not-found)))
 
-(defn refresh []
+(defn refresh
+  "Refresh the current page."
+  []
   (js/window.location.reload true))
 
-(defn r! []
-  (refresh))
 
-(defn clipboard [] (.get js/Clipboard))
-(defn read-clipboard [] (.get (clipboard)))
+(defn clipboard
+  "Get the js clipboard."
+  []
+  (.get js/Clipboard))
+
+
+(defn read-clipboard 
+  "Get the current contents of the clipboard."
+  [] 
+  (.get (clipboard)))
+
 
 (defn open-window
   [url & {:as options}]
@@ -383,18 +356,6 @@
   [file-name]
   (dom/append! (first (sel :head))
     (dt/node [:script {:src file-name}])))
-
-
-(defn on [elem ev cb]
-  (.addEventListener elem (str (name ev)) cb))
-
-
-(defn off [elem ev cb]
-  (.removeEventListener elem (str (name ev)) cb))
-
-
-(defn ready [func]
-  (on js/document :DOMContentLoaded func))
 
 
 (def serving-repl* (atom false))
@@ -459,13 +420,21 @@
 
 
 
+;; Basic data structure helpers
+
+(defn insert-at [coll pos item]
+  "Insert an item at a specific position within a collection."
+  (let [vec (into [] coll)]
+    (apply merge (subvec vec 0 pos) item (subvec vec pos))))
+
+
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
   from 's' and indexes count up from zero.
-
   (indexed '(a b c d))  =>  ([0 a] [1 b] [2 c] [3 d])"
   [s]
   (map vector (iterate inc 0) s))
+
 
 (defn positions
   "Returns a lazy sequence containing the positions at which pred
@@ -473,19 +442,9 @@
   [pred coll]
   (for [[idx elt] (indexed coll) :when (pred elt)] idx))
 
+
 (defn index-of
+  "Get the index of a value within a collection."
   [v coll]
   (first (positions #{v} coll)))
-
-
-(defn periodically
-  "Call f on a given interval until f returns :stop."
-  [interval f]
-  (let [inter   (atom nil)
-        handler (fn []
-                  (if (= :stop (f))
-                    (js/clearInterval @inter)))]
-    (reset! inter (js/setInterval handler interval))
-    @inter))
-
 

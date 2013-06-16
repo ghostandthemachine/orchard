@@ -3,12 +3,14 @@
   (:use [think.util.log :only    [log log-obj]])
   (:use-macros [redlobster.macros :only [when-realised let-realised defer-node]]
                [think.macros :only [defui]])
-  (:require [think.util         :as util]
+  (:require [think.util.core    :as util]
+            [think.util.time    :as time]
             [think.dispatch     :refer [fire react-to]]
             [think.couchdb      :as db]
             [think.object       :as object]
             [redlobster.promise :as p]
-            [dommy.template :as tpl]))
+            [dommy.template     :as tpl]))
+
 
 (def account
  {:login    "jon"
@@ -30,6 +32,7 @@
         (object/merge! this
           {:ready? true
            :document-db* db})
+        (log "telling app ready...")
         (object/raise think.objects.app/app :ready))
       (fn [err]
         (log "Error loading nano db")
@@ -43,7 +46,7 @@
                 :ready? false
                 :init (fn [this]
                         (log "Initialize db.. ")
-                        (util/periodically 500 (partial load-db this))))
+                        (time/periodically 500 (partial load-db this))))
  
 
 (def model (object/create ::model))
@@ -99,7 +102,7 @@
     (p/on-realised doc-promise
       (fn success [doc]
         (log "realizing new document of type: " (:type doc))
-        (log-obj doc)
+        (log-obj (clj->js doc))
         (let [obj-type (keyword (:type doc))]
           (if (object/defined? obj-type)
             (p/realise res-promise (object/create obj-type doc))

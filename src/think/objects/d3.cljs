@@ -3,7 +3,7 @@
   (:require [think.object :as object]
             [crate.core :as crate]
             [think.util.dom :as dom]
-            [think.util :refer [bound-do uuid]]
+            [think.util.core :refer [bound-do uuid]]
             [think.objects.modules :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]

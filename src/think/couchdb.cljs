@@ -3,7 +3,7 @@
   (:require-macros [think.macros :as mac])
   (:require [redlobster.promise :as p]
             [think.object :as object]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
 (def ^:private couch-server (js/require "nano"))

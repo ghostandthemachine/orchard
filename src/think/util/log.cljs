@@ -19,26 +19,35 @@
   (.log js/console obj)
   obj)
 
-; (defn log [& m]
-;   (.log js/console (apply str m)))
+
+;(defn trace-ns
+;  "ns should be a namespace object or a symbol."
+;  [ns]
+;  (doseq [s (keys (ns-interns ns))
+;          :let [v (ns-resolve ns s)]
+;          :when (and (ifn? @v) (-> v meta :macro not))]
+;    (intern ns
+;            (with-meta s {:traced true :untraced @v})
+;            (let [f @v] (fn [& args]
+;                          (clojure.contrib.trace/trace (str "entering: " s))
+;                          (apply f args))))))
+;
+;(defn untrace-ns [ns]
+;  (doseq [s (keys (ns-interns ns))
+;          :let [v (ns-resolve ns s)]
+;          :when (:traced (meta v))]
+;    (alter-meta! (intern ns s (:untraced (meta v)))
+;                 #(dissoc % :traced :untraced))))
+;
+
 
 (defn jslog [& m]
   (log (apply js->clj m)))
 
+
 (defn log-err
   [v & [text]]
   (log v text))
-
-
-
-
-
-
-
-
-
-
-
 
 
 ;; logging with flags

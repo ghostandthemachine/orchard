@@ -4,7 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.dispatch :as dispatch]
             [crate.core :as crate]
             [redlobster.promise :as p]))
@@ -12,9 +12,8 @@
 (declare logger-win)
 
 (when-not logger-win
-	(def logger-win (.open js/window
-			"http://localhost:3000/logger.html")))
-
+  (def logger-win (.open js/window "http://localhost:3000/logger.html"))
+  (.focus logger-win))
 
 ; (when-not (think.kv-store/local-get :logger-open?)
 ;   (def logger-win (.open js/window
@@ -26,16 +25,17 @@
 	[]
 	(.-document logger-win))
 
-
 (defn body
 	[]
 	(.getElementById (log-doc) "logger"))
 
 (defn body$ [] (js/$ (body)))
 
+
 (defn tab-content
 	[id]
 	(.getElementById (log-doc) id))
+
 
 (defn tab-content$
 	[id]
@@ -54,10 +54,9 @@
 
 (defn append-message
 	[log-id msg & args]
-	(.append (tab-content$ log-id)
-		(crate/html
-			[:li.log-row
-				[:p (str msg args)]])))
+  (let [tab (tab-content$ log-id)]
+	(.append tab (crate/html [:li.log-row [:p (str msg args)]]))
+    (set! (.-scrollTop tab) (.-scrollHeight tab))))
 
 
 (defgui tab
@@ -83,7 +82,6 @@
   				[:ul.log-list]]
   			[:div.tab-pane.log-pane {:id "cljsbuild"}
   				[:ul.log-list]]]])
-
 
 
 (defui logger-content
@@ -112,18 +110,18 @@
   :triggers #{:ready}
   :reaction (fn [this]
   						(log "logger inint content")
-              (let [log-panes (.find log-doc ".log-pane")]
+              (let [log-panes (.find (js/$ (log-doc)) ".log-pane")]
     						(for [i (.size log-panes)]
                   (let [elem       (.get log-panes i)
                         height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
+                    (log "set log pane top " height cur)
                     (set! (.-scrollTop elem) height)
                     (log "scrollTop for elem " height)))
                 (dom/append
                 	(body)
                 	(:content @this))
                 (.tab (js/$ "#logger-tabs a:last") "show"))))
-
 
 
 (object/behavior* ::quit
