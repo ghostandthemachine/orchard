@@ -44,7 +44,7 @@
 
 
 (object/object* :html-module
-  :tags #{}
+  :tags #{:module}
   :triggers #{:save :delete}
   :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
   :mode :present

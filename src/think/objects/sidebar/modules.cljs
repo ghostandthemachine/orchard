@@ -1,6 +1,6 @@
-(ns think.objects.sidebar.modules
-  (:use-macros [redlobster.macros :only [let-realised]]
-  						 [think.macros :only [defui defgui]])
+(ns think.objects.sidebar.modules-selector
+  (:require-macros [redlobster.macros :refer [let-realised]]
+  						     [think.macros :refer [defui defgui]])
   (:require [think.object :as object]
             [think.objects.sidebar :as sidebar]
             [think.util.log :refer [log log-obj]]
@@ -24,7 +24,7 @@
       (module-item this t))])
 
 
-(object/object* ::sidebar.modules
+(object/object* ::sidebar.modules-selector
                 :triggers #{}
                 :behaviors [::toggle]
                 :label "modules"
@@ -32,13 +32,12 @@
                 :init (fn [this]
                         [:div.modules-content
                           ; (bound (subatom this [:items]) (partial sidebar-modules this))
-                          ; (modules this [(atom {:label "Markdown"})])
                           [:div.row-fluid.item {:draggable "true"}
                             [:h4 "Working"]]
                           ]))
 
 
-(def sidebar-modules (object/create ::sidebar.modules))
+(def sidebar-modules (object/create ::sidebar.modules-selector))
 
 
 (sidebar/add-item sidebar-modules)

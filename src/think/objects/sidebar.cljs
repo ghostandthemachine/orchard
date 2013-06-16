@@ -1,6 +1,6 @@
 (ns think.objects.sidebar
-  (:use-macros [redlobster.macros :only [let-realised]]
-  						 [think.macros :only [defui defgui]])
+  (:require-macros [redlobster.macros :refer [let-realised]]
+  						     [think.macros :refer [defui defgui]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]

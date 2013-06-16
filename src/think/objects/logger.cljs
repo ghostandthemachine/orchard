@@ -1,6 +1,6 @@
 (ns think.objects.logger
-  (:use-macros [redlobster.macros :only [let-realised]]
-  						 [think.macros :only [defui defgui]])
+  (:require-macros [redlobster.macros :refer [let-realised]]
+  						     [think.macros :refer [defui defgui]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
@@ -116,7 +116,7 @@
                   (let [elem       (.get log-panes i)
                         height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    (log "set log pane top " height cur)
+                    (log "set log pane top " height cur-scroll)
                     (set! (.-scrollTop elem) height)
                     (log "scrollTop for elem " height)))
                 (dom/append
