@@ -75,21 +75,17 @@ function load_css(path, isFile) {
 try {
 
     console.log("Loading CSS files...");
-
     css_files.forEach(function(path) {
-        //console.log(path)
         load_css(path, false);
     });
 
     console.log("Loading Javascript files...");
     js_files.forEach(function(path) {
-        //console.log(path)
         load_script(path, false);
     });
 
 
     script.onload = function() {
-        console.log("Initializing application...");
         try {
             think.objects.app.init();
         } catch (e) {
