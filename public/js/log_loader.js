@@ -6,7 +6,7 @@ var css_files = [
     "css/codemirror.css",
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
-    "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css",
+    "css/jquery-ui.css",
     "css/thinker.css"];
 
 var js_files = [
@@ -17,7 +17,7 @@ var js_files = [
 
     "js/jquery-1.9.0.js",
     "js/jquery.sortable.min.js",
-    "http://code.jquery.com/ui/1.10.2/jquery-ui.js",
+    "js/jquery-ui.js",
     "js/throttle.js",
     "bootstrap/js/bootstrap.min.js",
     "js/logger.js"]
