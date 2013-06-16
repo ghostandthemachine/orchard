@@ -65,7 +65,7 @@
                 :max-width default-width
                 :init (fn [this]
                         [:div#workspace.row-fluid
-                          [:div.sidebar
+                          [:div
                             (bound (subatom this :sidebar) render-sidebar)]
                           [:div.container-fluid.document-container
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
