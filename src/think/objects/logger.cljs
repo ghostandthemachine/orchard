@@ -16,6 +16,12 @@
 			"http://localhost:3000/logger.html")))
 
 
+; (when-not (think.kv-store/local-get :logger-open?)
+;   (def logger-win (.open js/window
+;       "http://localhost:3000/logger.html"))
+;   (think.kv-store/local-set :logger-open? true))
+
+
 (defn log-doc
 	[]
 	(.-document logger-win))
@@ -89,22 +95,34 @@
 (object/behavior* ::post-message
   :triggers #{:post}
   :reaction (fn [this type msg & args]
-  						(case type
-  							:log (append-message "log" msg)
-  							:couchdb (append-message "couchdb" msg)
-  							:cljsbuild (append-message "cljsbuild" msg)
-  							:node (append-message "node" msg))))
+              (let [log-type   (str (name type))]
+                (if-let [elem       (tab-content log-type)]
+                  (let [height     (.-scrollHeight elem)
+                        cur-scroll (.-scrollTop elem)]
+                    (.log js/console "scroll data " height cur-scroll)
+                    (if (= height cur-scroll)
+                      (do
+                        (append-message log-type msg)
+                        (set! (.-scrollTop elem) height))
+                      (append-message log-type msg)))
+                  (append-message log-type msg)))))
 
 
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
   						(log "logger inint content")
-  						(log-obj (:content @this))
-              (dom/append
-              	(body)
-              	(:content @this))
-              (.tab (js/$ "#logger-tabs a:last") "show")))
+              (let [log-panes (.find log-doc ".log-pane")]
+    						(for [i (.size log-panes)]
+                  (let [elem       (.get log-panes i)
+                        height     (.-scrollHeight elem)
+                        cur-scroll (.-scrollTop elem)]
+                    (set! (.-scrollTop elem) height)
+                    (log "scrollTop for elem " height)))
+                (dom/append
+                	(body)
+                	(:content @this))
+                (.tab (js/$ "#logger-tabs a:last") "show"))))
 
 
 
@@ -133,6 +151,7 @@
 
 
 (def logger (object/create :logger))
+
 
 
 (dispatch/react-to #{:log-message}
