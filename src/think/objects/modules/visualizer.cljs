@@ -33,7 +33,7 @@
 
 (object/object* :visualizer-module
   :triggers #{}
-  :tags #{}
+  :tags #{:module}
   :reactions []
   :init (fn [this]
           [:div.span12.module.visualizer-module {:id (str "visualizer-module-" (:id @this))}

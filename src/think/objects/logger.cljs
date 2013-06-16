@@ -1,6 +1,6 @@
 (ns think.objects.logger
   (:use-macros [redlobster.macros :only [let-realised]]
-  						 [think.macros :only [defui defgui]])
+               [think.macros :only [defui defgui]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
@@ -26,69 +26,69 @@
 ;   (think.kv-store/local-set :logger-open? true))
 
 (defn log-doc
-	[]
-	(.-document logger-win))
+  []
+  (.-document logger-win))
 
 (defn body
-	[]
-	(.getElementById (log-doc) "logger"))
+  []
+  (.getElementById (log-doc) "logger"))
 
 (defn body$ [] (js/$ (body)))
 
 
 (defn tab-content
-	[id]
-	(.getElementById (log-doc) id))
+  [id]
+  (.getElementById (log-doc) id))
 
 
 (defn tab-content$
-	[id]
-	(.find (js/$ (log-doc)) (str "#" id " ul")))
+  [id]
+  (.find (js/$ (log-doc)) (str "#" id " ul")))
 
 
 (defn by-id
-	[id]
-	(.get (.find (body$) id) 0))
+  [id]
+  (.get (.find (body$) id) 0))
 
 
 (defn tab-elem
-	[id]
-	(.find (body$) (str "li a[href='" id "']")))
+  [id]
+  (.find (body$) (str "li a[href='" id "']")))
 
 
 (defn append-message
-	[log-id msg & args]
+  [log-id msg & args]
   (let [tab (tab-content$ log-id)]
-	(.append tab (crate/html [:li.log-row [:p (str msg args)]]))
+    (.append tab (crate/html [:li.log-row [:p (str msg args)]]))
     (set! (.-scrollTop tab) (.-scrollHeight tab))))
 
 
 (defgui tab
-	[id label & args]
-	[:li
-		(if (= :active (first args))
-			[:a.active {:href id :data-toggle "tab"} label]
-			[:a {:href id :data-toggle "tab"} label])])
+  [id label & args]
+  [:li
+   (if (= :active (first args))
+     [:a.active {:href id :data-toggle "tab"} label]
+     [:a {:href id :data-toggle "tab"} label])])
 
 
 (defui tabs
-	[]
-	[:div.loggger-element
-		[:div.tabs-container
-			[:ul#logger-tabs.nav.nav-tabs
-				(tab "#log" "Log" :active)
-				(tab "#couchdb" "Couchdb")]]
-			[:div.tab-content.logger-content-panes
-  			[:div.tab-pane.log-pane.active {:id "log"}
-  				[:ul.log-list]]
-  			[:div.tab-pane.log-pane  {:id "couchdb"}
-  				[:ul.log-list]]]])
+  []
+  [:div.loggger-element
+   [:div.tabs-container
+    [:ul#logger-tabs.nav.nav-tabs
+     (tab "#log" "Log" :active)
+     (tab "#couchdb" "Couchdb")]]
+   [:div.tab-content.logger-content-panes
+    [:div.tab-pane.log-pane.active {:id "log"}
+     [:ul.log-list]]
+    [:div.tab-pane.log-pane  {:id "couchdb"}
+     [:ul.log-list]]]])
 
 
 (defui logger-content
-	[]
+  []
   [:div.row-fluid
-    (tabs)])
+   (tabs)])
 
 
 (object/behavior* ::post-message
@@ -110,18 +110,18 @@
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
-  						(log "logger inint content")
               (let [log-panes (.find (js/$ (log-doc)) ".log-pane")]
-    						(for [i (.size log-panes)]
+                (for [i (.size log-panes)]
                   (let [elem       (.get log-panes i)
                         height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    (log "set log pane top " height cur)
+                    ;(log "set log pane top " height cur)
                     (set! (.-scrollTop elem) height)
-                    (log "scrollTop for elem " height)))
+                    ;(log "scrollTop for elem " height)
+                    ))
                 (dom/append
-                	(body)
-                	(:content @this))
+                  (body)
+                  (:content @this))
                 (.tab (js/$ "#logger-tabs a:last") "show"))))
 
 
@@ -133,20 +133,20 @@
 
 
 (object/behavior* ::show-dev-tools
-                  :triggers #{:show-dev-tools}
-                  :reaction (fn [this]
-                              (log "Show Dev Tools")
-                              (.showDevTools logger-win)))
+  :triggers #{:show-dev-tools}
+  :reaction (fn [this]
+              (log "Show Dev Tools")
+              (.showDevTools logger-win)))
 
 
 (object/object* :logger
-                :tags #{:logger}
-                :triggers [:quit :ready :show-dev-tools :init-window :post]
-                :behaviors [::quit ::ready ::show-dev-tools ::init-window ::post-message]
-                :delays 0
-                :init (fn [this]
-                        (log "init logger")
-                        (logger-content)))
+  :tags #{:logger}
+  :triggers [:quit :ready :show-dev-tools :init-window :post]
+  :behaviors [::quit ::ready ::show-dev-tools ::init-window ::post-message]
+  :delays 0
+  :init (fn [this]
+          (log "init logger")
+          (logger-content)))
 
 
 (def logger (object/create :logger))
@@ -154,5 +154,5 @@
 
 
 (dispatch/react-to #{:log-message}
-  (fn [ev & [data]]
-    (object/raise logger :post :log data)))
+                   (fn [ev & [data]]
+                     (object/raise logger :post :log data)))

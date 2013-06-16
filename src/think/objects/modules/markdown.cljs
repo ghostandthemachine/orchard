@@ -56,7 +56,7 @@
 
 
 (object/object* :markdown-module
-                :tags #{}
+                :tags #{:module}
                 :triggers #{:delete-module :save}
                 :behaviors [:think.objects.modules/delete-module :think.objects.modules/save-module]
                 :mode :present

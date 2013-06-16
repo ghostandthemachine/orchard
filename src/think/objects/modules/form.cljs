@@ -1,11 +1,11 @@
 (ns think.objects.modules.form
-  (:use [think.util.core :only [log log-obj uuid]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [think.objects.modules :refer [module-btn-icon module-btn]]
             [think.util.core :refer [bound-do]]
+            [think.util.core :refer [log log-obj]]
             [think.util.dom :as dom]
             [think.model :as model]
             [redlobster.promise :as p]
@@ -24,7 +24,7 @@
 
 
 (object/object* :form-module
-                :tags #{}
+                :tags #{:module}
                 :triggers #{:save :delete}
                 :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
                 :mode :present

@@ -63,7 +63,7 @@
 
 
 (object/object* :index-module
-                :tags #{}
+                :tags #{:module}
                 :triggers #{:save}
                 :behaviors [:think.objects.modules/save-module]
                 :mode :present

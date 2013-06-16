@@ -1,5 +1,4 @@
 (ns think.objects.modules.media
-  (:use [think.util.core :only [log log-obj uuid]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
@@ -8,7 +7,7 @@
             [think.util.core :refer [bound-do]]
             [think.util.dom :as dom]
             [think.model :as model]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer [log log-obj uuid]]
             [redlobster.promise :as p]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]]
@@ -198,7 +197,7 @@
 (def icon [:span.btn.btn-primary.html-icon "media"])
 
 (object/object* :media-module
-                :tags #{}
+                :tags #{:module}
                 :triggers #{:save :delete}
                 :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
                 :mode :present

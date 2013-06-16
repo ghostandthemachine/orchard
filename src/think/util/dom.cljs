@@ -247,5 +247,3 @@
 
 (defn on-doc-ready [func]
   (on-event js/document :DOMContentLoaded func))
-
->>>>>>> logger

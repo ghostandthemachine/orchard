@@ -3,9 +3,9 @@
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
-            [think.util.log :refer [log log-obj]])
-  (:use [think.util.dom :only [replace-with]]
-        [crate.binding :only [sub-swap! subatom sub-reset! deref?]]))
+            [think.util.log :refer [log log-obj]]
+            [think.util.dom :refer [replace-with]]
+            [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]))
 
 (def id-counter    (atom 0))
 (def instances     (atom (sorted-map)))
