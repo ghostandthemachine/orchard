@@ -34,11 +34,13 @@
   (-nth [this n not-found]
         (or (.item this n) not-found)))
 
+;; CSS selection, modification
 
 (defn $$ [query elem]
   (let [elem (or elem js/document)
         res (.querySelectorAll elem (name query))]
     res))
+
 
 (defn $
   ([query] ($ query nil))
@@ -47,9 +49,11 @@
         res (.querySelector elem (name query))]
     res)))
 
+
 (defn append [parent child]
   (.appendChild parent child)
   parent)
+
 
 (defn add-class [elem class]
   (when elem
@@ -107,12 +111,6 @@
     (.-value elem)
     (set! (.-value elem) v)))
 
-(defn prevent [e]
-  (.preventDefault e))
-
-(defn stop-propagation [e]
-  (.stopPropagation e))
-
 (defn siblings [elem]
   (.-children (parent elem)))
 
@@ -168,34 +166,16 @@
     (.-innerHTML elem)
     (set! (.-innerHTML elem) h)))
 
+
 (defn ->ev [ev]
   (str (name ev)))
 
-(defn trigger [elem ev]
-  (let [e (.createEvent js/document "HTMLEvents")]
-    (.initEvent e (name ev) true true)
-    (.dispatchEvent elem e)))
-
-(defn on [elem ev cb]
-  (.addEventListener elem (->ev ev) cb))
-
-(defn off [elem ev cb]
-  (.removeEventListener elem (->ev ev) cb))
-
-(defn on* [elem evs]
-  (doseq [[ev cb] evs]
-    (.addEventListener elem (->ev ev) cb)))
-
-(defn active-element []
-  (.-activeElement js/document))
-
-(defn focus [elem]
-  (.focus elem))
 
 (defn make [str]
   (let [d (.createElement js/document "div")]
     (html d str)
     (children d)))
+
 
 (defn index [e]
   (let [p (parent e)
@@ -208,8 +188,6 @@
           i
           (recur (inc i)))))))
 
-(defn ready [func]
-  (on js/document :DOMContentLoaded func))
 
 (defn module-element
   [module]
@@ -219,3 +197,55 @@
   [scrollable-elem]
   (set! (.-scrollTop scrollable-elem)
     (.-scrollHeight scrollable-elem)))
+
+;; Events
+
+(defn prevent
+  "Prevent default event behavior after this handler."
+  [e]
+  (.preventDefault e))
+
+
+(defn stop-propagation
+  "Stop event propagation."
+  [e]
+  (.stopPropagation e))
+
+
+(defn trigger
+  "Trigger an event on a dom element."
+  [elem ev]
+  (let [e (.createEvent js/document "HTMLEvents")]
+    (.initEvent e (name ev) true true)
+    (.dispatchEvent elem e)))
+
+
+(defn on-event
+  "Add an event handler to a dom element."
+  [elem event cb]
+  (.addEventListener elem (->ev event) cb))
+
+
+(defn clear-event
+  "Remove an event handler for a dom element."
+  [elem ev cb]
+  (.removeEventListener elem (->ev ev) cb))
+
+
+(defn on-event* [elem evs]
+  (doseq [[ev cb] evs]
+    (.addEventListener elem (->ev ev) cb)))
+
+
+(defn active-element []
+  (.-activeElement js/document))
+
+
+(defn focus [elem]
+  (.focus elem))
+
+
+(defn on-doc-ready [func]
+  (on-event js/document :DOMContentLoaded func))
+
+>>>>>>> logger

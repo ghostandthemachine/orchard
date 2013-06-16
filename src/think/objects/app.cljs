@@ -4,10 +4,10 @@
             [think.objects.context :as ctx]
             [think.model :as model]
             [think.dispatch :refer [react-to]]
-            [think.util.js :refer [now]]
+            [think.util.time :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.objects.nav :as nav]
             [think.objects.sidebar :as sidebar]
             [think.util.nw  :as nw]
@@ -19,20 +19,12 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 
-
 (def child-process (js/require "child_process"))
-
-(def shell (.-exec child-process))
-
-(def spawn (.-spawn child-process))
-
-
-(defn log-handler
-  [log-id msg]
-  (object/raise think.objects.logger/logger :post log-id msg))
-
+(def shell         (.-exec child-process))
+(def spawn         (.-spawn child-process))
 
 (def child-processes* (atom {}))
+
 
 (defn add-process
   [child]
@@ -47,12 +39,16 @@
     (.kill child)))
 
 
+(defn log-handler
+  [log-id msg]
+  (object/raise think.objects.logger/logger :post log-id msg))
+
+
 (def closing true)
 
 (declare app)
 
 (def windows js/global.windows)
-
 
 (def couch-created* (atom false))
 
@@ -148,7 +144,6 @@
     (object/raise workspace/workspace :show-document @doc)))
 
 
-
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
@@ -217,11 +212,9 @@
 
 
 (defn init []
-  (think.util/start-repl-server)
+  (log "Initializing app...")
   (object/raise app :init-home)
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
-
-
 
 
 (object/raise app :init-window)

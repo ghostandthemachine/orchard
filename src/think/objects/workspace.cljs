@@ -16,7 +16,6 @@
   (object/->content doc))
 
 
-
 (object/behavior* ::add-sidebar
                   :triggers #{:add-sidebar}
                   :reaction (fn [this sidebar]
@@ -29,9 +28,9 @@
                               (let [workspace$ (dom/$ "#workspace")
                                     active     (:wiki-document @this)]
                                 (when active
-                                  (dom/remove (:content @active)))                                
+                                  (dom/remove (:content @active)))
                                 (object/assoc! this :wiki-document doc-obj)
-	   	  											  (object/raise doc-obj :ready))))
+                                (object/raise doc-obj :ready))))
 
 
 (defn active-content [active]
@@ -46,6 +45,8 @@
 (defn render-wiki-doc
   [wiki-document]
   (when wiki-document
+  (log "render-wiki-doc")
+  (log-obj (clj->js @wiki-document))
     (:content @wiki-document)))
 
 
@@ -64,13 +65,10 @@
                 :max-width default-width
                 :init (fn [this]
                         [:div#workspace.row-fluid
-                          [:div.span1
+                          [:div.sidebar
                             (bound (subatom this :sidebar) render-sidebar)]
-                          [:div.span11.container-fluid.document-container
+                          [:div.container-fluid.document-container
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
 
-
 (def workspace (object/create ::workspace))
-
-
 (canvas/add! workspace)

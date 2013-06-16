@@ -7,7 +7,7 @@
             [dommy.attrs :as attrs]
             [think.dispatch :as dispatch]
             [think.util.log :refer [log]]
-            [think.util :refer [start-repl-server]]))
+            [think.util.core :refer [start-repl-server]]))
 
 ; (def default-opts
 ;   (clj->js

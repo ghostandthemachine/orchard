@@ -4,14 +4,14 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.dispatch :as dispatch]
             [crate.core :as crate]
             [crate.binding :refer [map-bound bound subatom]]
             [think.objects.animations :as anim]
             [redlobster.promise :as p]))
 
-(def DEFAULT-MAX-WIDTH 180)
+(def DEFAULT-MAX-WIDTH 100)
 
 (defui grip
 	[this]
@@ -50,6 +50,8 @@
 (defn active-content
   [active]
   (when active
+    (log "active content")
+    (log-obj (:content @active))
     (:content @active)))
 
 
@@ -81,6 +83,8 @@
                               (log "Toggle sidebar item " item)
                               (if (not= item (:active @this))
                                 (do
+                                  (log "Setting active sidebar content")
+                                  (log-obj item)
                                   (object/merge! this {:active item
                                                        :prev (:active @this)})
                                   (object/raise this :open!))
@@ -114,7 +118,7 @@
                           [:div#sidebar-wrapper
                             (bound (subatom this [:items]) (partial sidebar-tabs this))]
                           [:div.conent-wrapper {:style {:width (bound (subatom this :width) set-width)}}
-                        		[:div.content
+                        		[:div.sidebar-content
                         			(bound (subatom this :active) active-content)]
                         		(grip this)]]))
 

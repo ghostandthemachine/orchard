@@ -7,11 +7,11 @@
   (:use-macros [crate.def-macros :only [defpartial]]
                [think.macros :only [defui]]))
 
+
 (declare position!)
 (declare ->rep)
 (declare get-rep)
 (declare rem!)
-
 
 
 (object/behavior* ::refresh
@@ -73,7 +73,7 @@
   (let [content (:content @obj)]
     (dom/attr content {:objId (object/->id obj)})
     (comment
-    (dom/on* content {:mouseup (fn [e]
+    (dom/on-event* content {:mouseup (fn [e]
                                  (object/raise canvas :object.mouseup obj e))
                       :mousemove  (fn [e]
                                    (object/raise canvas :object.mousemove obj e))
@@ -135,7 +135,6 @@
 
 (defn ->px [s]
   (str (or s 0) "px"))
-
 
 (dom/append (dom/$ :#container) (:content @canvas))
 
