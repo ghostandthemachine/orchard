@@ -33,6 +33,8 @@
                         [:div.modules-content
                           ; (bound (subatom this [:items]) (partial sidebar-modules this))
                           ; (modules this [(atom {:label "Markdown"})])
+                          [:div.row-fluid.item {:draggable "true"}
+                            [:h4 "Working"]]
                           ]))
 
 
