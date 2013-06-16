@@ -1,5 +1,6 @@
 #container {
   margin-top: 38px;
+  user-select: none;
 }
 
 
@@ -352,18 +353,12 @@ li.modules-item {
 }
 
 
-
 .document-container {
-  margin-left: 0px;
-  padding-left: 0px;
+  width: 96%;
+  margin-left: 1%;
+  position: absolute;
+  top: 35;
 }
-
-
-
-
-
-
-
 
 .document {
   position: relative;
@@ -376,51 +371,42 @@ li.modules-item {
 #sidebar-wrapper { background:transparent; }
 
 ul#sidebar-tabs {
+    user-select: none;
   list-style: none;
   margin: 3px;
   padding: 2px;
   position: relative;
   top: 20px;
-  left: -20px;
+  width: 56px; 
+  left: -24px;
 }
+
 
 #sidebar-tabs li:hover, #sidebar-tabs .current { background:#ccc; color:#555; }
 
 #sidebar-tabs .content { background:#ccc; color:#555; }
-
-#sidebar .open { box-shadow:none; background:transparent; }
-#sidebar .open ul.files { color:#aaa; }
-#sidebar .open .files li.folder { color:#aaa; }
-#sidebar .open .files li:hover { background:#5d5e5c; color:#ddd; }
-#sidebar .open .segs { color:#aaa; }
-#sidebar .open .segs li { background:transparent; }
-#sidebar .open .segs li:hover { background:#7d7e7c; color:#eee; }
-
 #sidebar .command input { color: #555; background:#eee; }
 #sidebar .command em { border-bottom:1px solid #666; }
 
-.filter-list em { border-bottom:1px solid #666 }
-.filter-list .selected, .filter-list li:hover { color:#555; background: #eee; }
-
-#sidebar .navigate em { border-bottom:1px solid #777; }
-#sidebar .navigate .selected, #sidebar .navigate li:hover { color:#555; background: #eee; }
-#sidebar .navigate input { background:#eee; color:#555; }
-
-#sidebar .workspace ul.buttons li:hover { color:#555; background:#eee; }
-#sidebar .workspace li:hover > p { color:#111; background:transparent; }
-#sidebar .workspace li p:hover { background: #eee; color:#555; }
-
-#sidebar .clients > ul > li { background:#eee; color:#555; }
-#sidebar .clients h2 { color:#555; }
-#sidebar .clients td { color:#777; }
-#sidebar .clients td + td { color:#777; }
-#sidebar .clients .button { background:#ccc; color:#555; }
-#sidebar .clients .button:hover { background:#aaa; color:#fff; }
-
-
-
-
+.sidebar-content {
+  margin-left: 35px;
+}
 
 .rotate-right {
   -webkit-transform: rotate(-90deg);
+}
+
+.modules-content {
+ margin: 0px;
+ padding: 0px;
+ position: relative;
+ left: -16px;
+ top: -23px;
+}
+
+
+.modules-content .item {
+  padding-left: 10px;
+  width: 100px;
+  background-color: rgb(100,200,180);
 }
