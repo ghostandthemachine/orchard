@@ -3,7 +3,7 @@
                [redlobster.macros :only [when-realised let-realised defer-node]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.objects.workspace :as workspace]
             [think.util.dom :as dom]
             [think.model :as model]

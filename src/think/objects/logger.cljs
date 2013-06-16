@@ -4,7 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
-            [think.util :as util]
+            [think.util.core :as util]
             [think.dispatch :as dispatch]
             [crate.core :as crate]
             [redlobster.promise :as p]))

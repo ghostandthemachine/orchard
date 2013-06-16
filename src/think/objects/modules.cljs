@@ -5,7 +5,7 @@
             [think.util.dom :as dom]
             [crate.core :as crate]
             [think.util.log :refer [log log-obj]]
-            [think.util :refer [index-of]]
+            [think.util.core :refer [index-of]]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]
             [dommy.core :as dommy]))
@@ -109,12 +109,6 @@
                   (:modules @parent))]
     (object/assoc! parent :modules mods)
     (object/parent! parent new-mod)))
-
-
-
-(defn insert-at [coll pos item]
-  (let [vec (into [] coll)]
-    (apply merge (subvec vec 0 pos) item (subvec vec pos))))
 
 
 (defui create-module-icon
@@ -241,14 +235,14 @@
 (defui spacer
   [module]
   [:div.row-fluid.spacer-tray
-    [:ul.spacer-nav.pagination-centered {:id (str "spacer-nav-" (:id @module))}
-      [:li.active.spacer-item
-        (create-module-btn module :content)]]]
+   [:ul.spacer-nav.pagination-centered {:id (str "spacer-nav-" (:id @module))}
+    [:li.active.spacer-item
+     (create-module-btn module :content)]]]
   :mouseover (fn []
-  						(when-not (document-locked? module)
-	              (.show (spacer-nav$ module))))
+               (when-not (document-locked? module)
+                 (.show (spacer-nav$ module))))
   :mouseout  (fn []
-              (.hide (spacer-nav$ module))))
+               (.hide (spacer-nav$ module))))
 
 
 (defn hide
@@ -268,17 +262,20 @@
 
 
 (defgui module-view
-	[module body & handlers]
-	[:div {:class (str "span12 module " (:type @module))
-				 :id (str "module-" (:id @module))}
-	[:div.module-tray (delete-btn module) (edit-btn module)]
-		body]
-	:mouseout (fn [this e]
-							(when-not (document-locked? module)
-								(hide module)))
-	:mouseover (fn [this e]
-							(when-not (document-locked? module)
-		 						(show module)))
-	handlers)
+  [module body & handlers]
+  [:div {:class (str "span12 module " (:type @module))
+         :id (str "module-" (:id @module))}
+   [:div.module-tray (delete-btn module) (edit-btn module)]
+   body]
+
+  :mouseout (fn [this e]
+              (when-not (document-locked? module)
+                (hide module)))
+
+  :mouseover (fn [this e]
+               (when-not (document-locked? module)
+                 (show module)))
+
+  handlers)
 
 
