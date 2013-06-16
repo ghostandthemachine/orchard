@@ -76,7 +76,8 @@
               (log "remove child")
               (object/update! this [:modules]
                 (fn [mods]
-                  (filter #(not= (:id @%) (:id @child)) mods)))))
+                  (filter #(not= (:id @%) (:id @child)) mods)))
+              (object/raise this :save)))
 
 
 (object/behavior* ::add-module
@@ -85,6 +86,7 @@
               (log "single-column-template add module")
               (object/parent! template new-mod)
               (object/update! template [:modules] #(util/insert-at % index new-mod))
+              (object/raise this :save)
               (.css (js/$ ".module")
   							"background-color"
   							"rgb(247, 247, 247)")))
@@ -105,11 +107,7 @@
               (log-obj (clj->js new-tpl))
               (object/merge! this new-tpl)
               (doseq [mod module-objs]
-                (object/parent! this mod)))
-            (util/bound-do (subatom this :modules)
-                           (fn [mods]
-                             (log "update single column template modules")
-                             (object/raise this :save))))
+                (object/parent! this mod))))
           [:div.template.single-column-template
            [:div.modules-container
             (bound (subatom this :modules)

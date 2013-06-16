@@ -118,6 +118,9 @@
                     (log "set log pane top " height cur-scroll)
                     (set! (.-scrollTop elem) height)
                     ;(log "scrollTop for elem " height)
+                    (.on logger-win "close"
+                      (fn []
+                        (this-as this (.close this true))))
                     ))
                 (dom/append
                   (body)
