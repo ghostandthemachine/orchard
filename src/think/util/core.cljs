@@ -59,6 +59,12 @@
   (js->clj (JSON/parse line)))
 
 
+
+(aset js/global "defonce-instances" (clj->js {}))
+
+(log "set global defonce-instances = " (aget js/global "defonce-instances"))
+
+
 (defn parse-url
   "Returns a map by parsing a URL string."
   [url-str]
@@ -358,16 +364,20 @@
     (dt/node [:script {:src file-name}])))
 
 
-(def serving-repl* (atom false))
-
 (defn start-repl-server
   []
-  (if-not @serving-repl*
-    (do
-      (log "Repl does not exist, creating")
-      (repl/connect "http://127.0.0.1:9000/repl")
-      (reset! serving-repl* true))
-    (log "Repl exists, not creating new one")))
+  (repl/connect "http://127.0.0.1:9000/repl"))
+
+; (def serving-repl* (atom false))
+
+; (defn start-repl-server
+;   []
+;   (if-not @serving-repl*
+;     (do
+;       (log "Repl does not exist, creating")
+;       (repl/connect "http://127.0.0.1:9000/repl")
+;       (reset! serving-repl* true))
+;     (log "Repl exists, not creating new one")))
 
 
 

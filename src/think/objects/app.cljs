@@ -86,7 +86,7 @@
 (defn setup-tray
   []
   "Creates a tray menu in upper-right app tray."
-    (log "creating tray menu...")
+    ; (log "creating tray menu...")
     (nw/tray! {:title "Thinker"
                :menu (nw/menu [{:label "Show"         :onclick #(.show (nw/window))}
                                {:type "separator"}
@@ -180,6 +180,7 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
+              (object/raise think.objects.logger/logger :quit)
               (stop-children)
               (nw/quit)))
 

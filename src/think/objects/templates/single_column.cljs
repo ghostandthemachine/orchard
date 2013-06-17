@@ -103,8 +103,6 @@
                                    (keyword (:type %)) %)
                                 @mods)
                   new-tpl     (assoc tpl :modules module-objs)]
-              (log "template modules:")
-              (log-obj (clj->js new-tpl))
               (object/merge! this new-tpl)
               (doseq [mod module-objs]
                 (object/parent! this mod))))

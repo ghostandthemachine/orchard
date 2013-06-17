@@ -79,7 +79,7 @@
 
 (dommy/listen! [(dom/$ :body) :.html-module-content :a] :click
   (fn [e]
-    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/::"))))
+    ; (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/::"))))
     (think.objects.app/open-document
       (keyword
         (last (clojure.string/split (.-href (.-target e)) #"/::"))))

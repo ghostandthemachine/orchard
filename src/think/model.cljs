@@ -22,31 +22,45 @@
 (def DB "projects")
 
 
+(defn merge-db
+  [this db]
+  (when-not (:document-db* @this)
+    (log "DB Loaded")
+    (object/merge! this
+      {:ready? true
+       :document-db* db})
+    (object/raise think.objects.app/app :ready)))
+
+
+(defn handle-merge-db-error
+  [err]
+  (log "Error loading nano db")
+  (log-obj err))
+
+
 (defn load-db
-  [this]
+  ([this]
+  (load-db this
+    (partial merge-db this)
+    handle-merge-db-error))
+  ([this succes-fn err-fn]
   (if (:document-db* @this)
     :stop
     (p/on-realised (db/open DB)
-      (fn [db]
-        (log "DB Loaded")
-        (object/merge! this
-          {:ready? true
-           :document-db* db})
-        (log "telling app ready...")
-        (object/raise think.objects.app/app :ready))
-      (fn [err]
-        (log "Error loading nano db")
-        (log-obj err)))))
+      succes-fn
+      err-fn))))
 
 
 
 (object/object* ::model
-                :triggers  #{:db-loaded}
-                :behaviors [::db-loaded]
-                :ready? false
-                :init (fn [this]
-                        (log "Initialize db.. ")
-                        (time/periodically 500 (partial load-db this))))
+  :triggers  #{:db-loaded}
+  :behaviors [::db-loaded]
+  :ready? false
+  :init (fn [this]
+          (log "Initialize db.. ")
+          (time/periodically 500 (partial load-db this
+                                    (partial merge-db this)
+                                    #()))))
  
 
 (def model (object/create ::model))
@@ -101,8 +115,8 @@
         doc-promise (get-document id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        (log "realizing new document of type: " (:type doc))
-        (log-obj (clj->js doc))
+        ; (log "realizing new document of type: " (:type doc))
+        ; (log-obj (clj->js doc))
         (let [obj-type (keyword (:type doc))]
           (if (object/defined? obj-type)
             (p/realise res-promise (object/create obj-type doc))
@@ -119,7 +133,7 @@
 (defn all-documents
   []
   (let-realised [docs (db/all-docs (:document-db* @model))]
-    (log (str (keys @docs)))
+    ; (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
       (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
@@ -127,7 +141,7 @@
 (defn all-wiki-documents
   []
   (let-realised [docs (db/view (:document-db* @model) :index :wiki-documents)]
-    (log (str (keys @docs)))
+    ; (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
       (map #(assoc % :id (:_id %)) (map :value (:rows @docs))))))

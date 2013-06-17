@@ -1,6 +1,6 @@
 (ns think.objects.logger
   (:require-macros [redlobster.macros :refer [let-realised]]
-  						     [think.macros :refer [defui defgui]])
+  						     [think.macros :refer [defui defgui defonce]])
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
@@ -10,6 +10,15 @@
             [redlobster.promise :as p]))
 
 (declare logger-win)
+
+
+; (defonce foo "bar")
+
+; (log "")
+; (log "")
+; (log "")
+; (log "js/window = ")
+; (log-obj js/global)
 
 (when-not logger-win
   (def logger-win (.open js/window "http://localhost:3000/logger.html"))
@@ -98,7 +107,7 @@
                 (if-let [elem       (tab-content log-type)]
                   (let [height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    (.log js/console "scroll data " height cur-scroll)
+                    ; (.log js/console "scroll data " height cur-scroll)
                     (if (= height cur-scroll)
                       (do
                         (append-message log-type msg)
@@ -115,7 +124,7 @@
                   (let [elem       (.get log-panes i)
                         height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    (log "set log pane top " height cur-scroll)
+                    ; (log "set log pane top " height cur-scroll)
                     (set! (.-scrollTop elem) height)
                     ;(log "scrollTop for elem " height)
                     (.on logger-win "close"
@@ -132,7 +141,7 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Closing Logger")
-              (nw/quit)))
+              (.close logger-win)))
 
 
 (object/behavior* ::show-dev-tools
@@ -148,7 +157,6 @@
   :behaviors [::quit ::ready ::show-dev-tools ::init-window ::post-message]
   :delays 0
   :init (fn [this]
-          (log "init logger")
           (logger-content)))
 
 

@@ -50,8 +50,6 @@
 (defn active-content
   [active]
   (when active
-    (log "active content")
-    (log-obj (:content @active))
     (:content @active)))
 
 
@@ -80,11 +78,11 @@
 (object/behavior* ::toggle
                   :triggers #{:toggle}
                   :reaction (fn [this item]
-                              (log "Toggle sidebar item " item)
+                              ; (log "Toggle sidebar item " item)
                               (if (not= item (:active @this))
                                 (do
-                                  (log "Setting active sidebar content")
-                                  (log-obj item)
+                                  ; (log "Setting active sidebar content")
+                                  ; (log-obj item)
                                   (object/merge! this {:active item
                                                        :prev (:active @this)})
                                   (object/raise this :open!))

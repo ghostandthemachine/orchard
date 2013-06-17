@@ -116,7 +116,6 @@
 (object/behavior* ::add!
   :triggers #{:add!}
   :reaction (fn [this]
-              (log "Add nav to workspace")
               (dom/append (dom/$ "body") (:content @this))))
 
 

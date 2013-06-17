@@ -56,7 +56,7 @@
 
 
 (object/object* :markdown-module
-                :tags #{:module}
+                :tags #{:modules}
                 :triggers #{:delete-module :save}
                 :behaviors [:think.objects.modules/delete-module :think.objects.modules/save-module]
                 :mode :present
@@ -85,7 +85,7 @@
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click
   (fn [e]
-    (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/"))))
+    ; (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/"))))
     (think.objects.app/open-document
       (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))

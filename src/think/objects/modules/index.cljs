@@ -78,6 +78,5 @@
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click
   (fn [e]
-    (log "loading document: " (.-href (.-target e)))
     (think.objects.app/open-document (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
