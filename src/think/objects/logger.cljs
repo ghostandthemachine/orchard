@@ -154,8 +154,6 @@
 
 (def logger (object/create :logger))
 
-
-
 (dispatch/react-to #{:log-message}
                    (fn [ev & [data]]
                      (object/raise logger :post :log data)))

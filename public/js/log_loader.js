@@ -77,17 +77,6 @@ try {
         //console.log(path)
         load_script(path, false);
     });
-
-
-    script.onload = function() {
-        console.log("Initializing application...");
-        try {
-            think.objects.logger.init();
-        } catch (e) {
-            log_error(e);
-        }
-    }
-
 } catch (e) {
     uncaughtError(e);
 }
