@@ -1,1 +1,5 @@
-lein cljsbuild clean && lein cljsbuild auto
+#!/bin/bash
+
+pkill -f cljsbuild
+lein cljsbuild clean
+lein cljsbuild auto

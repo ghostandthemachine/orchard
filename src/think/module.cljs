@@ -1,4 +1,4 @@
-(ns think.objects.modules
+(ns think.module
   (:use-macros [think.macros :only [defui defgui]]
                [redlobster.macros :only [let-realised]])
   (:require [think.object :as object]
