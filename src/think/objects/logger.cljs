@@ -110,7 +110,6 @@
                 (if-let [elem       (tab-content log-type)]
                   (let [height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    ; (.log js/console "scroll data " height cur-scroll)
                     (if (= height cur-scroll)
                       (do
                         (append-message log-type msg)

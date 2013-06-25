@@ -12,6 +12,20 @@
             [dommy.template     :as tpl]))
 
 
+(def do-log true)
+
+(defn m-log
+  [& args]
+  (when do-log
+    (apply log args)))
+
+
+(defn m-log-obj
+  [& args]
+  (when do-log
+    (apply log-obj args)))
+
+
 (def account
  {:login    "jon"
   :password "celerycatstick"
@@ -61,19 +75,20 @@
           (time/periodically 500 (partial load-db this
                                     (partial merge-db this)
                                     #()))))
- 
+
 
 (def model (object/create ::model))
 
 (defn delete-document
   [doc]
+  (m-log "delete-document")
   (db/delete-doc (:document-db* @model) doc))
 
 
 (defn save-document
   [doc]
-  (log "save-document: ")
-  (log-obj doc)
+  (m-log "save-document: ")
+  (m-log-obj doc)
   (db/update-doc (:document-db* @model)
                  (if (and (contains? doc :rev) (nil? (:rev doc)))
                    (dissoc doc :rev)
@@ -84,7 +99,6 @@
   [doc-type]
   (let [doc-type (if (keyword? doc-type) (name doc-type) (str doc-type))
         mapper (fn [doc]
-                 (log-obj doc)
                  (when (= doc-type (:type (js->clj doc)))
                    (emit (.-:id doc) doc)))]
     (db/map-reduce (:document-db* @model) mapper)))
@@ -94,6 +108,7 @@
 
 (defn get-document
   [id]
+  (m-log "get-document: " id)
   (let [res-promise (p/promise)
         doc-promise (db/get-doc (:document-db* @model) id)]
     (p/on-realised doc-promise
@@ -115,8 +130,6 @@
         doc-promise (get-document id)]
     (p/on-realised doc-promise
       (fn success [doc]
-        ; (log "realizing new document of type: " (:type doc))
-        ; (log-obj (clj->js doc))
         (let [obj-type (keyword (:type doc))]
           (if (object/defined? obj-type)
             (p/realise res-promise (object/create obj-type doc))
@@ -133,7 +146,6 @@
 (defn all-documents
   []
   (let-realised [docs (db/all-docs (:document-db* @model))]
-    ; (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
       (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
@@ -141,7 +153,6 @@
 (defn all-wiki-documents
   []
   (let-realised [docs (db/view (:document-db* @model) :index :wiki-documents)]
-    ; (log (str (keys @docs)))
     (if (= (:total_rows @docs) 0)
       []
       (map #(assoc % :id (:_id %)) (map :value (:rows @docs))))))

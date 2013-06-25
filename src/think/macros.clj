@@ -9,7 +9,8 @@
             (-> db# ~@body))))
 
 
-(defmacro defui [sym params hiccup & events]
+(defmacro defui
+  [sym params hiccup & events]
   `(defn ~sym ~params
      (let [e# (crate.core/html ~hiccup)]
        (doseq [[ev# func#] (partition 2 ~(vec events))]
@@ -17,7 +18,8 @@
        e#)))
 
 
-(defmacro defgui [sym params hiccup & events]
+(defmacro defgui
+  [sym params hiccup & events]
   `(defn ~sym ~params
      (let [e# (crate.core/html ~hiccup)]
        (doseq [[ev# func#] (partition 2 ~(vec events))]

@@ -28,7 +28,7 @@
 (object/behavior* ::lock-document
   :triggers #{:lock-document}
   :reaction (fn [this]
-              ; (log "Lock document")
+              (log "Present Mode")
               (object/update! this [:locked?]
               	(fn [_]
               		true))
@@ -40,7 +40,7 @@
 (object/behavior* ::unlock-document
   :triggers #{:unlock-document}
   :reaction (fn [this]
-              ; (log "Unlock document")
+              (log "Edit Mode")
               (object/update! this [:locked?]
               	(fn [_]
               		false))
@@ -53,10 +53,10 @@
   :triggers #{:ready}
   :reaction (fn [this]
               (.tooltip
-								(js/$ ".header-label")
-								(clj->js
-									{:delay 100
-									 :placement "bottom"}))
+                (js/$ ".header-label")
+                (clj->js
+                  {:delay 100
+                   :placement "bottom"}))
               (object/raise (:template @this) :ready)))
 
 
@@ -76,26 +76,24 @@
 
 
 (defn copy-to-clipboard-prompt
-	[text]
-	(.prompt js/window "Copy to clipboard: cmd + c, Enter", text))
+  [text]
+  (.prompt js/window "Copy to clipboard: cmd + c, Enter", text))
 
 
 (defui id-btn
-	[this]
-	[:span.btn.btn-info.header-btn
-		{:data-toggle "tooltip"
-		 :title "document hyperlink tag"}
-		[:i.icon-barcode.icon-white]]
-	:click (fn [e]
-						(copy-to-clipboard-prompt
-							(str "[" (:title @this) "](" (:id @this) ")"))))
-
+  [this]
+  [:span.btn.btn-info.header-btn
+   {:data-toggle "tooltip"
+    :title "document hyperlink tag"}
+   [:i.icon-barcode.icon-white]]
+  :click (fn [e]
+           (copy-to-clipboard-prompt
+             (str "[" (:title @this) "](" (:id @this) ")"))))
 
 
 (defn left-margin
   [px]
   (str (or px 0) "px"))
-
 
 
 (object/object* :wiki-document

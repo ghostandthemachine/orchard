@@ -20,11 +20,10 @@
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
-                       ; {:source-paths ["test" "src"]
-                       ;  :compiler {:output-to     "target/cljs/testable.js"
-                       ;             :optimizations :whitespace
-                       ;             :warnings      true
-                       ;             :pretty-print  true}}
-                                   ]
+                       {:source-paths ["test" "src"]
+                        :compiler {:output-to     "target/cljs/testable.js"
+                                   :optimizations :whitespace
+                                   :warnings      true
+                                   :pretty-print  true}}]
               :test-commands {"unit-tests" ["runners/phantom.js" "target/cljs/testable.js"]}})
  

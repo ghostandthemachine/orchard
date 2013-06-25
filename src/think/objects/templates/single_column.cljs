@@ -14,14 +14,7 @@
 
 (object/behavior* ::ready
   :triggers #{:ready}
-  :reaction (fn [this id]
-              ; (log "ready id " id)
-              ; (log "Init after creating template. Content " (str "#sortable-" id))
-              ; (log-obj (js/$ (str "#sortable-" id)))
-              ; (log
-              ;   (-> (js/$ (str "#sortable-" id))
-              ;     (.sortable (clj->js {:connectWith ".connected-sortable"}))))
-              ))
+  :reaction (fn [this id] ))
 
 
 (defui render-modules
@@ -39,14 +32,13 @@
 (object/behavior* ::save-template
   :triggers #{:save}
   :reaction (fn [this]
-              (log "saving template...")
-              (let [mod-ids       (map #(:id @%)
-                                    (filter
-                                      #(not= (:type @%) "module-selector-module") (:modules @this)))
-                    original-doc  (first (:args @this))
-                    rev           (:rev original-doc)
-                    id            (:id original-doc)
-                    doc-keys      (into []
+              (let [mod-ids      (map #(:id @%)
+                                   (filter
+                                     #(not= (:type @%) "module-selector-module") (:modules @this)))
+                    original-doc (first (:args @this))
+                    rev          (:rev original-doc)
+                    id           (:id original-doc)
+                    doc-keys     (into []
                     								(distinct
                     									(conj
                     										(keys original-doc)
@@ -60,9 +52,13 @@
                                     ;; get the most current rev,
                     								:rev     (or (:rev @this) (:rev original-doc))
                     								:id      (:id original-doc))]
+                (log "saving template document...")
                 (let [doc (model/save-document new-doc)]
                   (p/on-realised doc
-                  	#(object/assoc! this :rev (:rev @doc))
+                  	(fn []
+                        (let [rev (:rev @doc)]
+                          (log "done [rev = " rev "]")
+                          (object/assoc! this :rev rev)))
                   	(fn [err]
                       (log "error loading doc " err)
                       (log "initial rev: " (:rev (first (:args @this))))
@@ -72,7 +68,6 @@
 (object/behavior* ::remove-module
   :triggers #{:remove-module}
   :reaction (fn [this child]
-              (log "remove child")
               (object/update! this [:modules]
                 (fn [mods]
                   (filter #(not= (:id @%) (:id @child)) mods)))
@@ -82,7 +77,6 @@
 (object/behavior* ::add-module
   :triggers #{:add-module}
   :reaction (fn [this template new-mod index]
-              (log "single-column-template add module")
               (object/parent! template new-mod)
               (object/update! template [:modules] #(util/insert-at % index new-mod))
               (object/raise this :save)
@@ -117,3 +111,4 @@
     {:type :single-column-template
      :modules mod-ids
      :id (util/uuid)}))
+

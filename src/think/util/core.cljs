@@ -74,6 +74,7 @@
      :host (get raw "hostname")
      :port (js/parseInt (get raw "port"))
      :path (get raw "pathname")}))
+
 (def DATE-FORMATS
   (let [f date-format/Format]
     {:full-date       (.-FULL_DATE f)
@@ -145,6 +146,7 @@
      (lazy-seq
        (cons (.item l n)
          (itemized-seq l (inc n)))))))
+
 
 (defn file-drop
   [elem handler]
@@ -368,18 +370,6 @@
   []
   (repl/connect "http://127.0.0.1:9000/repl"))
 
-; (def serving-repl* (atom false))
-
-; (defn start-repl-server
-;   []
-;   (if-not @serving-repl*
-;     (do
-;       (log "Repl does not exist, creating")
-;       (repl/connect "http://127.0.0.1:9000/repl")
-;       (reset! serving-repl* true))
-;     (log "Repl exists, not creating new one")))
-
-
 
 (defn await
   "Takes a seq of promises and produces a promise that will resolve to a seq of
@@ -407,7 +397,6 @@
     p))
 
 
-
 (defn bound-do
   [a* handler]
   (add-watch a* :mode-toggle-watch
@@ -423,11 +412,11 @@
 ;         (js-mixin obj (clj->js o)))
 ;       objs)))
 
+
 (defn mixin
   [obj obj2]
   (let [mix js/mixin]
     (mix obj (clj->js obj2))))
-
 
 
 ;; Basic data structure helpers
