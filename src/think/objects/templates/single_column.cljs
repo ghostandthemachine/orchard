@@ -5,7 +5,6 @@
             [think.util.log :refer [log log-obj]]
             [think.util.core :as util]
             [think.util.dom :as dom]
-            [think.model :as model]
             [think.objects.modules :refer [top-spacer spacer]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]

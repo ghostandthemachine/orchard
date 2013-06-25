@@ -7,14 +7,14 @@
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]
-                 [com.keminglabs/c2 "0.2.2"]
+                 ; [com.keminglabs/c2 "0.2.2"]
                  [com.cemerick/clojurescript.test "0.0.4"]]
 
   :plugins [[lein-cljsbuild "0.3.0"]]
 
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds [{:source-paths ["src"]
-                        :notify-command ["growlnotify" "-m"]
+                        ; :notify-command ["growlnotify" "-m"]
                         ;:incremental false ; https://github.com/emezeske/lein-cljsbuild/issues/181
                         :compiler {:output-to     "public/js/thinker.js"
                                    :optimizations :advanced

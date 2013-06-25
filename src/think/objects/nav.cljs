@@ -6,7 +6,6 @@
             [think.util.core :as util]
             [think.objects.workspace :as workspace]
             [think.util.dom :as dom]
-            [think.model :as model]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]
             [redlobster.promise :as p]))

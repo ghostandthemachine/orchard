@@ -1,5 +1,4 @@
 (ns think.objects.media.pdf
-  (:use [think.util.core :only [log]])
   (:use-macros [dommy.macros :only [sel]]
                [think.macros :only [defui]]
                [redlobster.macros :only [let-realised defer-node]])
