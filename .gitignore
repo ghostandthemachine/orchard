@@ -38,3 +38,5 @@ couchdb.stdout
 public/js/logger.js
 
 *.dump
+
+public/js/testable.js
