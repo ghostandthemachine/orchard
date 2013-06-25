@@ -50,12 +50,15 @@
     (object/raise (wiki-doc)
       (if lock
         :lock-document
-        :unlock-document))))
+        :unlock-document))
+    (.preventDefault e)
+    false))
 
 
 (defui lock-view
   [this]
   [:i#lock-btn.icon-lock.icon-white.nav-icon]
+  :mousedown (fn [& args] false)
   :click (partial lock-handler this))
 
 
@@ -65,7 +68,7 @@
   :click (partial lock-handler this))
 
 
-(defn handle-lock-btn
+(defn lock-btn-handler
   [this locked?]
   (let [btn$ (js/$ "#lock-btn")]
     (if (:locked? @this)
@@ -76,7 +79,7 @@
 (defn lock-btn
   [this]
   [:span.btn.btn-small.btn-nav-dark.nav-btn
-    (bound (subatom this [:locked?]) (partial handle-lock-btn this))])
+    (bound (subatom this [:locked?]) (partial lock-btn-handler this))])
 
 
 (defui refresh-btn
@@ -111,14 +114,10 @@
   [:input.nav-input {:type "text"}])
 
 
-
-
 (object/behavior* ::add!
   :triggers #{:add!}
   :reaction (fn [this]
-              (log "Add nav to workspace")
               (dom/append (dom/$ "body") (:content @this))))
-
 
 
 (object/object* :workspace-nav

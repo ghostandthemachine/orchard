@@ -167,7 +167,8 @@
     (set! (.-innerHTML elem) h)))
 
 
-(defn ->ev [ev]
+(defn ->event
+  [ev]
   (str (name ev)))
 
 
@@ -223,18 +224,18 @@
 (defn on-event
   "Add an event handler to a dom element."
   [elem event cb]
-  (.addEventListener elem (->ev event) cb))
+  (.addEventListener elem (->event event) cb))
 
 
 (defn clear-event
   "Remove an event handler for a dom element."
   [elem ev cb]
-  (.removeEventListener elem (->ev ev) cb))
+  (.removeEventListener elem (->event ev) cb))
 
 
 (defn on-event* [elem evs]
   (doseq [[ev cb] evs]
-    (.addEventListener elem (->ev ev) cb)))
+    (.addEventListener elem (->event ev) cb)))
 
 
 (defn active-element []

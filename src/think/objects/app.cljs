@@ -28,14 +28,12 @@
 
 (defn add-process
   [child]
-  (log "Add child process with pid: " (.-pid child))
   (swap! child-processes* assoc (.-pid child) child))
 
 
 (defn stop-children
   []
   (doseq [[pid child] @child-processes*]
-    (log "kill pid " pid)
     (.kill child)))
 
 
@@ -64,7 +62,6 @@
   []
   (if-not @couch-created*
     (do
-      (log "Couchdb does not exist, creating")
       (init-couch-db)
       (reset! couch-created* true))
     (log "Couchdb exists, not creating new one")))
@@ -86,7 +83,6 @@
 (defn setup-tray
   []
   "Creates a tray menu in upper-right app tray."
-    (log "creating tray menu...")
     (nw/tray! {:title "Thinker"
                :menu (nw/menu [{:label "Show"         :onclick #(.show (nw/window))}
                                {:type "separator"}
@@ -147,7 +143,6 @@
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
-              (log "App ready")
               (util/start-repl-server)
               (object/raise think.objects.nav/workspace-nav :add!)
               (open-document :home)
@@ -157,7 +152,6 @@
 (object/behavior* ::refresh
   :triggers #{:refresh}
   :reaction (fn [this]
-              (log "Refresh App")
               (stop-children)
               (refresh)))
 
@@ -165,7 +159,6 @@
 (object/behavior* ::init-window
   :triggers #{:init-window}
   :reaction (fn [this]
-              (log "Start App")
               (setup-tray)
               (restore-session)
               (.on win "close"
@@ -187,7 +180,6 @@
 (object/behavior* ::show-dev-tools
                   :triggers #{:show-dev-tools}
                   :reaction (fn [this]
-                              (log "Show Dev Tools")
                               (.showDevTools win)))
 
 
@@ -212,7 +204,6 @@
 
 
 (defn init []
-  (log "Initializing app...")
   (object/raise app :init-home)
   (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 

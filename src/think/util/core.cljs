@@ -362,13 +362,11 @@
 
 (defn start-repl-server
   []
-  (if-not @serving-repl*
+  (when-not @serving-repl*
     (do
-      (log "Repl does not exist, creating")
+      (log "Starting REPL...")
       (repl/connect "http://127.0.0.1:9000/repl")
-      (reset! serving-repl* true))
-    (log "Repl exists, not creating new one")))
-
+      (reset! serving-repl* true))))
 
 
 (defn await
@@ -397,7 +395,6 @@
     p))
 
 
-
 (defn bound-do
   [a* handler]
   (add-watch a* :mode-toggle-watch
@@ -413,11 +410,11 @@
 ;         (js-mixin obj (clj->js o)))
 ;       objs)))
 
+
 (defn mixin
   [obj obj2]
   (let [mix js/mixin]
     (mix obj (clj->js obj2))))
-
 
 
 ;; Basic data structure helpers

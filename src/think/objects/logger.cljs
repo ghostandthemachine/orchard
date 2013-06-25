@@ -98,7 +98,6 @@
                 (if-let [elem       (tab-content log-type)]
                   (let [height     (.-scrollHeight elem)
                         cur-scroll (.-scrollTop elem)]
-                    (.log js/console "scroll data " height cur-scroll)
                     (if (= height cur-scroll)
                       (do
                         (append-message log-type msg)
@@ -148,7 +147,6 @@
   :behaviors [::quit ::ready ::show-dev-tools ::init-window ::post-message]
   :delays 0
   :init (fn [this]
-          (log "init logger")
           (logger-content)))
 
 

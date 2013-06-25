@@ -60,12 +60,9 @@
   ([server db-name]
    (let [db-promise (p/promise)]
      (let-realised [dbs (list-all server)]
-       (log-obj @dbs)
        (if (some #{db-name} @dbs)
          (p/realise db-promise (.use server db-name))
          (let-realised [db-res (.create (.-db server) db-name)]
-           (log "created db...")
-           (log-obj @db-res)
            (p/realise db-promise (.use server db-name))))
        db-promise))))
 

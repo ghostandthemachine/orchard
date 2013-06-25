@@ -45,7 +45,6 @@
 (defn render-wiki-doc
   [wiki-document]
   (when wiki-document
-  (log "render-wiki-doc")
   (log-obj (clj->js @wiki-document))
     (:content @wiki-document)))
 
