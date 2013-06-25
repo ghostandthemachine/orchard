@@ -147,7 +147,7 @@
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
-              (log "App ready")
+              (log "App ready...")
               (util/start-repl-server)
               (object/raise think.objects.nav/workspace-nav :add!)
               (open-document :home)
@@ -165,7 +165,6 @@
 (object/behavior* ::init-window
   :triggers #{:init-window}
   :reaction (fn [this]
-              (log "Start App")
               (setup-tray)
               (restore-session)
               (.on win "close"

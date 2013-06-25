@@ -62,7 +62,7 @@
 
 (aset js/global "defonce-instances" (clj->js {}))
 
-(log "set global defonce-instances = " (aget js/global "defonce-instances"))
+; (log "set global defonce-instances = " (aget js/global "defonce-instances"))
 
 
 (defn parse-url

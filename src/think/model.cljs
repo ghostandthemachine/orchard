@@ -57,7 +57,7 @@
   :behaviors [::db-loaded]
   :ready? false
   :init (fn [this]
-          (log "Initialize db.. ")
+          (log "Initializing db.. ")
           (time/periodically 500 (partial load-db this
                                     (partial merge-db this)
                                     #()))))

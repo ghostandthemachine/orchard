@@ -12,16 +12,19 @@
 (declare logger-win)
 
 
-; (defonce foo "bar")
+(defonce foo "bar")
 
-; (log "")
-; (log "")
-; (log "")
-; (log "js/window = ")
-; (log-obj js/global)
+(log "")
+(log "")
+(log "")
+(log "js/window = ")
+(log-obj js/global)
+
+; (log "foo = " foo)
+; (log-obj foo)
 
 (when-not logger-win
-  (def logger-win (.open js/window "http://localhost:3000/logger.html"))
+  (def logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
   (.focus logger-win))
 
 ; (when-not (think.kv-store/local-get :logger-open?)
