@@ -5,7 +5,7 @@
             [c2.core :refer [unify]]
             [think.object :as object]
             [think.util.core :refer [uuid]]
-            [think.objects.modules :refer [module-btn-icon module-btn]]))
+            [think.module :refer [module-btn-icon module-btn]]))
 
 
 (defn visualizer-doc

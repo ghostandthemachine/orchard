@@ -5,7 +5,7 @@
             [think.model :as model]
             [think.util.core :as util]
             [think.objects.templates.single-column :as single-column]
-            [think.objects.modules :as modules]
+            [think.module :as modules]
             [crate.binding :refer [subatom bound]]
             [think.util.log :refer [log log-obj]]))
 

@@ -8,7 +8,7 @@
             [think.objects.modules.markdown :as markdown]
             [think.objects.wiki-document :as wiki-doc]
             [think.objects.workspace :as workspace]
-            [think.objects.modules :as modules]
+            [think.module :as modules]
             [crate.binding :refer [subatom bound]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom :as dom]))
