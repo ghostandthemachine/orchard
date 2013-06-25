@@ -4,15 +4,13 @@
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [think.objects.modules :refer [module-btn-icon module-btn]]
-            [think.util.core :refer [bound-do]]
-            [think.util.core :refer [log log-obj]]
+            [think.util.core :refer [log log-obj bound-do]]
             [think.util.dom :as dom]
             [think.model :as model]
             [redlobster.promise :as p]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]]
-            [clojure.string :as string]
-            [dommy.core :as dom]))
+            [clojure.string :as string]))
 
 
 (defn render-form

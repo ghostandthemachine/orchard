@@ -9,7 +9,6 @@
             [think.objects.modules :refer [top-spacer spacer]]
             [think.objects.modules.module-selector :as selector]
             [crate.binding :refer [map-bound bound subatom]]
-            [think.model :as model]
             [redlobster.promise :as p]))
 
 

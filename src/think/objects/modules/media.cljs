@@ -12,7 +12,7 @@
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string]
-            [dommy.core :as dom]))
+            [dommy.core :as dommy]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
@@ -53,14 +53,14 @@
   [id]
   (let [dzs (sel id)]
     (doseq [elem dzs]
-      (dom/listen! elem :dragover handle-drag-over)
-      (dom/listen! elem :drop     handle-file-select))))
+      (dommy/listen! elem :dragover handle-drag-over)
+      (dommy/listen! elem :drop     handle-file-select))))
 
 
 (defn make-dropable
   [$dropzone handler]
-  (dom/listen! $dropzone :dragover handle-drag-over)
-  (dom/listen! $dropzone :drop (partial handle-file-select handler)))
+  (dommy/listen! $dropzone :dragover handle-drag-over)
+  (dommy/listen! $dropzone :drop (partial handle-file-select handler)))
 
 
 (defn prepare-media-canvas
@@ -125,7 +125,7 @@
           (let [$chooser (dom/$ :#file-dialog)]
             (.preventDefault e)
             (dom/fire! $chooser :click)
-            (dom/listen! $chooser :change
+            (dommy/listen! $chooser :change
               (fn [ev]
                 (handler (.-value $chooser)))))))
 
