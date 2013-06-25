@@ -4,12 +4,7 @@
                [redlobster.macros :only [let-realised defer-node]])
   (:require [think.object :as object]
             [think.module :refer [module-btn-icon module-btn]]
-            [think.util.core :refer [bound-do]]
-            [think.util.core :refer [log log-obj]]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [redlobster.promise :as p]
-            [crate.core :as crate]
+            [think.util.core :refer [bound-do log log-obj]]
             [crate.binding :refer [bound subatom]]
             [clojure.string :as string]))
 

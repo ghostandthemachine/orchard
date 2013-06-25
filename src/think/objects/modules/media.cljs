@@ -11,8 +11,7 @@
             [redlobster.promise :as p]
             [crate.core :as crate]
             [crate.binding :refer [bound subatom]]
-            [clojure.string :as string]
-            [dommy.core :as dommy]))
+            [clojure.string :as string]))
 
 
 (def ^:private gui     (js/require "nw.gui"))

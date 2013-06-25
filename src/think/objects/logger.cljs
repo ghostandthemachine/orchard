@@ -12,15 +12,15 @@
 (declare logger-win)
 
 
-(defonce foo "bar")
+; (defonce foo "bar")
 
-(log "")
-(log "")
-(log "")
-(log "js/window = ")
-(log-obj js/global)
+; (log "")
+; (log "")
+; (log "")
+; (log "js/window = ")
+; (log-obj js/global)
 
-; (log "foo = " foo)
+; ; (log "foo = " foo)
 ; (log-obj foo)
 
 (when-not logger-win
