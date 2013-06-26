@@ -5,7 +5,6 @@
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
             [think.util.core :as util]
-            [think.dispatch :as dispatch]
             [crate.core :as crate]
             [crate.binding :refer [map-bound bound subatom]]
             [think.objects.animations :as anim]

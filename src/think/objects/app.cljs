@@ -3,7 +3,6 @@
   (:require [think.object :as object]
             [think.objects.context :as ctx]
             [think.model :as model]
-            [think.dispatch :refer [react-to]]
             [think.util.time :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]

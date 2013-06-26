@@ -67,6 +67,11 @@
        db-promise))))
 
 
+(defn destroy-db
+  [db-name]
+  (defer-node (.destroy (.-db nano) db-name) util/js->clj))
+
+
 (defn info
   "Returns some info about the state of the DB."
   ([db-name] (info nano db-name))

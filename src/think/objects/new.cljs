@@ -57,7 +57,6 @@
                             :single-column (single-column/single-column-template-doc @md-doc))]
       (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
       	(let-realised [new-document-obj (model/load-document (:id @wiki-doc))]
-      		(log "new docing it")
       		;; BUG
       		;; For some reason the new-document-obj promise does not realize unless
       		;; it is (redlobster) derefed with @

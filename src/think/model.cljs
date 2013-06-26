@@ -1,11 +1,10 @@
 (ns think.model
   (:refer-clojure  :exclude [create-node])
-  (:use [think.util.log :only    [log log-obj]])
+  (:use [think.util.log :only [log log-obj]])
   (:use-macros [redlobster.macros :only [when-realised let-realised defer-node]]
                [think.macros :only [defui]])
   (:require [think.util.core    :as util]
             [think.util.time    :as time]
-            [think.dispatch     :refer [fire react-to]]
             [think.couchdb      :as db]
             [think.object       :as object]
             [redlobster.promise :as p]
@@ -54,15 +53,27 @@
 
 (defn load-db
   ([this]
-  (load-db this
+  (load-db this DB
+    (partial merge-db this)
+    handle-merge-db-error))
+  ([this db-name]
+  (load-db this db-name
     (partial merge-db this)
     handle-merge-db-error))
   ([this succes-fn err-fn]
+  (load-db this DB
+    succes-fn
+    err-fn))
+  ([this db-name succes-fn err-fn]
   (if (:document-db* @this)
     :stop
-    (p/on-realised (db/open DB)
+    (p/on-realised (db/open db-name)
       succes-fn
       err-fn))))
+
+
+; (defn delete-db
+;   [this db-name])
 
 
 

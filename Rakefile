@@ -31,6 +31,11 @@ def start_app
     system "#{node_webkit_path} #{Dir.pwd} $@"
 end
 
+def start_testing_app
+    puts "starting testing app"
+    system "#{node_webkit_path} #{Dir.pwd} $@"
+end
+
 def start_cljsbuild
     puts "starting cljsbuild"
     system "lein cljsbuild auto &"
@@ -58,6 +63,12 @@ task :run do
   kill_node
   start_node
   start_app
+end
+
+task :run_testing do
+  kill_node
+  start_node
+  start_testing_app
 end
 
 
