@@ -39,3 +39,4 @@ public/js/logger.js
 public/js/testable.js
 
 *.dump
+*.zip

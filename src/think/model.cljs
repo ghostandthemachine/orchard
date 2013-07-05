@@ -72,14 +72,26 @@
       err-fn))))
 
 
-; (defn delete-db
-;   [this db-name])
+(object/behavior* ::load-db
+  :triggers #{:load-db}
+  :reaction (fn [this db]
+              (log "Loading database: " db)
+              (load-db this db)))
 
+
+(object/behavior* ::destroy-db
+  :triggers #{:destroy-db}
+  :reaction (fn [this db-name]
+              (log "Destroying database: " db-name)
+              (let-realised [p (db/destroy-db db-name)]
+                (log "database destroyed")
+                (log-obj @p))
+              true))
 
 
 (object/object* ::model
-  :triggers  #{:db-loaded}
-  :behaviors [::db-loaded]
+  :triggers  #{:load-db :destroy-db}
+  :behaviors [::load-db ::destroy-db]
   :ready? false
   :init (fn [this]
           (log "Initializing db.. ")

@@ -22,10 +22,14 @@
 
 (defn cljs-ids
   [x]
-  (let [id   (:_id x)
-        rev  (:_rev x)
+  (let [id   (or
+              ("_id" x)
+              (:id x))
+        rev  (or
+              ("_rev" x)
+              (:rev x))
         type (:type x)
-        x    (dissoc x :_id :_rev :type)]
+        x    (dissoc x "_id" "_rev" :type)]
     (assoc x :id id :rev rev :type type)))
 
 
