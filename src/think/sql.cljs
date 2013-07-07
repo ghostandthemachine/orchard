@@ -1,22 +1,23 @@
 (ns think.sql
+  "SQL Database API."
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
   (:require [redlobster.promise :as p]
             [think.util.core :as util]
             [think.util.log :refer (log log-obj log-err)]))
 
-;; SQL Database API
+
 
 (def DEFAULT-SQL-DB-SIZE (* 1024 1024))
 
 
-(defn sql-store
+(defn db
   "Returns a named, local WebSQL database."
-  ([db-name] (sql-store db-name "1.0" db-name DEFAULT-SQL-DB-SIZE))
+  ([db-name] (db db-name "1.0" db-name DEFAULT-SQL-DB-SIZE))
   ([db-name version description size]
    (js/openDatabase db-name version description size)))
 
 
-(defn sql-exec
+(defn run
   "Execute a SQL statement on the db."
   [db stmt]
   (let [res-promise (p/promise)]

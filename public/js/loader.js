@@ -1,4 +1,4 @@
-
+var initialized = false;
 
 (function(window) {
 
@@ -39,10 +39,6 @@ function log_error(e) {
   }
 }
 
-
-process.on("uncaughtException", log_error);
-window.onerror = log_error;
-
 var body = window.document.querySelector("body");
 var head = window.document.querySelector("head");
 
@@ -71,30 +67,42 @@ function load_css(path, isFile) {
     return css;
 }
 
+function initialize() {
+    try {
+        process.on("uncaughtException", log_error);
+        window.onerror = log_error;
 
-try {
+        console.log("Loading CSS files...");
+        css_files.forEach(function(path) {
+            load_css(path, false);
+        });
 
-    console.log("Loading CSS files...");
-    css_files.forEach(function(path) {
-        load_css(path, false);
-    });
+        console.log("Loading Javascript files...");
+        js_files.forEach(function(path) {
+            load_script(path, false);
+        });
 
-    console.log("Loading Javascript files...");
-    js_files.forEach(function(path) {
-        load_script(path, false);
-    });
-
-
-    script.onload = function() {
-        try {
-            think.objects.app.init();
-        } catch (e) {
-            log_error(e);
+        script.onload = function() {
+            try {
+                var gui = require("nw.gui");
+                if (gui.App.argv.indexOf('-test') > -1) {
+                    console.log("Running unit tests...")
+                        //var results = cemerick.cljs.test.run_all_tests();
+                        //console.log(results);
+                } else {
+                    console.log("Starting application...")
+                        think.objects.app.init();
+                }
+            } catch (e) {
+                log_error(e);
+            }
         }
-    }
 
-} catch (e) {
-    uncaughtError(e);
+    } catch (e) {
+        log_error(e);
+    }
 }
+
+initialize()
 
 })(window);

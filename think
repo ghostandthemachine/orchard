@@ -2,7 +2,6 @@
 
 nw="/Applications/Thinker.app/Contents/MacOS/node-webkit"
 
-#!/bin/bash
 if pgrep node
 then
       donothing=0
@@ -10,5 +9,6 @@ else
     node app.js &
 fi
 
-couchdb -b &
+#couchdb -b &
+
 ${nw} $(pwd) $@

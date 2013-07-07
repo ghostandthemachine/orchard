@@ -8,8 +8,6 @@
             [goog.i18n.DateTimeFormat :as date-format]))
 
 
-(def ^:private gui     (js/require "nw.gui"))
-(def ^:private fs      (js/require "fs"))
 (def ^:private url     (js/require "url"))
 
 
@@ -233,11 +231,6 @@
 ;                             ])}))
 ;
 ;
-;(defn write-file
-;  "Write a string to a text file."
-;  [path string]
-;  (.writeFile fs path string))
-
 
 (defn data
   ([elem attr]
@@ -341,9 +334,9 @@
   (.get js/Clipboard))
 
 
-(defn read-clipboard 
+(defn read-clipboard
   "Get the current contents of the clipboard."
-  [] 
+  []
   (.get (clipboard)))
 
 

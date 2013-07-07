@@ -15,30 +15,9 @@
             think.objects.wiki-document
             [redlobster.promise :as p]))
 
+
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
-
-(def child-process (js/require "child_process"))
-(def shell         (.-exec child-process))
-(def spawn         (.-spawn child-process))
-
-(def child-processes* (atom {}))
-
-
-(defn add-process
-  [child]
-  (swap! child-processes* assoc (.-pid child) child))
-
-
-(defn stop-children
-  []
-  (doseq [[pid child] @child-processes*]
-    (.kill child)))
-
-
-(defn log-handler
-  [log-id msg]
-  (object/raise think.objects.logger/logger :post log-id msg))
 
 
 (def closing true)
@@ -46,38 +25,6 @@
 (declare app)
 
 (def windows js/global.windows)
-
-(def couch-created* (atom false))
-
-(defn init-couch-db
-  []
-  (let [proc (spawn "couchdb")]
-    (add-process proc)
-    (.on (.-stdout proc) "data" (partial log-handler :couchdb))
-    proc))
-
-
-(defn start-couch
-  []
-  (if-not @couch-created*
-    (do
-      (init-couch-db)
-      (reset! couch-created* true))
-    (log "Couchdb exists, not creating new one")))
-
-
-(start-couch)
-
-
-(defn start-cljsbuild
-  []
-  (let [proc (spawn "lein" (clj->js ["cljsbuild" "auto"]))]
-    (add-process proc)
-    (.on (.-stdout proc) "data" (partial log-handler :cljsbuild))
-    proc))
-
-; (start-cljsbuild)
-
 
 (defn setup-tray
   []
@@ -88,15 +35,15 @@
                                {:label "Quit"         :onclick #(object/raise app :quit)}])}))
 
 
-
-
 (defn prevent-close []
   (set! closing false))
+
 
 (defn close [force?]
   (when force?
     (object/raise app :closed))
   (.close win force?))
+
 
 (defn refresh []
   (js/window.location.reload true))
@@ -139,25 +86,15 @@
     (object/raise workspace/workspace :show-document @doc)))
 
 
-(object/behavior* ::ready
-  :triggers #{:ready}
-  :reaction (fn [this]
-              (log "App ready...")
-              (util/start-repl-server)
-              (object/raise think.objects.nav/workspace-nav :add!)
-              (open-document :home)
-              (object/raise think.objects.logger/logger :ready)))
-
-
 (object/behavior* ::refresh
   :triggers #{:refresh}
   :reaction (fn [this]
-              (stop-children)
+              ;(stop-children)
               (refresh)))
 
 
-(object/behavior* ::init-window
-  :triggers #{:init-window}
+(object/behavior* ::start
+  :triggers #{:start}
   :reaction (fn [this]
               (setup-tray)
               (restore-session)
@@ -166,15 +103,20 @@
                      (save-session)
                      (object/raise this :quit)
                      (this-as this (.close this true))))
+              (log "Showing application window...")
               (nw/show)
+              (util/start-repl-server)
+              (object/raise think.objects.nav/workspace-nav :add!)
+              (open-document :home)
               (.showDevTools win)))
+
 
 (object/behavior* ::quit
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
               (object/raise think.objects.logger/logger :quit)
-              (stop-children)
+              ;(stop-children)
               (nw/quit)))
 
 
@@ -186,8 +128,8 @@
 
 (object/object* ::app
                 :tags #{:app}
-                :triggers [:quit :ready :show-dev-tools :init-window :refresh]
-                :behaviors [::quit ::ready ::show-dev-tools ::init-window ::refresh]
+                :triggers [:quit :show-dev-tools :start :refresh]
+                :behaviors [::quit ::show-dev-tools ::start ::refresh]
                 :delays 0
                 :init (fn [this]
                         (ctx/in! :app this)))
@@ -201,12 +143,12 @@
 
 (def windows js/global.windows)
 
-(def app         (object/create ::app))
-
+(def app (object/create ::app))
 
 (defn init []
-  (object/raise app :init-home)
-  (set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+  (log "think.objects.app.init")
+  (let-realised [db (model/load-db)]
+    (log "db ready, starting app")
+    (object/raise app :start)))
 
-
-(object/raise app :init-window)
+  ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))

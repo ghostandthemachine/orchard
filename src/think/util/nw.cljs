@@ -2,6 +2,7 @@
 
 (def ^:private gui (js/require "nw.gui"))
 
+
 (defn window
   "If `window-object` is not specifed, then return current window's Window object,
   otherwise return `window-object`s Window object."
@@ -10,6 +11,7 @@
 
 
 (defn show
+  "Show the application window and focus."
   []
   (let [w (window)]
     (.show w)
@@ -55,6 +57,7 @@
   []
   (.App.quit gui))
 
+
 ;; ## Tray
 
 (when-not js/global.app-tray
@@ -79,3 +82,5 @@
   See [Tray documentation](https://github.com/rogerwang/node-webkit/wiki/Tray)."
   [option value]
   (aset @app-tray (name option) value))
+
+

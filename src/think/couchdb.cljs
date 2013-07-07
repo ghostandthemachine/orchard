@@ -4,11 +4,39 @@
   (:require [redlobster.promise :as p]
             [think.object :as object]
             [think.util.core :as util]
+            [think.util.os :as os]
             [think.util.log :refer (log log-obj log-err)]))
 
-(def ^:private couch-server (js/require "nano"))
-(def ^:private nano (couch-server "http://localhost:5984"))
 
+(def couch-created* (atom false))
+
+
+(defn log-handler
+  [log-id msg]
+  (object/raise think.objects.logger/logger :post log-id msg))
+
+
+(defn start-db
+  []
+  (let [proc (os/process "couchdb")]
+    (.on (.-stdout proc) "data"
+         (partial log-handler :couchdb))
+    proc))
+
+
+(defn start-couch
+  []
+  (if-not @couch-created*
+    (do
+      (start-db)
+      (reset! couch-created* true))
+    (log "Couchdb exists, not creating new one")))
+
+
+;(start-couch)
+
+(def ^:private couch-server (js/require "nano"))
+(def ^:private nano         (couch-server "http://localhost:5984"))
 
 (defn couch-ids
   [x]

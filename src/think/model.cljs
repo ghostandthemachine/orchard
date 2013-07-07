@@ -32,87 +32,32 @@
   :root     "projects"})
 
 
-(def DB "projects")
+(def DEFAULT-DB "projects")
 
-
-(defn merge-db
-  [this db]
-  (when-not (:document-db* @this)
-    (log "DB Loaded")
-    (object/merge! this
-      {:ready? true
-       :document-db* db})
-    (object/raise think.objects.app/app :ready)))
-
-
-(defn handle-merge-db-error
-  [err]
-  (log "Error loading nano db")
-  (log-obj err))
-
+(def model-db* (atom nil))
 
 (defn load-db
-  ([this]
-  (load-db this DB
-    (partial merge-db this)
-    handle-merge-db-error))
-  ([this db-name]
-  (load-db this db-name
-    (partial merge-db this)
-    handle-merge-db-error))
-  ([this succes-fn err-fn]
-  (load-db this DB
-    succes-fn
-    err-fn))
-  ([this db-name succes-fn err-fn]
-  (if (:document-db* @this)
-    :stop
-    (p/on-realised (db/open db-name)
-      succes-fn
-      err-fn))))
+  ([] (load-db DEFAULT-DB))
+  ([db-name]
+   (log "loading database: " db-name)
+   (let [res-prom (p/promise)]
+     (let-realised [the-db (db/open db-name)]
+       (reset! model-db* @the-db)
+       (p/realise res-prom @the-db))
+     res-prom)))
 
-
-(object/behavior* ::load-db
-  :triggers #{:load-db}
-  :reaction (fn [this db]
-              (log "Loading database: " db)
-              (load-db this db)))
-
-
-(object/behavior* ::destroy-db
-  :triggers #{:destroy-db}
-  :reaction (fn [this db-name]
-              (log "Destroying database: " db-name)
-              (let-realised [p (db/destroy-db db-name)]
-                (log "database destroyed")
-                (log-obj @p))
-              true))
-
-
-(object/object* ::model
-  :triggers  #{:load-db :destroy-db}
-  :behaviors [::load-db ::destroy-db]
-  :ready? false
-  :init (fn [this]
-          (log "Initializing db.. ")
-          (time/periodically 500 (partial load-db this
-                                    (partial merge-db this)
-                                    #()))))
-
-
-(def model (object/create ::model))
 
 (defn delete-document
   [doc]
   (m-log "delete-document")
-  (db/delete-doc (:document-db* @model) doc))
+  (db/delete-doc @model-db* doc))
 
 
 (defn save-document
   [doc]
   (m-log "save-document: ")
   (m-log-obj doc)
-  (db/update-doc (:document-db* @model)
+  (db/update-doc @model-db*
                  (if (and (contains? doc :rev) (nil? (:rev doc)))
                    (dissoc doc :rev)
                    doc)))
@@ -124,16 +69,16 @@
         mapper (fn [doc]
                  (when (= doc-type (:type (js->clj doc)))
                    (emit (.-:id doc) doc)))]
-    (db/map-reduce (:document-db* @model) mapper)))
+    (db/map-reduce @model-db* mapper)))
 
-    ;(db/query (:document-db* @model) {:select "*" :where (str "type=" doc-type)})))
+    ;(db/query @model-db* {:select "*" :where (str "type=" doc-type)})))
 
 
 (defn get-document
   [id]
   (m-log "get-document: " id)
   (let [res-promise (p/promise)
-        doc-promise (db/get-doc (:document-db* @model) id)]
+        doc-promise (db/get-doc @model-db* id)]
     (p/on-realised doc-promise
       (fn success [doc]
         (p/realise res-promise doc))
@@ -168,26 +113,25 @@
 
 (defn all-documents
   []
-  (let-realised [docs (db/all-docs (:document-db* @model))]
+  (let-realised [docs (db/all-docs @model-db*)]
     (if (= (:total_rows @docs) 0)
       []
-      (util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
+      (util/await (map #(db/get-doc @model-db* (:id %)) (:rows @docs))))))
 
 (defn all-wiki-documents
   []
-  (let-realised [docs (db/view (:document-db* @model) :index :wiki-documents)]
+  (let-realised [docs (db/view @model-db* :index :wiki-documents)]
     (if (= (:total_rows @docs) 0)
       []
       (map #(assoc % :id (:_id %)) (map :value (:rows @docs))))))
-      ;(util/await (map #(db/get-doc (:document-db* @model) (:id %)) (:rows @docs))))))
+      ;(util/await (map #(db/get-doc @model-db* (:id %)) (:rows @docs))))))
 
 
 (defn delete-all-documents
   "Delete all documents."
   []
   (let-realised [docs (all-documents)]
-    (util/await (map #(db/delete-doc (:document-db* @model) %) @docs))))
-
+    (util/await (map #(db/delete-doc @model-db* %) @docs))))
 
 
 (defn format-request
@@ -276,6 +220,7 @@
    :template tpl-id
    :title "thinker app"})
 
+
 (defn test-doc
   [id tpl-id]
   {:type :wiki-document
@@ -292,6 +237,7 @@
         home-doc   (home-doc (:id tpl-doc))]
     (doseq [doc [index ht-doc tpl-doc home-doc]]
       (save-document doc))))
+
 
 (defn create-test-doc
   []
@@ -311,7 +257,6 @@
         test-doc   (test-doc :test-doc1 (:id tpl-doc))]
     (doseq [doc [md-doc media-doc tpl-doc test-doc]]
       (save-document doc))))
-
 
 
 (defn reset-home
