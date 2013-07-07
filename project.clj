@@ -16,10 +16,10 @@
                         :compiler {:output-to "public/js/thinker.js"
                                    :optimizations :advanced
                                    :warnings      true
+                                   :notify-command ["growlnotify" "-m"]
                                    :pretty-print  true}}
                        {:source-paths ["test"]
                         :compiler {:output-to "target/cljs/unit-test.js"
                                    :optimizations :whitespace
                                    :pretty-print  true}}]
               :test-commands {"unit-tests" ["runners/phantom.js" "target/cljs/unit-test.js"]}})
- 
