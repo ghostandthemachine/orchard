@@ -276,6 +276,16 @@
                (when-not (document-locked? module)
                  (show module)))
 
+  :dragstart (fn [this e]
+               (log "drag start")
+               (.setData (.-dataTransfer e) "Text" (.-id (.-target e))))
+
+  :ondragover (fn [this e]
+                (log "drag over")
+                (.preventDefault e)
+                (let [id (.getData (.-dataTransfer e) "Text")]
+                  (dom/append! (.-target e) (dom/$ id))))
+
   handlers)
 
 
