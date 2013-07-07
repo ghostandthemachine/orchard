@@ -404,14 +404,6 @@
       (handler nv))))
 
 
-; (defn mixin
-;   [obj & objs]
-;   (let [js-mixin js/mixin]
-;     (reduce
-;       (fn [_ o]
-;         (js-mixin obj (clj->js o)))
-;       objs)))
-
 
 (defn mixin
   [obj obj2]

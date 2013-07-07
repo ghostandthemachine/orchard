@@ -12,10 +12,14 @@
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
-  :cljsbuild {:builds [{:source-paths ["src" "test"]
+  :cljsbuild {:builds [{:source-paths ["src"]
                         :compiler {:output-to "public/js/thinker.js"
-                                   :optimizations :whitespace
+                                   :optimizations :advanced
                                    :warnings      true
+                                   :pretty-print  true}}
+                       {:source-paths ["test"]
+                        :compiler {:output-to "target/cljs/unit-test.js"
+                                   :optimizations :whitespace
                                    :pretty-print  true}}]
-              :test-commands {"unit-tests" ["runners/phantom.js" "public/js/thinker.js"]}})
+              :test-commands {"unit-tests" ["runners/phantom.js" "target/cljs/unit-test.js"]}})
  
