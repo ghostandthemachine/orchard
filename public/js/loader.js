@@ -87,8 +87,8 @@ function initialize() {
                 var gui = require("nw.gui");
                 if (gui.App.argv.indexOf('-test') > -1) {
                     console.log("Running unit tests...")
-                        //var results = cemerick.cljs.test.run_all_tests();
-                        //console.log(results);
+                        var results = cemerick.cljs.test.run_all_tests();
+                        console.log(results);
                 } else {
                     console.log("Starting application...")
                         think.objects.app.init();
