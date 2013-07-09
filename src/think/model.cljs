@@ -36,14 +36,23 @@
 
 (def model-db* (atom nil))
 
+; TODO: setup a retry
 (defn load-db
   ([] (load-db DEFAULT-DB))
   ([db-name]
-   (log "loading database: " db-name)
+   (log "starting database...")
+   (db/start)
    (let [res-prom (p/promise)]
-     (let-realised [the-db (db/open db-name)]
-       (reset! model-db* @the-db)
-       (p/realise res-prom @the-db))
+     (log "loading database: " db-name)
+     (time/periodically 100
+       (fn []
+         (if (p/realised? res-prom)
+           :stop
+           (let-realised [the-db (db/open db-name)]
+             (when @the-db
+               (reset! model-db* @the-db)
+               (p/realise res-prom @the-db)
+               :stop)))))
      res-prom)))
 
 

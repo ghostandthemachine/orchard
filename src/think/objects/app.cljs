@@ -105,7 +105,6 @@
                      (this-as this (.close this true))))
               (log "Showing application window...")
               (nw/show)
-              (util/start-repl-server)
               (object/raise think.objects.nav/workspace-nav :add!)
               (open-document :home)
               (.showDevTools win)))
@@ -147,8 +146,10 @@
 
 (defn init []
   (log "think.objects.app.init")
+  (log "starting repl server...")
+  (util/start-repl-server)
   (let-realised [db (model/load-db)]
     (log "db ready, starting app")
     (object/raise app :start)))
 
-  ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))

@@ -16,7 +16,9 @@
   (object/raise think.objects.logger/logger :post log-id msg))
 
 
-(defn start-db
+(defn running? [] @couch-created*)
+
+(defn- start-db
   []
   (let [proc (os/process "couchdb")]
     (.on (.-stdout proc) "data"
@@ -24,7 +26,7 @@
     proc))
 
 
-(defn start-couch
+(defn start
   []
   (if-not @couch-created*
     (do
@@ -32,8 +34,6 @@
       (reset! couch-created* true))
     (log "Couchdb exists, not creating new one")))
 
-
-;(start-couch)
 
 (def ^:private couch-server (js/require "nano"))
 (def ^:private nano         (couch-server "http://localhost:5984"))
@@ -88,6 +88,7 @@
 
 
 (defn open
+  "Open a database by name."
   ([db-name] (open nano db-name))
   ([server db-name]
    (let [db-promise (p/promise)]
