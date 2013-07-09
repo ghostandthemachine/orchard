@@ -44,15 +44,17 @@
    (db/start)
    (let [res-prom (p/promise)]
      (log "loading database: " db-name)
-     (time/periodically 100
+     (time/periodically 200
        (fn []
-         (if (p/realised? res-prom)
+         (if @model-db*
            :stop
-           (let-realised [the-db (db/open db-name)]
-             (when @the-db
-               (reset! model-db* @the-db)
-               (p/realise res-prom @the-db)
-               :stop)))))
+           (let [db-prom (db/open db-name)]
+             (p/on-realised db-prom
+                            (fn []
+                              (reset! model-db* @db-prom)
+                              (p/realise res-prom @db-prom)
+                              :stop)
+                            #(log "db/open failed!"))))))
      res-prom)))
 
 
