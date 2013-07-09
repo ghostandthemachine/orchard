@@ -41,6 +41,7 @@
   []
   (.-document logger-win))
 
+
 (defn body
   []
   (.getElementById (log-doc) "logger"))
@@ -118,25 +119,24 @@
                   (append-message log-type msg)))))
 
 
-(object/behavior* ::ready
-  :triggers #{:ready}
-  :reaction (fn [this]
-              (let [log-panes (.find (js/$ (log-doc)) ".log-pane")]
-                (for [i (.size log-panes)]
-                  (let [elem       (.get log-panes i)
-                        height     (.-scrollHeight elem)
-                        cur-scroll (.-scrollTop elem)]
-                    ; (log "set log pane top " height cur-scroll)
-                    (set! (.-scrollTop elem) height)
-                    ;(log "scrollTop for elem " height)
-                    (.on logger-win "close"
-                      (fn []
-                        (this-as this (.close this true))))
-                    ))
-                (dom/append
-                  (body)
-                  (:content @this))
-                (.tab (js/$ "#logger-tabs a:last") "show"))))
+(defn ready
+  [this]
+  (let [log-panes (.find (js/$ (log-doc)) ".log-pane")]
+    (for [i (.size log-panes)]
+      (let [elem       (.get log-panes i)
+            height     (.-scrollHeight elem)
+            cur-scroll (.-scrollTop elem)]
+        ; (log "set log pane top " height cur-scroll)
+        (set! (.-scrollTop elem) height)
+        ;(log "scrollTop for elem " height)
+        (.on logger-win "close"
+          (fn []
+            (this-as this (.close this true))))
+        ))
+    (dom/append
+      (body)
+      (:content @this))
+    (.tab (js/$ "#logger-tabs a:last") "show")))
 
 
 (object/behavior* ::quit
@@ -155,14 +155,16 @@
 
 (object/object* :logger
   :tags #{:logger}
-  :triggers [:quit :ready :show-dev-tools :init-window :post]
-  :behaviors [::quit ::ready ::show-dev-tools ::init-window ::post-message]
+  :triggers [:quit :show-dev-tools :init-window :post]
+  :behaviors [::quit ::show-dev-tools ::init-window ::post-message]
   :delays 0
   :init (fn [this]
           (logger-content)))
 
 
 (def logger (object/create :logger))
+
+(aset logger-win "onload" (partial ready logger))
 
 (dispatch/react-to #{:log-message}
                    (fn [ev & [data]]
