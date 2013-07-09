@@ -8,7 +8,8 @@
             [think.couchdb      :as db]
             [think.object       :as object]
             [redlobster.promise :as p]
-            [dommy.template     :as tpl]))
+            [dommy.template     :as tpl]
+            ))
 
 
 (def do-log true)

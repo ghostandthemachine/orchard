@@ -8,31 +8,34 @@
             [think.util.log :refer (log log-obj log-err)]))
 
 
-(def couch-created* (atom false))
-
+(def db* (atom nil))
 
 (defn log-handler
   [log-id msg]
   (object/raise think.objects.logger/logger :post log-id msg))
 
 
-(defn running? [] @couch-created*)
+(defn running?
+  []
+  (if @db* true false))
+
 
 (defn- start-db
   []
-  (let [proc (os/process "couchdb")]
-    (.on (.-stdout proc) "data"
-         (partial log-handler :couchdb))
+  (let [proc (if (aget js/global ::db)
+               (aget js/global ::db)
+               (aset js/global ::db (os/process "couchdb")))]
+    (log "DB PROCESS:")
+    (log-obj proc)
+    (doseq [pipe [(.-stdout proc) (.-stderr proc)]]
+      (.on pipe "data"
+           (partial log-handler :couchdb)))
     proc))
 
 
 (defn start
   []
-  (if-not @couch-created*
-    (do
-      (start-db)
-      (reset! couch-created* true))
-    (log "Couchdb exists, not creating new one")))
+  (reset! db* (start-db)))
 
 
 (def ^:private couch-server (js/require "nano"))
