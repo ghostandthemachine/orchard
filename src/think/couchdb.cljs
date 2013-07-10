@@ -1,11 +1,16 @@
 (ns think.couchdb
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require-macros [think.macros :as mac])
+  (:require-macros [think.macros :refer [defonce]])
   (:require [redlobster.promise :as p]
             [think.object :as object]
             [think.util.core :as util]
             [think.util.os :as os]
             [think.util.log :refer (log log-obj log-err)]))
+
+
+(defonce foo "bar")
+
+(defonce foo "woz")
 
 
 (def db* (atom nil))

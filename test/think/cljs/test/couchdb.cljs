@@ -6,7 +6,7 @@
             [think.cljs.test.model :as test-model]
             [redlobster.promise :as p]
             [think.util.log     :refer [log log-obj]]
-            [cemerick.cljs.test :as t])
+            [think.cljs.test :as t])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing use-fixtures]]
                    [redlobster.macros  :refer [when-realised let-realised defer-node]]
                    [think.macros       :refer [defui]]))
@@ -27,14 +27,18 @@
     "should convert both \"_id\" and \"_rev\" keys to :id and :rev"))
 
 
-
+(deftest test-promise
+  (let [p (p/promise)]
+    (is
+      (= ))))
 
 
 
 
 
 (comment 
+
   ;; reset tests to run
   (reset! t/registered-tests {})
-  (t/test-ns 'think.cljs.test.couchdb)  
+  (t/test-ns 'think.cljs.test.couchdb)
   )

@@ -27,18 +27,34 @@
        e#)))
 
 
+
+
 (defmacro defonce
   [sym-name value]
-  `(let [defonce-instances# (aget js/global "defonce-instances")]
-    `(when-let [stored-val# (get defonce-instances# ~(name sym-name))]
-        ; (def ~sym-name stored-val#)
-        `(.log js/console "defonce value exists for symbol: " defonce-instances#)
-        ; `(.log js/console "defonce value does not exists for symbol: " ~(name sym-name))
-        ; (aset js/global
-        ;   ~(name sym-name)
-        ;   (def ~sym-name ~value))
-        )
-    )
+    `(def ~sym-name
+      (or
+        (aget js/global (name '~sym-name))
+        (aset js/global (name '~sym-name) ~value))))
+
+
+
+
+
+
+
+
+(comment
+
+
+(def data (atom {:foo "bar" :bar "baz"}))
+
+(defmacro defoo
+  [sym-name value]
+    `(def ~sym-name
+      (or
+        (get @data (name '~sym-name))
+        (get (swap! data assoc (name '~sym-name) ~value)
+          (name '~sym-name)))))
+
+
 )
-
-
