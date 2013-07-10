@@ -1,11 +1,16 @@
 (ns think.couchdb
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require-macros [think.macros :as mac])
+  (:require-macros [think.macros :refer [defonce]])
   (:require [redlobster.promise :as p]
             [think.object :as object]
             [think.util.core :as util]
             [think.util.os :as os]
             [think.util.log :refer (log log-obj log-err)]))
+
+
+(defonce ::foo "bar")
+;; this should not work and foo should be set to "bar" again
+(defonce ::foo "woz")
 
 
 (def db* (atom nil))
@@ -20,17 +25,15 @@
   (if @db* true false))
 
 
+(defonce ::db-proc (os/process "couchdb"))
+
+
 (defn- start-db
   []
-  (let [proc (if (aget js/global ::db)
-               (aget js/global ::db)
-               (aset js/global ::db (os/process "couchdb")))]
-    (log "DB PROCESS:")
-    (log-obj proc)
-    (doseq [pipe [(.-stdout proc) (.-stderr proc)]]
-      (.on pipe "data"
-           (partial log-handler :couchdb)))
-    proc))
+  (doseq [pipe [(.-stdout db-proc) (.-stderr db-proc)]]
+    (.on pipe "data"
+      (partial log-handler :couchdb)))
+  db-proc)
 
 
 (defn start
