@@ -8,9 +8,9 @@
             [think.util.log :refer (log log-obj log-err)]))
 
 
-(defonce foo "bar")
-
-(defonce foo "woz")
+(defonce ::foo "bar")
+;; this should not work and foo should be set to "bar" again
+(defonce ::foo "woz")
 
 
 (def db* (atom nil))
@@ -25,17 +25,15 @@
   (if @db* true false))
 
 
+(defonce ::db-proc (os/process "couchdb"))
+
+
 (defn- start-db
   []
-  (let [proc (if (aget js/global ::db)
-               (aget js/global ::db)
-               (aset js/global ::db (os/process "couchdb")))]
-    (log "DB PROCESS:")
-    (log-obj proc)
-    (doseq [pipe [(.-stdout proc) (.-stderr proc)]]
-      (.on pipe "data"
-           (partial log-handler :couchdb)))
-    proc))
+  (doseq [pipe [(.-stdout db-proc) (.-stderr db-proc)]]
+    (.on pipe "data"
+      (partial log-handler :couchdb)))
+  db-proc)
 
 
 (defn start
