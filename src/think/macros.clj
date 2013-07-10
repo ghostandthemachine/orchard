@@ -34,7 +34,7 @@
   "A symbol based version of defonce which creates global, non ns qualified, vars."
   [sym-name value]
     `(def ~sym-name
-      ~(or
+      (or
         (aget js/global (name '~sym-name))
         (aset js/global (name '~sym-name) ~value))))
 

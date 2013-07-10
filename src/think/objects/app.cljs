@@ -1,5 +1,6 @@
 (ns think.objects.app
-  (:use-macros [redlobster.macros :only [let-realised]])
+  (:require-macros [redlobster.macros :refer [let-realised]]
+                   [think.macros :refer [defonce]])
   (:require [think.object :as object]
             [think.objects.context :as ctx]
             [think.model :as model]
@@ -153,3 +154,8 @@
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+
+
+
+
+(defonce ::foo "bam")
