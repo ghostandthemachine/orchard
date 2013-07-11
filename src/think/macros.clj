@@ -47,7 +47,7 @@
 
 
 (defmacro defonce
-  {^:doc "A Clojurescript version of defonce which takes a namespace qualified keyword
+  "A Clojurescript version of defonce which takes a namespace qualified keyword
   and creates a global, namespaced var. This will will result in a normal var
   definition.
 
@@ -60,7 +60,7 @@
   => bar
 
   (println my-ns/foo)
-  => bar"}
+  => bar"
   [nskw value]
   `(def ~(nskw->sym nskw)
     (or

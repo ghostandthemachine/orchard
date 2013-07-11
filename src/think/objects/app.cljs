@@ -91,7 +91,6 @@
 (object/behavior* ::refresh
   :triggers #{:refresh}
   :reaction (fn [this]
-              ;(stop-children)
               (refresh)))
 
 
@@ -155,8 +154,3 @@
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
-
-
-
-
-(defonce ::foo "bam")
