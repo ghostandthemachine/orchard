@@ -1,6 +1,6 @@
 (ns think.couchdb
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require-macros [think.macros :refer [defonce]])
+  (:require-macros [think.macros :refer [defonce mac]])
   (:require [redlobster.promise :as p]
             [think.object :as object]
             [think.util.core :as util]
@@ -10,7 +10,7 @@
 
 (defonce ::foo "bar")
 ;; this should not work and foo should be set to "bar" again
-(defonce ::foo "woz")
+(defonce ::foo "wat")
 
 
 (def db* (atom nil))

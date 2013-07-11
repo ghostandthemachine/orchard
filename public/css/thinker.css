@@ -111,12 +111,6 @@ video {
   /*display: none;*/
 }
 
-@-webkit-keyframes greenPulse {
-  from { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
-  50% { background-color: #91bd09; -webkit-box-shadow: 0 0 6px #91bd09; }
-  to { background-color: #749a02; -webkit-box-shadow: 0 0 3px #333; }
-}
-
 ul.modules {
   list-style-type: none;
   margin: 0;
@@ -230,7 +224,7 @@ li.modules-item {
   padding-bottom: 1px;
   padding-top: 2px;
   border-radius: 10px;
-  box-shadow: 0px 0px 4px #999999;
+  /*box-shadow: 0px 0px 4px #999999;*/
 }
 
 .popover-container {
