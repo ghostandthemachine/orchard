@@ -9,33 +9,9 @@
             [crate.core :as crate]
             [redlobster.promise :as p]))
 
-(declare logger-win)
 
+(defonce ::logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
 
-; (defonce foo "bar")
-
-; (log "")
-; (log "")
-; (log "")
-; (log "js/window = ")
-; (log-obj js/global)
-
-; ; (log "foo = " foo)
-; (log-obj foo)
-
-(when-not logger-win
-  (def logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
-  (.focus logger-win))
-
-; (when-not (think.kv-store/local-get :logger-open?)
-;   (def logger-win (.open js/window
-;       "http://localhost:3000/logger.html"))
-;   (think.kv-store/local-set :logger-open? true))
-
-; (when-not (think.kv-store/local-get :logger-open?)
-;   (def logger-win (.open js/window
-;       "http://localhost:3000/logger.html"))
-;   (think.kv-store/local-set :logger-open? true))
 
 (defn log-doc
   []
