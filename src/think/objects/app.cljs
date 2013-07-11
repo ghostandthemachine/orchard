@@ -116,7 +116,7 @@
   :reaction (fn [this]
               (log "Quitting...")
               (object/raise think.objects.logger/logger :quit)
-              (kill-children)
+              ; (kill-children)
               (nw/quit)))
 
 

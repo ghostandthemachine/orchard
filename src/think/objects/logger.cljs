@@ -70,7 +70,7 @@
    [:div.tab-content.logger-content-panes
     [:div.tab-pane.log-pane.active {:id "log"}
      [:ul.log-list]]
-    [:div.tab-pane.log-pane  {:id "couchdb"}
+    [:div.tab-pane.log-panes  {:id "couchdb"}
      [:ul.log-list]]]])
 
 

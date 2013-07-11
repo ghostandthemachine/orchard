@@ -8,11 +8,6 @@
             [think.util.log :refer (log log-obj log-err)]))
 
 
-(defonce ::foo "bar")
-;; this should not work and foo should be set to "bar" again
-(defonce ::foo "wat")
-
-
 (def db* (atom nil))
 
 (defn log-handler
