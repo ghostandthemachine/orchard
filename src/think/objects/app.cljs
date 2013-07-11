@@ -7,6 +7,7 @@
             [think.util.time :refer [now]]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
+            [think.util.os  :refer [kill-children]]
             [think.util.core :as util]
             [think.objects.nav :as nav]
             [think.objects.sidebar :as sidebar]
@@ -90,7 +91,6 @@
 (object/behavior* ::refresh
   :triggers #{:refresh}
   :reaction (fn [this]
-              ;(stop-children)
               (refresh)))
 
 
@@ -116,7 +116,7 @@
   :reaction (fn [this]
               (log "Quitting...")
               (object/raise think.objects.logger/logger :quit)
-              ; (kill-children)
+              (kill-children)
               (nw/quit)))
 
 
@@ -155,7 +155,3 @@
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
-
-
-
-(defonce ::foo "bam")
