@@ -43,14 +43,18 @@
   [nskw]
   (symbol (last (str/split (apply str (rest (str nskw))) #"/"))))
 
+
 (defmacro defonce
   [nskw value]
   `(def ~(nskw->sym nskw)
     (or
-      (aget js/global '~nskw)
-      (aset js/global '~nskw ~value))))
+      (aget js/global ~nskw)
+      (aset js/global ~nskw ~value))))
 
 
+(defmacro mac
+  [nskw value]
+  `(.log js/console "nskw = " ~nskw))
 
 
 
