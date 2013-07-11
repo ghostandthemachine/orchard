@@ -28,8 +28,6 @@
        e#)))
 
 
-
-
 (defmacro defone
   "A symbol based version of defonce which creates global, non ns qualified, vars."
   [sym-name value]
@@ -41,52 +39,30 @@
 
 (defn nskw->sym
   [nskw]
-  (symbol (last (str/split (apply str (rest (str nskw))) #"/"))))
+  (symbol
+    (last
+      (str/split
+        (apply str (rest (str nskw)))
+        #"/"))))
 
 
 (defmacro defonce
+  {^:doc "A Clojurescript version of defonce which takes a namespace qualified keyword
+  and creates a global, namespaced var. This will will result in a normal var
+  definition.
+
+  ex:
+  (defonce ::foo \"bar\")
+
+  will result in a var named foo in the namespace where it was defined. So from ns my-ns,
+
+  (println foo)
+  => bar
+
+  (println my-ns/foo)
+  => bar"}
   [nskw value]
   `(def ~(nskw->sym nskw)
     (or
       (aget js/global ~nskw)
       (aset js/global ~nskw ~value))))
-
-
-(defmacro mac
-  [nskw value]
-  `(.log js/console "nskw = " ~nskw))
-
-
-
-
-
-(comment
-
-
-(def data (atom {:foo "bar" :bar "baz"}))
-
-(defmacro defoo
-  [sym-name value]
-    `(def ~sym-name
-      (or
-        (get @data (name '~sym-name))
-        (get (swap! data assoc (name '~sym-name) ~value)
-          (name '~sym-name)))))
-
-(def data (atom {:foo "bar" :bar "baz"}))
-
-(defn nskw->sym
-  [nskw]
-  (symbol (last (str/split (apply str (rest (str nskw))) #"/"))))
-
-(defmacro defoo
-  [nskw value]
-  (println )
-  `(def ~(nskw->sym nskw)
-    (or
-      (get @data '~nskw)
-      (get (swap! data assoc '~nskw ~value)
-        (name '~nskw)))))
-
-
-)
