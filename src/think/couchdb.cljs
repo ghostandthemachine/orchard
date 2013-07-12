@@ -1,6 +1,6 @@
 (ns think.couchdb
   (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require-macros [think.macros :refer [defonce mac]])
+  (:require-macros [think.macros :refer [defonce]])
   (:require [redlobster.promise :as p]
             [think.object :as object]
             [think.util.core :as util]
@@ -20,7 +20,7 @@
   (if @db* true false))
 
 
-(defonce ::db-proc (os/process "couchdb"))
+(defonce db-proc (os/process "couchdb"))
 
 
 (defn- start-db

@@ -10,7 +10,7 @@
             [redlobster.promise :as p]))
 
 
-(defonce ::logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
+(defonce logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
 
 
 (defn log-doc
@@ -122,11 +122,10 @@
               (.close logger-win)))
 
 
-(object/behavior* ::show-dev-tools
-  :triggers #{:show-dev-tools}
-  :reaction (fn [this]
-              (log "Show Dev Tools")
-              (.showDevTools logger-win)))
+(defn show-dev-tools
+  []
+  (log "Show Logger Dev Tools")
+  (.showDevTools logger-win))
 
 
 (object/object* :logger
@@ -145,3 +144,5 @@
 (dispatch/react-to #{:log-message}
                    (fn [ev & [data]]
                      (object/raise logger :post :log data)))
+
+
