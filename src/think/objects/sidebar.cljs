@@ -153,7 +153,5 @@
 
 (defn init
   []
-  (add-item sidebar-projects)
-  (add-item sidebar-modules)
-  )
+  (object/update! sidebar [:items] assoc 0 sidebar-projects 1 sidebar-modules))
 

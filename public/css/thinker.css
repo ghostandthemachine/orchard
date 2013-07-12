@@ -409,9 +409,7 @@ ul#sidebar-tabs {
 }
 
 .vertical-grip {
-  height: 5000px;
-  background-color: rgb(220,220,220);
+  height: 100%;
+  /*background-color: rgb(220,220,220);*/
   width: 3;
-  position: absolute;
-  top: 0px;
 }
