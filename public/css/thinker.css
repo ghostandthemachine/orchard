@@ -59,7 +59,7 @@ body.video-page{
   display: block;
 }
 
-.video-box input.text{background-color: #f1f1f1; font-size: 16px; @include border-radius(0); padding: 14px 10px; width: 280px}
+/*.video-box input.text{background-color: #f1f1f1; font-size: 16px; @include border-radius(0); padding: 14px 10px; width: 280px}*/
 
 .video-box input.text.top{
   @include border-radius(5px 5px 0 0);
@@ -348,8 +348,8 @@ li.modules-item {
 
 
 .document-container {
-  width: 96%;
-  margin-left: 1%;
+  width: 95.5%;
+  margin-left: 1.75%;
   position: absolute;
   top: 35;
 }
@@ -365,26 +365,33 @@ li.modules-item {
 #sidebar-wrapper { background:transparent; }
 
 ul#sidebar-tabs {
-    user-select: none;
   list-style: none;
   margin: 3px;
   padding: 2px;
   position: relative;
-  top: 20px;
-  width: 56px; 
-  left: -24px;
+  top: 1px;
+  width: 20px;
+  left: 0px;
+}
+
+#sidebar-content-wrapper {
+  width: 100px;
+  left: 10px;
+  position: relative;
 }
 
 
-#sidebar-tabs li:hover, #sidebar-tabs .current { background:#ccc; color:#555; }
+/*#sidebar-tabs li:hover, #sidebar-tabs .current { background:#ccc; color:#555; }*/
 
-#sidebar-tabs .content { background:#ccc; color:#555; }
+#sidebar-tabs li.btn {
+  margin: 0;
+  padding: 3px;
+}
+
+/*#sidebar-tabs .content { background:#ccc; color:#555; }
 #sidebar .command input { color: #555; background:#eee; }
 #sidebar .command em { border-bottom:1px solid #666; }
-
-.sidebar-content {
-  margin-left: 35px;
-}
+*/
 
 .rotate-right {
   -webkit-transform: rotate(-90deg);
@@ -393,14 +400,18 @@ ul#sidebar-tabs {
 .modules-content {
  margin: 0px;
  padding: 0px;
- position: relative;
- left: -16px;
- top: -23px;
 }
 
 
 .modules-content .item {
-  padding-left: 10px;
   width: 100px;
   background-color: rgb(100,200,180);
+}
+
+.vertical-grip {
+  height: 5000px;
+  background-color: rgb(220,220,220);
+  width: 3;
+  position: absolute;
+  top: 0px;
 }

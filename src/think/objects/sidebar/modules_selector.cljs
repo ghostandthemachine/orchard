@@ -2,7 +2,6 @@
   (:require-macros [redlobster.macros :refer [let-realised]]
   						     [think.macros :refer [defui defgui]])
   (:require [think.object :as object]
-            [think.objects.sidebar :as sidebar]
             [think.util.log :refer [log log-obj]]
             [crate.binding :refer [map-bound bound subatom]]))
 
@@ -24,10 +23,15 @@
       (module-item this t))])
 
 
+(defui modules-icon
+  []
+  [:i.icon-tasks])
+
 (object/object* ::sidebar.modules-selector
                 :triggers #{}
                 :behaviors [::toggle]
                 :label "modules"
+                :icon (modules-icon)
                 :order 1
                 :init (fn [this]
                         [:div.modules-content
@@ -40,7 +44,7 @@
 (def sidebar-modules (object/create ::sidebar.modules-selector))
 
 
-(sidebar/add-item sidebar-modules)
+; (sidebar/add-item sidebar-modules)
 
 
 (defn add-item [item]

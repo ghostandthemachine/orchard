@@ -6,7 +6,7 @@
             [think.cljs.test.model :as test-model]
             [redlobster.promise :as p]
             [think.util.log     :refer [log log-obj]]
-            [think.cljs.test :as t])
+            [cemerick.cljs.test :as t])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing use-fixtures]]
                    [redlobster.macros  :refer [when-realised let-realised defer-node]]
                    [think.macros       :refer [defui]]))
@@ -28,9 +28,8 @@
 
 
 (deftest test-promise
-  (let [p (p/promise)]
-    (is
-      (= ))))
+  (is :promise
+    (= 1 0)))
 
 
 

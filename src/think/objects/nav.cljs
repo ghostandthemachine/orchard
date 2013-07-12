@@ -126,12 +126,12 @@
   :init (fn [this]
           [:div.top-nav
             [:div.nav-container.row-fluid
-              [:div.span3.row
+              [:div.span2
                (home-btn)
                (new-doc-btn)
                (refresh-btn)]
-              [:div.span6.row (text-input)]
-              [:div.span3.row
+              [:div.span6 (text-input)]
+              [:div.span2.pull-right
                (lock-btn this)
                (synch-btn)
                (dev-tools-btn)]]]))
