@@ -29,15 +29,16 @@
        e#)))
 
 
-(defmacro sym->nssym
+(defmacro nssym
   [sym]
   `(str '~*cljs-ns* "/" ~(name sym)))
 
 (defmacro defonce
   ^{:doc
-    "Clojurescript version of defonce. Uses ns qaulified keyword as key to store val in global browser object."}
+    "Clojurescript version of defonce.
+    Stores variables in the javascript global function. They will persist through browser refreshes."}
   [n value]
   `(def ~n
     (or
-      (aget js/global (sym->nssym ~n))
-      (aset js/global (sym->nssym ~n) ~value))))
+      (aget js/global (nssym ~n))
+      (aset js/global (nssym ~n) ~value))))
