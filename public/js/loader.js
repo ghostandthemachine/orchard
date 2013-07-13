@@ -11,8 +11,6 @@ var css_files = [
     ];
 
 var js_files = [
-    "bootstrap/js/bootstrap.min.js",
-
     "js/jquery-1.9.0.js",
     "js/jquery.sortable.min.js",
     "js/jquery-ui.js",
@@ -33,6 +31,8 @@ var js_files = [
 
     "js/d3.v3.min.js",
 
+    "bootstrap/js/bootstrap.min.js",
+    
     "js/thinker.js",
     //"js/test.js"
     ];
@@ -102,7 +102,7 @@ function initialize() {
                     console.log("Running unit tests...");
                     var results = test.model.run_tests();
                     //var results = cemerick.cljs.test.run_all_tests();
-                    console.log(results);
+                    console.log("\n\n\n\n" + results + "\n\n\n\n");
                     gui.App.quit();
                 } else {
                     console.log("Starting application...");

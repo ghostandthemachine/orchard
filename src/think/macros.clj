@@ -42,3 +42,5 @@
     (or
       (aget js/global (nssym ~n))
       (aset js/global (nssym ~n) ~value))))
+
+

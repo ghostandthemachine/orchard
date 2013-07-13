@@ -37,53 +37,6 @@
   height: 100%;
 }
 
-
-/* Login Page */
-body.video-page{
-  background: #EEE;
-  .container .content { padding-top: 5%; }
-}
-
-.video-box{
-  width: 400px;
-  height: 500px;
-  position: relative;
-  @include border-radius(5px);
-  margin: auto;
-  padding: 20px;
-  background: white;
-}
-
-.video-box .login-logo{
-  margin: 10px 0 30px 0;
-  display: block;
-}
-
-/*.video-box input.text{background-color: #f1f1f1; font-size: 16px; @include border-radius(0); padding: 14px 10px; width: 280px}*/
-
-.video-box input.text.top{
-  @include border-radius(5px 5px 0 0);
-  margin-bottom: 0px;
-}
-
-.video-box input.text.bottom{
-  @include border-radius(0 0 5px 5px);
-  border-top: 0;
-  margin-bottom: 20px;
-}
-
-.video-box input.text.middle{
-  border-top: 0;
-  margin-bottom:0px;
-}
-
-.video-box a.forgot{float: right; padding-top: 6px}
-
-video {
-  border-radius: 6px;
-  padding: 5px;
-}
-
 .editor-btn-nav {
 }
 
@@ -181,6 +134,8 @@ li.modules-item {
   overflow-x: auto;
 }
 
+
+
 .media-module-content {
   text-align: center;
 }
@@ -252,6 +207,13 @@ li.modules-item {
   top: -2px;
 }
 
+
+
+/**************************************************************************
+  Top Nav
+***************************************************************************/
+
+
 .top-nav {
   background-image: url("/images/osx-bg.png");
   background-repeat: repeat-x;
@@ -302,6 +264,13 @@ li.modules-item {
   width: 100%;
 }
 
+/**************************************************************************/
+
+
+
+/**************************************************************************
+Logger
+***************************************************************************/
 
 .log-list {
   list-style: none;
@@ -332,6 +301,7 @@ li.modules-item {
   width: 100%;
 }
 
+
 .logger-content-panes {
   margin-top: 40px;
 }
@@ -346,6 +316,9 @@ li.modules-item {
   overflow: scroll;
 }
 
+/**************************************************************************/
+
+
 
 .document-container {
   width: 95.5%;
@@ -358,7 +331,11 @@ li.modules-item {
   position: relative;
 }
 
-/*Sidebar*/
+
+/**************************************************************************
+    Sidebar
+***************************************************************************/
+
 
 #sidebar ::-webkit-scrollbar-thumb { background: #999; border:1px solid #999; }
 
@@ -366,36 +343,26 @@ li.modules-item {
 
 ul#sidebar-tabs {
   list-style: none;
-  margin: 3px;
-  padding: 2px;
-  position: relative;
-  top: 1px;
-  width: 20px;
+  padding: 0px;
+  margin: 0px;
+  width: 30px;
+  background: rgb(220, 220, 220);
+  position: absolute;
+  top: 36px;
   left: 0px;
 }
 
 #sidebar-content-wrapper {
   width: 100px;
-  left: 10px;
+  top: 36px;
   position: relative;
 }
 
 
-/*#sidebar-tabs li:hover, #sidebar-tabs .current { background:#ccc; color:#555; }*/
-
-#sidebar-tabs li.btn {
-  margin: 0;
-  padding: 3px;
+#sidebar-tabs li:hover, #sidebar-tabs .current {
+  background:#ccc; color:#555;
 }
 
-/*#sidebar-tabs .content { background:#ccc; color:#555; }
-#sidebar .command input { color: #555; background:#eee; }
-#sidebar .command em { border-bottom:1px solid #666; }
-*/
-
-.rotate-right {
-  -webkit-transform: rotate(-90deg);
-}
 
 .modules-content {
  margin: 0px;
@@ -413,3 +380,10 @@ ul#sidebar-tabs {
   /*background-color: rgb(220,220,220);*/
   width: 3;
 }
+
+.sidebar-tab-item {
+  margin: 0;
+  padding: 8px;
+}
+
+/**************************************************************************/

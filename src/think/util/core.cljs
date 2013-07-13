@@ -433,3 +433,22 @@
   [v coll]
   (first (positions #{v} coll)))
 
+
+(defn aget-in
+  [obj ks]
+  (reduce
+    (fn [o k]
+      (aget o (name k)))
+    obj ks))
+
+
+(defn aset-in
+  [obj ks v]
+  (aset obj (name (first ks))
+    (clj->js
+      (reduce
+        (fn [m k]
+          {k m})
+        {(last ks) v}
+        (butlast (rest ks))))))
+

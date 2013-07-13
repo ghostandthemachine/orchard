@@ -28,9 +28,7 @@
 (defn teardown-test
   []
   (log "Destroying testing database")
-  (db/delete-db "testing")
-  (log "Loading projects database")
-  (model/load-db))
+  (db/delete-db "testing"))
 
 
 (defn setup-test
@@ -41,7 +39,6 @@
 
 (use-fixtures :once
   (fn [f]
-    (println "Setting up tests...")
     (setup-test)
     (f)
     (teardown-test)))

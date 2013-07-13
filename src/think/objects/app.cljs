@@ -107,7 +107,7 @@
               (log "Showing application window...")
               (object/raise think.objects.nav/workspace-nav :add!)
               (sidebar/init)
-              (.tooltip (js/$ ".sidebar-tab-item"))
+              ; (.tooltip (js/$ ".sidebar-tab-item"))
               (open-document :home)
               (nw/show)
               (.showDevTools win)))

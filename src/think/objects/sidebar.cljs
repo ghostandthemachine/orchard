@@ -12,7 +12,7 @@
             [think.objects.animations :as anim]
             [redlobster.promise :as p]))
 
-(def DEFAULT-MAX-WIDTH 100)
+(def DEFAULT-MAX-WIDTH 120)
 
 (defn set-left
   [left]
@@ -43,7 +43,7 @@
 
 (defui sidebar-item [this item]
   (let [{:keys [icon label]} @item]
-    [:li.btn.sidebar-tab-item
+    [:li.sidebar-tab-item
     {:data-toggle "tooltip"
      :data-placement "right"
      :title label}
@@ -136,7 +136,7 @@
                           [:div#sidebar-conent-wrapper {:style
                                                         {:width (bound (subatom this :width) set-width)
                                                          :left "30px"
-                                                         :top "-34px"
+                                                         :top "-3px"
                                                          :position "relative"}}
                         		[:div.sidebar-content
                         			(bound (subatom this :active) active-content)]
@@ -154,4 +154,5 @@
 (defn init
   []
   (object/update! sidebar [:items] assoc 0 sidebar-projects 1 sidebar-modules))
+
 
