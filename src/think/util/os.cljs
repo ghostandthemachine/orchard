@@ -1,15 +1,18 @@
 (ns think.util.os
   (:use [think.util.log :only (log log-obj)])
-  (:require [redlobster.promise :as p]
+  (:require-macros [think.macros :refer [defonce]])
+  (:require [redlobster.promise   :as p]
             [clojure.browser.repl :as repl]))
 
 (def ^:private fs            (js/require "fs"))
 (def ^:private child-process (js/require "child_process"))
 
-(def shell   (.-exec child-process))
-(def spawn   (.-spawn child-process))
+(def shell (.-exec child-process))
+(def spawn (.-spawn child-process))
 
-(def child-processes* (atom {}))
+(def DEFAULT-KILL-TIMEOUT 1000)
+
+(defonce child-processes* (atom {}))
 
 
 (defn process
@@ -21,9 +24,12 @@
 
 
 (defn kill-children
-  []
-  (doseq [[pid child] @child-processes*]
-    (.kill child)))
+  ([] (kill-children DEFAULT-KILL-TIMEOUT))
+  ([timeout] (kill-children timeout "SIGQUIT"))
+  ([timeout sig]
+   (doseq [[pid child] @child-processes*]
+     (log "killing child process: " pid)
+     (.kill child sig))))
 
 
 (defn env
