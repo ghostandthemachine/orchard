@@ -31,7 +31,7 @@
   db-proc)
 
 
-(defn start
+(defn start!
   []
   (reset! db* (start-db)))
 

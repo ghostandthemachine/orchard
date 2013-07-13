@@ -8,8 +8,7 @@
             [think.couchdb      :as db]
             [think.object       :as object]
             [redlobster.promise :as p]
-            [dommy.template     :as tpl]
-            ))
+            [dommy.template     :as tpl]))
 
 
 (def do-log true)
@@ -34,28 +33,32 @@
 
 
 (def DEFAULT-DB "projects")
+(def CONNECT-RETRY-MS 100)
 
 (def model-db* (atom nil))
 
-; TODO: setup a retry
+(defn try-connect
+  [res-prom db-name]
+  (log "couchdb try-connect...")
+  (let [db-prom (db/open db-name)]
+    (p/on-realised db-prom
+                   (fn on-success []
+                     (log "couchdb connected!")
+                     (reset! model-db* @db-prom)
+                     (p/realise res-prom @db-prom))
+                   (fn on-failure []
+                     (log "couchdb connect failed...")
+                     (time/run-in CONNECT-RETRY-MS #(try-connect res-prom db-name))))))
+
+
 (defn load-db
   ([] (load-db DEFAULT-DB))
   ([db-name]
    (log "starting database...")
-   (db/start)
+   (db/start!)
    (let [res-prom (p/promise)]
      (log "loading database: " db-name)
-     (time/periodically 200
-       (fn []
-         (if @model-db*
-           :stop
-           (let [db-prom (db/open db-name)]
-             (p/on-realised db-prom
-                            (fn []
-                              (reset! model-db* @db-prom)
-                              (p/realise res-prom @db-prom)
-                              :stop)
-                            #(log "db/open failed!"))))))
+     (time/run-in CONNECT-RETRY-MS #(try-connect res-prom db-name))
      res-prom)))
 
 
@@ -248,7 +251,8 @@
         tpl-doc    (single-column-template (:id index) (:id ht-doc))
         home-doc   (home-doc (:id tpl-doc))]
     (doseq [doc [index ht-doc tpl-doc home-doc]]
-      (save-document doc))))
+      (save-document doc))
+    home-doc))
 
 
 (defn create-test-doc
