@@ -1,6 +1,7 @@
 (ns think.macros
   [:refer-clojure :exclude [defonce]]
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [cljs.analyzer :refer (*cljs-ns* get-expander)]))
 
 
 (defmacro with-instance
@@ -28,41 +29,16 @@
        e#)))
 
 
-(defmacro defone
-  "A symbol based version of defonce which creates global, non ns qualified, vars."
-  [sym-name value]
-    `(def ~sym-name
-      (or
-        (aget js/global (name '~sym-name))
-        (aset js/global (name '~sym-name) ~value))))
-
-
-(defn nskw->sym
-  [nskw]
-  (symbol
-    (last
-      (str/split
-        (apply str (rest (str nskw)))
-        #"/"))))
-
+(defmacro nssym
+  [sym]
+  `(str '~*cljs-ns* "/" ~(name sym)))
 
 (defmacro defonce
-  "A Clojurescript version of defonce which takes a namespace qualified keyword
-  and creates a global, namespaced var. This will will result in a normal var
-  definition.
-
-  ex:
-  (defonce ::foo \"bar\")
-
-  will result in a var named foo in the namespace where it was defined. So from ns my-ns,
-
-  (println foo)
-  => bar
-
-  (println my-ns/foo)
-  => bar"
-  [nskw value]
-  `(def ~(nskw->sym nskw)
+  ^{:doc
+    "Clojurescript version of defonce.
+    Stores variables in the javascript global function. They will persist through browser refreshes."}
+  [n value]
+  `(def ~n
     (or
-      (aget js/global ~nskw)
-      (aset js/global ~nskw ~value))))
+      (aget js/global (nssym ~n))
+      (aset js/global (nssym ~n) ~value))))

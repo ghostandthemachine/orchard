@@ -143,7 +143,7 @@
   "Delete all documents."
   []
   (let-realised [docs (all-documents)]
-    (util/await (map #(db/delete-doc @model-db* %) @docs))))
+    (util/await (doall (map #(db/delete-doc @model-db* %) @docs)))))
 
 
 (defn format-request

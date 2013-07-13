@@ -5,13 +5,13 @@
 				    [think.cljs.test :refer [test-ns]]))
 
 
-(defonce ::foo "bar")
+; (defonce ::foo "bar")
 
-(defonce ::foo "woz")
+; (defonce ::foo "woz")
 
-(deftest test-defonce
-	(is
-		(= foo "bar")))
+; (deftest test-defonce
+; 	(is
+; 		(= foo "bar")))
 
 
 
@@ -22,13 +22,13 @@
 	(:require [think.util.log :refer [log log-obj]]
 				    [think.cljs.test :refer [test-ns]]))
 
-(defonce ::foo "woz")
+; (defonce ::foo "woz")
 
-(deftest test-defonce
-	(is
-		(= foo "woz"))
-	(is
-		(not= foo "bar")))
+; (deftest test-defonce
+; 	(is
+; 		(= foo "woz"))
+; 	(is
+; 		(not= foo "bar")))
 
 
 
