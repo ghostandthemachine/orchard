@@ -5,9 +5,9 @@
             [clojure.template :as temp]))
 
 
-(defn promise?
-  [v]
-  (= redlobster.promise/Promise (type v)))
+; (defn promise?
+;   [v]
+;   (= redlobster.promise/Promise (type v)))
 
 
 ; (defmethod assert-expr :default [msg form]
@@ -37,26 +37,26 @@
 
 
 
-(defmethod assert-expr :promise
-  [msg form]
-  (println msg form)
-  (if (and (seq? form) (t/function? (first form)))
-    (t/assert-predicate msg form)
-    (t/assert-any msg form)))
+; (defmethod assert-expr :promise
+;   [msg form]
+;   (println msg form)
+;   (if (and (seq? form) (t/function? (first form)))
+;     (t/assert-predicate msg form)
+;     (t/assert-any msg form)))
 
-(comment
-
-
-
-(deftest promise-test
-  (let [foo-promise (p/promise)]
-    (p/realise foo-promise "foo")
-    (is :promise  ;; the is macro can take an optional type to allow for cutom assert-expr's https://github.com/cemerick/clojurescript.test/blob/master/src/cemerick/cljs/test.clj#L372
-      (=
-        "foo"
-        foo-promise)))
-  "Should take an assertion form, resolve any promises 
-  in it, and then apply the assertion to the seq.")
+; (comment
 
 
-)
+
+; (deftest promise-test
+;   (let [foo-promise (p/promise)]
+;     (p/realise foo-promise "foo")
+;     (is :promise  ;; the is macro can take an optional type to allow for cutom assert-expr's https://github.com/cemerick/clojurescript.test/blob/master/src/cemerick/cljs/test.clj#L372
+;       (=
+;         "foo"
+;         foo-promise)))
+;   "Should take an assertion form, resolve any promises 
+;   in it, and then apply the assertion to the seq.")
+
+
+; )

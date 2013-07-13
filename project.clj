@@ -14,14 +14,14 @@
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
-  :cljsbuild {:builds [{:source-paths ["src"]
+  :cljsbuild {:builds [{:source-paths ["src" "test"]
                         :compiler {:output-to "public/js/thinker.js"
                                    :notify-command ["growlnotify" "-m" "%"]
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
 
-                       {:source-paths ["test"]
+                       {:source-paths ["test" "src"]
                         :compiler {:output-to "public/js/tests.js"
                                    :optimizations :whitespace
                                    :warnings      true

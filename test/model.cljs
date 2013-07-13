@@ -16,13 +16,13 @@
    :body "This is a test body"})
 
 
-(deftest save-doc-test
-  (let [doc   (test-doc)
-        okeys (keys doc)]
-    (let-realised [sd (model/save-document doc)]
-      (let-realised [gd (model/get-document (:id doc))]
-        (testing "testing save-document"
-          (is (= doc (select-keys @gd (keys doc)))))))))
+; (deftest save-doc-test
+;   (let [doc   (test-doc)
+;         okeys (keys doc)]
+;     (let-realised [sd (model/save-document doc)]
+;       (let-realised [gd (model/get-document (:id doc))]
+;         (testing "testing save-document"
+;           (is (= doc (select-keys @gd (keys doc)))))))))
 
 
 (defn teardown-test
@@ -47,6 +47,16 @@
     (teardown-test)))
 
 
+(deftest testing-testing
+  (is (= 1 1)))
+
+
+(deftest testing-testing2
+  (is (= 1 0)))
+
+
 (defn run-tests
   []
-  (test-ns 'think.cljs.test.model))
+
+
+  (test-ns 'test.model))
