@@ -3,10 +3,10 @@
   (:require [think.util.core       :as util]
             [think.couchdb         :as db]
             [think.object          :as object]
-            [think.cljs.test.model :as test-model]
+            [test..model :as test-model]
             [redlobster.promise    :as p]
             [think.util.log        :refer [log log-obj]]
-            [think.cljs.test       :refer [test-ns]])
+            [test.       :refer [test-ns]])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing use-fixtures]]
                    [redlobster.macros  :refer [when-realised let-realised defer-node]]
                    [think.macros       :refer [defui]]))
@@ -26,4 +26,4 @@
       {:id "test-id" :rev "rev-id"})
     "should convert both \"_id\" and \"_rev\" keys to :id and :rev"))
 
-;(test-ns 'think.cljs.test.couchdb)
+;(test-ns 'test..couchdb)
