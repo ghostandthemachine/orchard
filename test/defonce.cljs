@@ -1,8 +1,8 @@
-(ns think.cljs.test.defonce
-	(:require-macros [think.macros :refer [defonce]]
-									 [cemerick.cljs.test :refer [is deftest]])
-	(:require [think.util.log :refer [log log-obj]]
-				    [think.cljs.test :refer [test-ns]]))
+(ns test.think.defonce
+  (:require-macros [think.macros :refer [defonce]]
+                   [cemerick.cljs.test :refer [is deftest]])
+  (:require [think.util.log :refer [log log-obj]]
+            [think.cljs.test :refer [test-ns]]))
 
 
 ; (defonce ::foo "bar")

@@ -22,7 +22,8 @@
                                    :pretty-print  true}}
 
                        {:source-paths ["test"]
-                        :compiler {:output-to "target/cljs/unit-test.js"
+                        :compiler {:output-to "public/js/tests.js"
                                    :optimizations :whitespace
+                                   :warnings      true
                                    :pretty-print  true}}]
-              :test-commands {"unit-tests" ["runners/phantom.js" "target/cljs/unit-test.js"]}})
+              :test-commands {"unit-tests" ["./think" "-test"]}})

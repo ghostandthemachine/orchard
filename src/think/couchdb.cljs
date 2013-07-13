@@ -101,7 +101,8 @@
        db-promise))))
 
 
-(defn destroy-db
+(defn delete-db
+  "Delete a database."
   [db-name]
   (defer-node (.destroy (.-db nano) db-name) util/js->clj))
 

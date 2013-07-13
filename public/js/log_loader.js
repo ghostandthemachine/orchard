@@ -37,7 +37,6 @@ window.onerror = log_error;
 var body = window.document.querySelector("#logger-head");
 var head = window.document.querySelector("#logger-body");
 
-
 function load_script(path, isFile) {
     script= document.createElement('script');
     script.type= 'text/javascript';

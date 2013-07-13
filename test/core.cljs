@@ -1,13 +1,18 @@
-(ns think.cljs.test
+(ns test.core
   (:require-macros [redlobster.macros :refer [let-realised]])
-  (:require [cemerick.cljs.test :refer [do-report *testing-vars* inc-report-counter *initial-report-counters* registered-fixtures join-fixtures registered-tests registered-test-hooks *report-counters*]]
+  (:require [cemerick.cljs.test :refer [do-report *testing-vars* 
+                                        inc-report-counter *initial-report-counters* 
+                                        registered-fixtures join-fixtures 
+                                        registered-tests registered-test-hooks 
+                                        *report-counters*]]
             [clojure.string :as str]))
 
+
+(def TESTED-NAMESPACES ['test.think.model])
 
 (defn promise?
   [v]
   (= redlobster.promise/Promise (type v)))
-
 
 
 ;;; RUNNING TESTS: LOW-LEVEL FUNCTIONS
@@ -33,6 +38,7 @@
                       :expected nil, :actual e})))
       (do-report {:type :end-test-var, :var v}))))
 
+
 (defn test-all-vars
   "Calls test-var on every var interned in the namespace, with fixtures."
   {:added "1.1"}
@@ -44,6 +50,7 @@
        (doseq [v (get @registered-tests ns-sym)]
          (when (:test (meta v))
            (each-fixture-fn (fn [] (test-var v)))))))))
+
 
 (defn test-ns
   "If the namespace defines a function named test-ns-hook, calls that.
@@ -65,3 +72,9 @@
 
     (do-report {:type :end-test-ns, :ns ns-sym})
     @*report-counters*))
+
+
+(defn run-all-tests
+  []
+  (doseq [testing-ns TESTED-NAMESPACES]
+    (test-ns testing-ns)))
