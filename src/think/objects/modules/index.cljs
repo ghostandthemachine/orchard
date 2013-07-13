@@ -32,6 +32,7 @@
 (defui render-present
   [docs]
   [:div.module-content.index-module-content
+   [:h3 "Index"]
     [:ul
       (for [doc docs]
         [:li

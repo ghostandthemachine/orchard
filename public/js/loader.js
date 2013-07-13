@@ -6,21 +6,24 @@ var css_files = [
     "css/codemirror.css",
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
-    "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css",
-    "css/thinker.css"];
+    "css/jquery-ui.css",
+    "css/thinker.css"
+    ];
 
 var js_files = [
-    "js/markdown_parser.js",
-    "http://d3js.org/d3.v3.min.js",
+    "bootstrap/js/bootstrap.min.js",
+
+    "js/jquery-1.9.0.js",
+    "js/jquery.sortable.min.js",
+    "js/jquery-ui.js",
+    "js/throttle.js",
+
     "js/codemirror.js",
     "js/cm/clojure.js",
     "js/cm/markdown.js",
     "js/cm/gfm.js",
 
-    "js/jquery-1.9.0.js",
-    "js/jquery.sortable.min.js",
-    "http://code.jquery.com/ui/1.10.2/jquery-ui.js",
-    "js/throttle.js",
+    "js/markdown_parser.js",
 
     // "js/pdf/compatibility.js",
     // "js/pdf/l10n.js",
@@ -28,8 +31,11 @@ var js_files = [
     // "js/pdf/debugger.js",
     // "js/pdf/viewer.js",
 
-    "bootstrap/js/bootstrap.min.js",
-    "js/thinker.js"]
+    "js/d3.v3.min.js",
+
+    "js/thinker.js",
+    //"js/test.js"
+    ];
 
 
 function log_error(e) {
@@ -44,6 +50,7 @@ var head = window.document.querySelector("head");
 
 
 function load_script(path, isFile) {
+    console.log("loading script: " + path)
     script= document.createElement('script');
     script.type= 'text/javascript';
     script.async = false;
@@ -56,6 +63,7 @@ function load_script(path, isFile) {
 }
 
 function load_css(path, isFile) {
+    console.log("loading css: " + path)
     css = document.createElement('link');
     css.type= 'text/css';
     if(isFile) {
@@ -68,6 +76,8 @@ function load_css(path, isFile) {
 }
 
 function initialize() {
+    var test_mode = false;
+
     try {
         process.on("uncaughtException", log_error);
         window.onerror = log_error;
@@ -86,20 +96,29 @@ function initialize() {
             try {
                 var gui = require("nw.gui");
                 if (gui.App.argv.indexOf('-test') > -1) {
-                    console.log("Running unit tests...")
-                        var results = cemerick.cljs.test.run_all_tests();
-                        console.log(results);
+                    test_mode = true;
+                    console.log("Loading unit tests...");
+                    //load_script("js/test.js");
+                    console.log("Running unit tests...");
+                    var results = test.model.run_tests();
+                    //var results = cemerick.cljs.test.run_all_tests();
+                    console.log(results);
+                    gui.App.quit();
                 } else {
-                    console.log("Starting application...")
-                        think.objects.app.init();
+                    console.log("Starting application...");
+                    think.objects.app.init();
                 }
             } catch (e) {
                 log_error(e);
+                if (test_mode) {
+                    gui.App.quit();
+                }
             }
         }
 
     } catch (e) {
         log_error(e);
+        gui.App.quit();
     }
 }
 
