@@ -1,4 +1,3 @@
-(comment
 (ns test.think.couchdb
   (:refer-clojure  :exclude [create-node])
   (:require [think.util.core       :as util]
@@ -29,4 +28,3 @@
 
 
 ;(test-ns 'think.cljs.test.couchdb)
-)
