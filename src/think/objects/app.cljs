@@ -12,6 +12,7 @@
             [think.objects.nav :as nav]
             [think.objects.sidebar :as sidebar]
             [think.util.nw  :as nw]
+            [think.dispatch :as dispatch]
             [think.objects.workspace :as workspace]
             think.kv-store
             think.objects.wiki-document
@@ -107,7 +108,10 @@
               (log "Showing application window...")
               (object/raise think.objects.nav/workspace-nav :add!)
               (sidebar/init)
-              ; (.tooltip (js/$ ".sidebar-tab-item"))
+              ;; create resize handler
+              (aset js/window "onresize" #(dispatch/fire :resize-window %))
+
+              (.tooltip (js/$ ".sidebar-tab-item"))
               (open-document :home)
               (nw/show)
               (.showDevTools win)))
@@ -156,3 +160,4 @@
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+

@@ -452,3 +452,8 @@
         {(last ks) v}
         (butlast (rest ks))))))
 
+(defn by-id
+  ([id]
+    (by-id js/document id))
+  ([document id]
+    (.getElementById document (name id))))

@@ -208,66 +208,6 @@ li.modules-item {
 }
 
 
-
-/**************************************************************************
-  Top Nav
-***************************************************************************/
-
-
-.top-nav {
-  background-image: url("/images/osx-bg.png");
-  background-repeat: repeat-x;
-  position: fixed;
-  width: 100%;
-  height: 36px;
-  top: 0px;
-}
-
-.nav-container {
-    min-width: 200px;
-  margin-top: 2px;
-  margin-left: 4px;
-  margin-right: 4px;
-  padding: 2px;
-}
-
-.btn-nav-dark {
-  background-color: hsl(0, 0%, 16%) !important;
-  background-repeat: repeat-x;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5b5b5b), color-stop(100%, #282828));
-  background-image: -webkit-linear-gradient(top, #5b5b5b, #282828);
-  border-color: #282828 #282828 hsl(0, 0%, 11%);
-  color: #fff !important;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
-  -webkit-font-smoothing: antialiased;
-}
-
-.nav-btn {
-  margin: 4px;
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.header-btn {
-  position: relative;
-  margin-top: 2px;
-  padding: 2px;
-}
-
-.nav-input {
-  font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
-  font-size: 10px;
-  line-height: 1.8;
-  margin-top: 5px;
-  width: 100%;
-}
-
-/**************************************************************************/
-
-
-
 /**************************************************************************
 Logger
 ***************************************************************************/
@@ -332,43 +272,92 @@ Logger
 }
 
 
+
+
+/**************************************************************************
+  Top Nav
+***************************************************************************/
+
+
+#nav-wrapper {
+  background:transparent;
+}
+
+ul#nav-list {
+  list-style: none;
+  background: rgb(220 ,220 ,220 );
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  margin: 0;
+}
+
+
+ul#nav-list li {
+  display: inline;
+}
+
+ul#nav-list li:hover {
+  background:#ccc;
+  color:#555;
+}
+
+.nav-element {
+  margin: 0;
+  padding: 8px;
+  height: 30px;
+}
+
+#nav-input {
+  font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
+  font-size: 10px;
+  line-height: 1.8;
+  width: 720px;
+  position: relative;
+  top: 4px;
+}
+
+/**************************************************************************/
+
 /**************************************************************************
     Sidebar
 ***************************************************************************/
 
-
-#sidebar ::-webkit-scrollbar-thumb { background: #999; border:1px solid #999; }
-
-#sidebar-wrapper { background:transparent; }
+#sidebar-wrapper {
+  background:transparent;
+}
 
 ul#sidebar-tabs {
   list-style: none;
   padding: 0px;
   margin: 0px;
-  width: 30px;
+  width: 30px; /*block btn size*/
   background: rgb(220, 220, 220);
   position: absolute;
-  top: 36px;
+  top: 30px; /*block btn size*/
   left: 0px;
 }
 
 #sidebar-content-wrapper {
-  width: 100px;
-  top: 36px;
+  width: 120px;
+  top: 30px;
   position: relative;
 }
 
-
 #sidebar-tabs li:hover, #sidebar-tabs .current {
-  background:#ccc; color:#555;
+  background:#ccc;
+  color:#555;
 }
 
+.block-btn {
+  margin: 0;
+  padding: 8px;
+}
 
 .modules-content {
  margin: 0px;
  padding: 0px;
 }
-
 
 .modules-content .item {
   width: 100px;
@@ -381,9 +370,5 @@ ul#sidebar-tabs {
   width: 3;
 }
 
-.sidebar-tab-item {
-  margin: 0;
-  padding: 8px;
-}
-
 /**************************************************************************/
+

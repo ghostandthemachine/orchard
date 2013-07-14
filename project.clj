@@ -10,7 +10,9 @@
                  [com.cemerick/clojurescript.test "0.0.4"]
                  ;[org.clojure/clojurescript "0.0-1586"]
                  ;[org.clojure/clojurescript "0.0-1835"]
-                 [io.rkn/core.async "0.1.0-SNAPSHOT"]]
+                 [org.clojure/core.async "0.1.0-SNAPSHOT"]]
+
+  :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
