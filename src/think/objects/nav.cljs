@@ -4,12 +4,15 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.core :as util]
+            [think.util.dom :refer [window-width]]
             [think.objects.workspace :as workspace]
             [think.util.dom :as dom]
             [crate.binding :refer [map-bound bound subatom]]
             [think.model :as model]
+            [think.dispatch :as dispatch]
             [redlobster.promise :as p]))
 
+(def BLOCK-SIZE 30)  ;; default nav (and sidebar btn) btn size
 
 (defn wiki-doc
   []
@@ -29,15 +32,15 @@
 
 (defui new-doc-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-plus.icon-white.nav-icon]]
+  [:li.nav-element
+    [:i.icon-plus.icon-white]]
   :click #(think.objects.new/load-new-doc))
 
 
 (defui home-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-home.icon-white.nav-icon]]
+  [:li.nav-element
+    [:i.icon-home.icon-white]]
   :click (fn [e]
             (think.objects.app/open-document :home)))
 
@@ -56,14 +59,14 @@
 
 (defui lock-view
   [this]
-  [:i#lock-btn.icon-lock.icon-white.nav-icon]
+  [:i#lock-btn.icon-lock.icon-white]
   :mousedown (fn [& args] false)
   :click (partial lock-handler this))
 
 
 (defui unlock-view
   [this]
-  [:i#lock-btn.icon-unlock.icon-white.nav-icon]
+  [:i#lock-btn.icon-unlock.icon-white]
   :click (partial lock-handler this))
 
 
@@ -77,22 +80,22 @@
 
 (defn lock-btn
   [this]
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
+  [:li.nav-element
     (bound (subatom this [:locked?]) (partial lock-btn-handler this))])
 
 
 (defui refresh-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-refresh.icon-white.nav-icon]]
+  [:li.nav-element
+    [:i.icon-refresh.icon-white]]
   :click (fn [e]
             (object/raise think.objects.app/app :refresh)))
 
 
 (defui synch-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-sitemap.icon-white.nav-icon]]
+  [:li.nav-element
+    [:i.icon-sitemap.icon-white]]
   :click (fn [e]
             (log "synch projects")
             (let-realised [p (model/synch-documents)]
@@ -102,15 +105,22 @@
 
 (defui dev-tools-btn
   []
-  [:span.btn.btn-small.btn-nav-dark.nav-btn
-    [:i.icon-dashboard.icon-white.nav-icon]]
+  [:li.nav-element
+    [:i.icon-dashboard.icon-white]]
   :click (fn [e]
             (object/raise think.objects.app/app :show-dev-tools)))
 
 
+(defn format-width
+  [width]
+  (- width (* 6 BLOCK-SIZE) 5))
+
 (defn text-input
-  []
-  [:input.nav-input {:type "text"}])
+  [this]
+  [:li.nav-input-element
+    [:input#nav-input
+      {:type "text"
+       :style {:width (bound this #(format-width (:window-width @this)))}}]])
 
 
 (object/behavior* ::add!
@@ -123,19 +133,24 @@
   :triggers #{:add!}
   :behaviors [::add!]
   :locked? true
+  :window-width (window-width)
   :init (fn [this]
-          [:div.top-nav
-            [:div.nav-container.row-fluid
-              [:div.span2
-               (home-btn)
-               (new-doc-btn)
-               (refresh-btn)]
-              [:div.span6 (text-input)]
-              [:div.span2.pull-right
-               (lock-btn this)
-               (synch-btn)
-               (dev-tools-btn)]]]))
+          [:div#nav-wrapper
+            [:ul#nav-list
+              (home-btn)
+              (new-doc-btn)
+              (refresh-btn)
+              (text-input this)
+              (lock-btn this)
+              (synch-btn)
+              (dev-tools-btn)]]))
 
 
 (def workspace-nav (object/create :workspace-nav))
+
+
+(dispatch/react-to #{:resize-window}
+  (fn [ev & [e]]
+    (object/assoc! workspace-nav :window-width
+      (aget (aget e "target") "innerWidth"))))
 

@@ -12,6 +12,7 @@
             [think.objects.nav :as nav]
             [think.objects.sidebar :as sidebar]
             [think.util.nw  :as nw]
+            [think.dispatch :as dispatch]
             [think.objects.workspace :as workspace]
             think.kv-store
             think.objects.wiki-document
@@ -85,7 +86,8 @@
 (defn open-document
   [doc-id]
   (let-realised [doc (model/load-document doc-id)]
-    (object/raise workspace/workspace :show-document @doc)))
+    (object/raise workspace/workspace :show-document @doc)
+    (dispatch/fire :open-document @@doc)))
 
 
 (object/behavior* ::refresh
@@ -107,6 +109,9 @@
               (log "Showing application window...")
               (object/raise think.objects.nav/workspace-nav :add!)
               (sidebar/init)
+              ;; create resize handler
+              (aset js/window "onresize" #(dispatch/fire :resize-window %))
+
               (.tooltip (js/$ ".sidebar-tab-item"))
               (open-document :home)
               (nw/show)
@@ -136,7 +141,6 @@
                 :init (fn [this]
                         (ctx/in! :app this)))
 
-; (object/tag-behaviors :app [::store-position-on-close ::restore-position-on-init ::restore-fullscreen])
 
 (when-not js/global.windows
   (set! js/global.windows (atom (sorted-map 0 win)))
@@ -156,3 +160,4 @@
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+

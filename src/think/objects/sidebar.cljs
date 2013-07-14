@@ -4,7 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.dom  :as dom]
-            [think.util.core :as util]
+            [think.util.core :refer [by-id]]
             [think.objects.sidebar.modules-selector :refer [sidebar-modules]]
             [think.objects.sidebar.projects-selector :refer [sidebar-projects]]
             [crate.core :as crate]
@@ -12,11 +12,17 @@
             [think.objects.animations :as anim]
             [redlobster.promise :as p]))
 
-(def DEFAULT-MAX-WIDTH 100)
+(def DEFAULT-MAX-WIDTH 120)
+
+(def BLOCK-SIZE 30)
 
 (defn set-left
   [left]
   (str (or left 0) "px"))
+
+(defn set-width
+  [width]
+  (str (or width 0) "px"))
 
 (defui grip
 	[this]
@@ -30,24 +36,16 @@
         			  (object/raise this :width! e)))
 
 
-; (defui sidebar-item [this item]
-;   (let [{:keys [label]} @item]
-;     [:li {:class (bound this #(if (= item (:active %))
-;                                 "rotate-right current"
-;                                 "rotate-right"))}
-;                         label])
-;   :click (fn [e]
-;            (object/raise this :toggle item)
-;            (object/raise item :toggle e)))
-
-
 (defui sidebar-item [this item]
   (let [{:keys [icon label]} @item]
-    [:li.btn.sidebar-tab-item
-    {:data-toggle "tooltip"
-     :data-placement "right"
-     :title label}
-     icon])
+    [:li.sidebar-tab-item.block-btn
+      {:data-toggle "tooltip"
+       :data-placement "right"
+       :title label
+       :class (bound this #(if (= item (:active %))
+                              "sidebar-tab-item block-btn current"
+                              "sidebar-tab-item block-btn"))}
+       icon])
   :click (fn [e]
            (object/raise this :toggle item)
            (object/raise item :toggle e)))
@@ -58,11 +56,6 @@
   [:ul#sidebar-tabs
     (for [[_ t] tabs]
       (sidebar-item this t))])
-
-
-(defn set-width
-	[width]
-	(str (or width 0) "px"))
 
 
 (defn active-content
@@ -134,9 +127,9 @@
                           [:div#sidebar-wrapper
                             (bound (subatom this [:items]) (partial sidebar-tabs this))]
                           [:div#sidebar-conent-wrapper {:style
-                                                        {:width (bound (subatom this :width) set-width)
-                                                         :left "30px"
-                                                         :top "-34px"
+                                                        {:width    (bound (subatom this :width) set-width)
+                                                         :left     "30px"
+                                                         :top      "30px"
                                                          :position "relative"}}
                         		[:div.sidebar-content
                         			(bound (subatom this :active) active-content)]
@@ -154,4 +147,5 @@
 (defn init
   []
   (object/update! sidebar [:items] assoc 0 sidebar-projects 1 sidebar-modules))
+
 

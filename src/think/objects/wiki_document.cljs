@@ -4,8 +4,10 @@
   (:require [think.object :as object]
             [think.model :as model]
             [think.util.core :as util]
+            [think.util.dom :refer [set-frame-title]]
             [think.objects.templates.single-column :as single-column]
             [think.module :as modules]
+            [think.dispatch :as dispatch]
             [crate.binding :refer [subatom bound]]
             [think.util.log :refer [log log-obj]]))
 
@@ -62,10 +64,10 @@
 
 (defui delete-doc-btn
 	[this]
-	[:span.btn.btn-danger.header-btn
+	[:span.header-btn
 		{:data-toggle "tooltip"
 		 :title "delete this document"}
-		[:i.icon-trash.icon-white.header-icon]]
+		[:i.icon-trash.header-icon]]
 	:click (fn [e]
             (let [msg "Are you sure you want to delete this document?\nThis will permanently delete this document."
                   delete? (js/confirm msg)]
@@ -82,25 +84,20 @@
 
 (defui id-btn
   [this]
-  [:span.btn.btn-info.header-btn
+  [:span.header-btn
    {:data-toggle "tooltip"
     :title "document hyperlink tag"}
-   [:i.icon-barcode.icon-white]]
+   [:i.icon-barcode]]
   :click (fn [e]
            (copy-to-clipboard-prompt
              (str "[" (:title @this) "](" (:id @this) ")"))))
-
-
-(defn left-margin
-  [px]
-  (str (or px 0) "px"))
 
 
 (object/object* :wiki-document
   :triggers #{:save :lock-document :unlock-document :ready}
   :behaviors [::save-document ::lock-document ::unlock-document ::ready]
   :locked? true
-  :left 0
+  :title ""
   :init (fn [this document]
           (let-realised [template (model/get-document (:template document))]
             (let [tpl-obj (object/create (keyword (:type @template)) @template)]
@@ -108,17 +105,20 @@
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div.document {:style {:left (bound (subatom this :left) left-margin)}}
-          [:div.span12
-           [:h4
-             [:div.pull-left.module-link-label
-             		(id-btn this)]
-             (:title @this)
-             [:div.pull-right
-             		(delete-doc-btn this)]]]
+          [:div.document
             [:div.row-fluid
-              (bound (subatom this [:template])
-                (partial render-template this))]]))
+              [:div
+                (bound (subatom this [:template])
+                  (partial render-template this))]
+              [:div.pull-left
+                (id-btn this)
+                (delete-doc-btn this)]]]))
+
+
+(dispatch/react-to #{:open-document}
+  (fn [_ & [document]]
+    (log (:title document))
+    (set-frame-title (:title document))))
 
 
 (defn wiki-doc
@@ -128,4 +128,6 @@
      :id (util/uuid)
      :title title
      :template (:id tpl)}))
+
+
 

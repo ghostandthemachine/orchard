@@ -44,7 +44,7 @@
   (fn [f]
     (let [db (setup-test)]
       (p/on-realised db
-        (fn on-success [] 
+        (fn on-success []
           (f)
           (teardown-test))
         (fn on-error []

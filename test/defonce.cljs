@@ -1,8 +1,8 @@
-(ns test.think.defonce
+(ns test.defonce
   (:require-macros [think.macros :refer [defonce]]
                    [cemerick.cljs.test :refer [is deftest]])
   (:require [think.util.log :refer [log log-obj]]
-            [think.cljs.test :refer [test-ns]]))
+            [test. :refer [test-ns]]))
 
 
 ; (defonce ::foo "bar")
@@ -16,11 +16,11 @@
 
 
 ;; test that defonce allows for new defs in other namespaces
-(ns think.cljs.test.defonce2
-	(:require-macros [think.macros :refer [defonce]]
-									 [cemerick.cljs.test :refer [is deftest]])
-	(:require [think.util.log :refer [log log-obj]]
-				    [think.cljs.test :refer [test-ns]]))
+; (ns test.defonce2
+; 	(:require-macros [think.macros :refer [defonce]]
+; 									 [cemerick.cljs.test :refer [is deftest]])
+; 	(:require [think.util.log :refer [log log-obj]]
+; 				    [test. :refer [test-ns]]))
 
 ; (defonce ::foo "woz")
 
@@ -36,5 +36,5 @@
 (comment
 
 	;; run tests by loading code into repl then running
-	(test-ns 'think.cljs.test.defonce)
+	(test-ns 'test..defonce)
 	)
