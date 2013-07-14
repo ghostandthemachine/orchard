@@ -1,8 +1,139 @@
-#container {
-  margin-top: 38px;
-  user-select: none;
+/**************************************************************************
+    Document
+**************************************************************************/
+
+.document-container {
+  width: 96%;
+  margin-left: 1%;
+  position: absolute;
+  top: 27;
 }
 
+.header-label {
+  margin-left: 5px;
+  box-shadow: 0px 0px 4px #999999;
+}
+
+.header-icon {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.header-btn {
+  padding: 2px;
+  margin: 4px;
+}
+
+/**************************************************************************
+  Top Nav
+***************************************************************************/
+
+#nav-wrapper {
+  background:transparent;
+}
+
+ul#nav-list {
+  list-style: none;
+  background: rgb(120 ,120 ,120 );
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  margin: 0;
+}
+
+
+ul#nav-list li {
+  display: inline;
+}
+
+ul#nav-list li.nav-element:hover {
+  background:#ccc;
+  color:#555;
+}
+
+.nav-element {
+  margin: 0;
+  padding: 8px;
+  height: 30px;
+}
+
+.nav-input-element {
+  margin: 0;
+  padding: 8px;
+  height: 30px; 
+}
+
+#nav-input {
+  font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
+  font-size: 10px;
+  line-height: 1.8;
+  width: 720px;
+  position: relative;
+  top: 5px;
+}
+
+/**************************************************************************
+    Sidebar
+***************************************************************************/
+
+#sidebar {
+  position: absolute;
+  left: 0px;
+}
+
+#sidebar-wrapper {
+  background:transparent;
+}
+
+ul#sidebar-tabs {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  width: 30px; /*block btn size*/
+  background: rgb(220, 220, 220);
+  position: absolute;
+  top: 30px; /*block btn size*/
+  left: 0px;
+}
+
+#sidebar-content-wrapper {
+  width: 120px;
+  top: 30px;
+  position: relative;
+}
+
+#sidebar-tabs li:hover, #sidebar-tabs .current {
+  background:#ccc;
+  color:#555;
+}
+
+.block-btn {
+  margin: 0;
+  padding: 8px;
+  border-width: 1px;
+  border-color: rgb(200,200,200);
+  border-style: solid;
+}
+
+.modules-content {
+ margin: 0px;
+ padding: 0px;
+}
+
+.modules-content .item {
+  width: 100px;
+  background-color: rgb(100,200,180);
+}
+
+.vertical-grip {
+  height: 100%;
+  /*background-color: rgb(220,220,220);*/
+  width: 3;
+}
+
+/**************************************************************************
+    Drag and drop
+**************************************************************************/
 
 #drop-spot {
     border: 10px dashed #ccc;
@@ -15,9 +146,35 @@
     border: 10px dashed #333;
 }
 
-/*
-  Don't allow text etc. to be select/highlighteable
- */
+/**************************************************************************
+    Media module
+**************************************************************************/
+
+.button-bar {
+  background-color: rgb(245, 245, 245);
+  padding: 5px;
+  border-radius: 7px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.media-module-content {
+  text-align: center;
+}
+
+.media-place-holder {
+  width: 150px;
+  height: 250px;
+}
+
+.media-content {
+  border-style: 1px solid black;
+}
+
+/**************************************************************************
+    Helper classes
+**************************************************************************/
+
 .unselectable {
    -webkit-user-select: none;
 }
@@ -28,41 +185,21 @@
   height: 100%;
 }
 
-.CodeMirror {
-  height: 100%;
-}
-
 #right-text {
   overflow: scroll;
   height: 100%;
 }
 
-.editor-btn-nav {
+.center {
+  text-align: center;
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.button-bar {
-  background-color: rgb(245, 245, 245);
-  padding: 5px;
-  border-radius: 7px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-#new-project-btn {
-    margin: 5px;
-    margin-bottom: 1.2em;
-}
-
-.main-container {
-  padding: 5px;
-  padding-right: 15px;
-  width: 98%;
-}
-
-#project-nav {
-  /*width: 20%;*/
-  /*display: none;*/
-}
+/**************************************************************************
+    Modules
+***************************************************************************/
 
 ul.modules {
   list-style-type: none;
@@ -72,28 +209,22 @@ ul.modules {
 li.modules-item {
 }
 
-
 .module {
+  /*padding: 10px;*/
+  /*margin-bottom: 5px;*/
+  background-color: rgb(255, 255, 255);
+}
+
+/*.module:hover {
   border-color: #eee;
   border-width: 1px;
   border-style: solid;
   border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: rgb(255, 255, 255);
+}*/
+
+.modules-container {
+  padding-left: 5px;
 }
-
-
-.template {
-  border-color: #eee;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: rgb(255, 255, 255);
-}
-
 
 .module-tray {
   opacity: 0;
@@ -111,7 +242,6 @@ li.modules-item {
   -webkit-transition: .4s;
 }
 
-
 .module-content .module-editor {
   border-color: rgb(225, 225, 225);
   border-width: 1px;
@@ -119,46 +249,6 @@ li.modules-item {
   /*margin: 10px;*/
   padding: 10px;
   border-radius: 5px;
-}
-
-
-
-/*Code Mirror*/
-
-.CodeMirror {
-  border: 1px solid #eee;
-  height: auto;
-}
-.CodeMirror-scroll {
-  overflow-y: hidden;
-  overflow-x: auto;
-}
-
-
-
-.media-module-content {
-  text-align: center;
-}
-
-.delete-btn {
-  margin-left: 5px;
-}
-
-
-.media-place-holder {
-  width: 150px;
-  height: 250px;
-}
-
-.media-content {
-  border-style: 1px solid black;
-}
-
-.center {
-  text-align: center;
-  float: none;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .spacer-tray {
@@ -190,26 +280,54 @@ li.modules-item {
   padding: 2px;
 }
 
-
-.header-label {
-  margin-left: 5px;
-  box-shadow: 0px 0px 4px #999999;
-}
-
-.header-icon {
-  margin-left: 4px;
-  margin-right: 4px;
-}
-
 .module-link-label {
   position: relative;
   margin-right: 5px;
   top: -2px;
 }
 
+/**************************************************************************
+    Template
+***************************************************************************/
+
+.template {
+  padding-left: 5px;
+  margin-bottom: 5px;
+  background-color: rgb(255, 255, 255);
+}
+
+/*.template:hover {
+  border-color: #eee;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+}*/
 
 /**************************************************************************
-Logger
+    Code Mirror
+***************************************************************************/
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+/**************************************************************************
+    Application
+***************************************************************************/
+
+.main-container {
+  padding: 5px;
+  padding-right: 15px;
+  width: 98%;
+}
+
+/**************************************************************************
+    Logger
 ***************************************************************************/
 
 .log-list {
@@ -241,7 +359,6 @@ Logger
   width: 100%;
 }
 
-
 .logger-content-panes {
   margin-top: 40px;
 }
@@ -255,120 +372,3 @@ Logger
 .log-pane {
   overflow: scroll;
 }
-
-/**************************************************************************/
-
-
-
-.document-container {
-  width: 95.5%;
-  margin-left: 1.75%;
-  position: absolute;
-  top: 35;
-}
-
-.document {
-  position: relative;
-}
-
-
-
-
-/**************************************************************************
-  Top Nav
-***************************************************************************/
-
-
-#nav-wrapper {
-  background:transparent;
-}
-
-ul#nav-list {
-  list-style: none;
-  background: rgb(220 ,220 ,220 );
-  position: fixed;
-  width: 100%;
-  top: 0px;
-  margin: 0;
-}
-
-
-ul#nav-list li {
-  display: inline;
-}
-
-ul#nav-list li:hover {
-  background:#ccc;
-  color:#555;
-}
-
-.nav-element {
-  margin: 0;
-  padding: 8px;
-  height: 30px;
-}
-
-#nav-input {
-  font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
-  font-size: 10px;
-  line-height: 1.8;
-  width: 720px;
-  position: relative;
-  top: 4px;
-}
-
-/**************************************************************************/
-
-/**************************************************************************
-    Sidebar
-***************************************************************************/
-
-#sidebar-wrapper {
-  background:transparent;
-}
-
-ul#sidebar-tabs {
-  list-style: none;
-  padding: 0px;
-  margin: 0px;
-  width: 30px; /*block btn size*/
-  background: rgb(220, 220, 220);
-  position: absolute;
-  top: 30px; /*block btn size*/
-  left: 0px;
-}
-
-#sidebar-content-wrapper {
-  width: 120px;
-  top: 30px;
-  position: relative;
-}
-
-#sidebar-tabs li:hover, #sidebar-tabs .current {
-  background:#ccc;
-  color:#555;
-}
-
-.block-btn {
-  margin: 0;
-  padding: 8px;
-}
-
-.modules-content {
- margin: 0px;
- padding: 0px;
-}
-
-.modules-content .item {
-  width: 100px;
-  background-color: rgb(100,200,180);
-}
-
-.vertical-grip {
-  height: 100%;
-  /*background-color: rgb(220,220,220);*/
-  width: 3;
-}
-
-/**************************************************************************/
-

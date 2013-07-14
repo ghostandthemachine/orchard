@@ -86,7 +86,8 @@
 (defn open-document
   [doc-id]
   (let-realised [doc (model/load-document doc-id)]
-    (object/raise workspace/workspace :show-document @doc)))
+    (object/raise workspace/workspace :show-document @doc)
+    (dispatch/fire :open-document @@doc)))
 
 
 (object/behavior* ::refresh
@@ -140,7 +141,6 @@
                 :init (fn [this]
                         (ctx/in! :app this)))
 
-; (object/tag-behaviors :app [::store-position-on-close ::restore-position-on-init ::restore-fullscreen])
 
 (when-not js/global.windows
   (set! js/global.windows (atom (sorted-map 0 win)))

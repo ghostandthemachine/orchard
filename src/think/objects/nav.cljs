@@ -33,14 +33,14 @@
 (defui new-doc-btn
   []
   [:li.nav-element
-    [:i.icon-plus.icon-white.nav-icon]]
+    [:i.icon-plus.icon-white]]
   :click #(think.objects.new/load-new-doc))
 
 
 (defui home-btn
   []
   [:li.nav-element
-    [:i.icon-home.icon-white.nav-icon]]
+    [:i.icon-home.icon-white]]
   :click (fn [e]
             (think.objects.app/open-document :home)))
 
@@ -59,14 +59,14 @@
 
 (defui lock-view
   [this]
-  [:i#lock-btn.icon-lock.icon-white.nav-icon]
+  [:i#lock-btn.icon-lock.icon-white]
   :mousedown (fn [& args] false)
   :click (partial lock-handler this))
 
 
 (defui unlock-view
   [this]
-  [:i#lock-btn.icon-unlock.icon-white.nav-icon]
+  [:i#lock-btn.icon-unlock.icon-white]
   :click (partial lock-handler this))
 
 
@@ -87,7 +87,7 @@
 (defui refresh-btn
   []
   [:li.nav-element
-    [:i.icon-refresh.icon-white.nav-icon]]
+    [:i.icon-refresh.icon-white]]
   :click (fn [e]
             (object/raise think.objects.app/app :refresh)))
 
@@ -95,7 +95,7 @@
 (defui synch-btn
   []
   [:li.nav-element
-    [:i.icon-sitemap.icon-white.nav-icon]]
+    [:i.icon-sitemap.icon-white]]
   :click (fn [e]
             (log "synch projects")
             (let-realised [p (model/synch-documents)]
@@ -106,18 +106,18 @@
 (defui dev-tools-btn
   []
   [:li.nav-element
-    [:i.icon-dashboard.icon-white.nav-icon]]
+    [:i.icon-dashboard.icon-white]]
   :click (fn [e]
             (object/raise think.objects.app/app :show-dev-tools)))
 
 
 (defn format-width
   [width]
-  (- width (* 6 BLOCK-SIZE) 20))
+  (- width (* 6 BLOCK-SIZE) 5))
 
 (defn text-input
   [this]
-  [:li.nav-element
+  [:li.nav-input-element
     [:input#nav-input
       {:type "text"
        :style {:width (bound this #(format-width (:window-width @this)))}}]])

@@ -252,3 +252,8 @@
 (defn window-width
   []
   (aget js/window "innerWidth"))
+
+(defn set-frame-title
+  [title]
+  (aset js/document "title" title))
+

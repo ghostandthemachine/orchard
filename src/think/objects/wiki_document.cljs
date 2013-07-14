@@ -4,8 +4,10 @@
   (:require [think.object :as object]
             [think.model :as model]
             [think.util.core :as util]
+            [think.util.dom :refer [set-frame-title]]
             [think.objects.templates.single-column :as single-column]
             [think.module :as modules]
+            [think.dispatch :as dispatch]
             [crate.binding :refer [subatom bound]]
             [think.util.log :refer [log log-obj]]))
 
@@ -91,16 +93,16 @@
              (str "[" (:title @this) "](" (:id @this) ")"))))
 
 
-(defn left-margin
-  [px]
-  (str (or px 0) "px"))
+(defn left-offset
+  [offset]
+  (str (or offset 0) "px"))
 
 
 (object/object* :wiki-document
   :triggers #{:save :lock-document :unlock-document :ready}
   :behaviors [::save-document ::lock-document ::unlock-document ::ready]
   :locked? true
-  :left 0
+  :title ""
   :init (fn [this document]
           (let-realised [template (model/get-document (:template document))]
             (let [tpl-obj (object/create (keyword (:type @template)) @template)]
@@ -108,17 +110,21 @@
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div.document {:style {:left (bound (subatom this :left) left-margin)}}
-          [:div.span12
-           [:h4
-             [:div.pull-left.module-link-label
-             		(id-btn this)]
-             (:title @this)
-             [:div.pull-right
-             		(delete-doc-btn this)]]]
+          [:div.document
+            ; {:style {:left (bound (subatom think.objects.sidebar/ :left) left-offset)}}
             [:div.row-fluid
-              (bound (subatom this [:template])
-                (partial render-template this))]]))
+              [:div
+                (bound (subatom this [:template])
+                  (partial render-template this))]
+              [:div.pull-right
+                (id-btn this)
+                (delete-doc-btn this)]]]))
+
+
+(dispatch/react-to #{:open-document}
+  (fn [_ & [document]]
+    (log (:title document))
+    (set-frame-title (:title document))))
 
 
 (defn wiki-doc
@@ -128,4 +134,6 @@
      :id (util/uuid)
      :title title
      :template (:id tpl)}))
+
+
 
