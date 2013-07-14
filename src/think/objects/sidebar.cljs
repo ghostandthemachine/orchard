@@ -127,9 +127,9 @@
                           [:div#sidebar-wrapper
                             (bound (subatom this [:items]) (partial sidebar-tabs this))]
                           [:div#sidebar-conent-wrapper {:style
-                                                        {:width (bound (subatom this :width) set-width)
-                                                         :left "30px"
-                                                         :top "-3px"
+                                                        {:width    (bound (subatom this :width) set-width)
+                                                         :left     "30px"
+                                                         :top      "30px"
                                                          :position "relative"}}
                         		[:div.sidebar-content
                         			(bound (subatom this :active) active-content)]

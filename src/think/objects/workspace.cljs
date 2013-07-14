@@ -55,6 +55,11 @@
     (:content @sidebar)))
 
 
+(defn left-offset
+  [offset]
+  (str (or offset 0) "px"))
+
+
 (object/object* ::workspace
                 :triggers  #{:show-document :add-sidebar}
                 :behaviors [::show-document ::add-sidebar]
@@ -67,6 +72,7 @@
                           [:div
                             (bound (subatom this :sidebar) render-sidebar)]
                           [:div.container-fluid.document-container
+                            {:style {:left (bound (subatom think.objects.sidebar/sidebar :width) left-offset)}}
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
 
 (def workspace (object/create ::workspace))

@@ -79,6 +79,7 @@ ul#nav-list li.nav-element:hover {
 #sidebar {
   position: absolute;
   left: 0px;
+  z-index: 999;
 }
 
 #sidebar-wrapper {
@@ -121,7 +122,6 @@ ul#sidebar-tabs {
 }
 
 .modules-content .item {
-  width: 100px;
   background-color: rgb(100,200,180);
 }
 

@@ -35,10 +35,9 @@
                 :order 1
                 :init (fn [this]
                         [:div.modules-content
-                          ; (bound (subatom this [:items]) (partial sidebar-modules this))
-                          [:div.row-fluid.item {:draggable "true"}
-                            [:h4 "Working"]]
-                          ]))
+                          (bound (subatom this [:items]) (partial modules this))
+                          [:div.item {:draggable "true"}
+                            [:h4 "Working"]]]))
 
 
 (def sidebar-modules (object/create ::sidebar.modules-selector))

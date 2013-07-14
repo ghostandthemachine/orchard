@@ -64,10 +64,10 @@
 
 (defui delete-doc-btn
 	[this]
-	[:span.btn.btn-danger.header-btn
+	[:span.header-btn
 		{:data-toggle "tooltip"
 		 :title "delete this document"}
-		[:i.icon-trash.icon-white.header-icon]]
+		[:i.icon-trash.header-icon]]
 	:click (fn [e]
             (let [msg "Are you sure you want to delete this document?\nThis will permanently delete this document."
                   delete? (js/confirm msg)]
@@ -84,18 +84,13 @@
 
 (defui id-btn
   [this]
-  [:span.btn.btn-info.header-btn
+  [:span.header-btn
    {:data-toggle "tooltip"
     :title "document hyperlink tag"}
-   [:i.icon-barcode.icon-white]]
+   [:i.icon-barcode]]
   :click (fn [e]
            (copy-to-clipboard-prompt
              (str "[" (:title @this) "](" (:id @this) ")"))))
-
-
-(defn left-offset
-  [offset]
-  (str (or offset 0) "px"))
 
 
 (object/object* :wiki-document
@@ -111,12 +106,11 @@
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
           [:div.document
-            ; {:style {:left (bound (subatom think.objects.sidebar/ :left) left-offset)}}
             [:div.row-fluid
               [:div
                 (bound (subatom this [:template])
                   (partial render-template this))]
-              [:div.pull-right
+              [:div.pull-left
                 (id-btn this)
                 (delete-doc-btn this)]]]))
 
