@@ -45,11 +45,10 @@
 
 
 (deftest testing-testing
-  (is (= 1 1)))
-
-
-(deftest testing-testing2
-  (is (= 1 0)))
+  (let-realised [d (model/get-document :home)]
+    (log "realizing document in test")
+    (log-obj @d)
+    (is (= @d @d))))
 
 
 (defn run-tests

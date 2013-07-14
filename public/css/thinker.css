@@ -130,6 +130,17 @@ ul#sidebar-tabs {
   /*background-color: rgb(220,220,220);*/
   width: 3;
 }
+/*
+.animated #multi {
+  -webkit-transition: bottom 0.1s ease-in-out, left 0.1s ease-in-out; }
+
+.animated #bottombar {
+  -webkit-transition: height 0.1s ease-in-out, left 0.1s ease-in-out; }*/
+
+.animated #side .content-wrapper {
+  -webkit-transition: width 0.1s ease-in-out; 
+}
+
 
 /**************************************************************************
     Drag and drop

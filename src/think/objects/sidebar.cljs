@@ -92,6 +92,7 @@
                               ; (log "Toggle sidebar item " item)
                               (if (not= item (:active @this))
                                 (do
+                                  (anim/on)
                                   ; (log "Setting active sidebar content")
                                   ; (log-obj item)
                                   (object/merge! this {:active item
