@@ -6,45 +6,56 @@
             [crate.binding :refer [map-bound bound subatom]]))
 
 
-(defui module-item [this item]
-  (let [{:keys [label]} @item]
-    [:li {:class (bound this #(when (= item (:active %))
-                                "current"))}
-                        label])
+(defui module-item
+  [item]
+  [:li.modules-content-item
+    item]
   :click (fn [e]
-           (log "click module " (:label @item))
+           (log "click module ")
            ))
 
 
-(defui modules
-  [this mods]
-  [:ul#modules-sidebar
-    (for [[_ t] mods]
-      (module-item this t))])
+(defui render-modules
+  [mods]
+  [:ul.modules-content-list
+    (for [m mods]
+      (module-item m))])
 
 
 (defui modules-icon
   []
   [:i.icon-tasks])
 
-(object/object* ::sidebar.modules-selector
+(defui templates-item
+  []
+  [:h2.sidebar-content-title "Templates"])
+
+(defui modules-item
+  []
+  [:h2.sidebar-content-title "Modules"])
+
+(defui elements-item
+  []
+  [:h2.sidebar-content-title "Elements"])
+
+
+(defn add-item [this item]
+  (object/update! this [:items] conj item))
+
+(object/object* ::sidebar.modules
                 :triggers #{}
                 :behaviors [::toggle]
                 :label "modules"
+                :items []
                 :icon (modules-icon)
-                :order 1
                 :init (fn [this]
+                        (doseq [item [(templates-item) (modules-item) (elements-item)]]
+                          (add-item this item))
                         [:div.modules-content
-                          (bound (subatom this [:items]) (partial modules this))
-                          [:div.item {:draggable "true"}
-                            [:h4 "Working"]]]))
+                          (bound (subatom this [:items]) render-modules)]))
 
 
-(def sidebar-modules (object/create ::sidebar.modules-selector))
+(def sidebar-modules (object/create ::sidebar.modules))
 
 
-; (sidebar/add-item sidebar-modules)
 
-
-(defn add-item [item]
-  (object/update! sidebar-modules [:items] assoc (:order @item) item))

@@ -6,7 +6,7 @@
   width: 96%;
   margin-left: 1%;
   position: absolute;
-  top: 27;
+  top: 30px;
 }
 
 .header-label {
@@ -55,21 +55,29 @@ ul#nav-list li.nav-element:hover {
   margin: 0;
   padding: 8px;
   height: 30px;
+  -webkit-user-select: none;
+  user-select: none;
+
 }
 
 .nav-input-element {
   margin: 0;
-  padding: 8px;
   height: 30px; 
 }
 
 #nav-input {
   font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.8;
-  width: 720px;
+  /*width: 720px;*/
   position: relative;
-  top: 5px;
+  top: 0px;
+}
+
+.nav-input-element input#nav-input {
+  height: 22px;
+  padding-left: 5px;
+  margin: 4px;
 }
 
 /**************************************************************************
@@ -104,7 +112,7 @@ ul#sidebar-tabs {
 }
 
 #sidebar-tabs li:hover, #sidebar-tabs .current {
-  background:#ccc;
+  background: rgb(200,200,200);
   color:#555;
 }
 
@@ -114,6 +122,9 @@ ul#sidebar-tabs {
   border-width: 1px;
   border-color: rgb(200,200,200);
   border-style: solid;
+  -webkit-user-select: none;
+  user-select: none;
+
 }
 
 .modules-content {
@@ -122,25 +133,39 @@ ul#sidebar-tabs {
 }
 
 .modules-content .item {
-  background-color: rgb(100,200,180);
+  /*background-color: rgb(100,200,180);*/
 }
 
-.vertical-grip {
-  height: 100%;
-  /*background-color: rgb(220,220,220);*/
-  width: 3;
-}
-/*
-.animated #multi {
-  -webkit-transition: bottom 0.1s ease-in-out, left 0.1s ease-in-out; }
-
-.animated #bottombar {
-  -webkit-transition: height 0.1s ease-in-out, left 0.1s ease-in-out; }*/
-
-.animated #side .content-wrapper {
+.animated #sidebar .content-wrapper {
   -webkit-transition: width 0.1s ease-in-out; 
 }
 
+.modules-content-list {
+  list-style: none;
+  margin: 0px;
+}
+
+.modules-content-item {
+  background: rgb(220, 220, 220);
+  border-color: rgb(200, 200, 200);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.modules-content-item:hover {
+  background: rgb(200, 200, 200);
+  border-color: rgb(180, 180, 180);
+  border-width: 1px;
+  border-style: solid;
+}
+
+h2.sidebar-content-title {
+  font-size: 16.5px;
+  height: 36px;  /*This should only be 30...*/
+  margin: 0;
+  text-align: center;
+  padding: 0;
+}
 
 /**************************************************************************
     Drag and drop
@@ -249,7 +274,7 @@ li.modules-item {
   border-radius: 10px;
   right: -12px;
   float: right;
-  top: -6px;
+  /*top: -6px;*/
   -webkit-transition: .4s;
 }
 
@@ -382,4 +407,17 @@ li.modules-item {
 
 .log-pane {
   overflow: scroll;
+}
+
+/**************************************************************************
+    Draggable
+***************************************************************************/
+
+/* Prevent the text contents of draggable elements from being selectable. */
+[draggable] {
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
 }

@@ -12,23 +12,26 @@
 (defn test-doc
   []
   {:type :test-document
-   :_id  (util/uuid)
+   :id  (util/uuid)
    :body "This is a test body"})
 
 
-; (deftest save-doc-test
-;   (let [doc   (test-doc)
-;         okeys (keys doc)]
-;     (let-realised [sd (model/save-document doc)]
-;       (let-realised [gd (model/get-document (:id doc))]
-;         (testing "testing save-document"
-;           (is (= doc (select-keys @gd (keys doc)))))))))
+(deftest save-doc-test
+   (let [doc   (test-doc)
+         okeys (keys doc)]
+     (log (str "current database: " @think.model/model-db*))
+     (let-realised [sd (model/save-document doc)]
+       (let-realised [gd (model/get-document (:id doc))]
+         (testing "testing save-document"
+           (is (= doc (select-keys @gd (keys doc)))))))))
 
 
 (defn teardown-test
   []
   (log "Destroying testing database")
-  (db/delete-db "testing"))
+  ;(db/delete-db "testing")
+  (log "Loading projects database")
+  (model/load-db))
 
 
 (defn setup-test
@@ -39,20 +42,26 @@
 
 (use-fixtures :once
   (fn [f]
-    (setup-test)
-    (f)
-    (teardown-test)))
+    (let [db (setup-test)]
+      (p/on-realised db
+        (fn on-success []
+          (f)
+          (teardown-test))
+        (fn on-error []
+          (log "Error trying to load testing database"))))))
 
 
-(deftest testing-testing
+(deftest testing-promise
   (let-realised [d (model/get-document :home)]
     (log "realizing document in test")
     (log-obj @d)
     (is (= @d @d))))
 
+(deftest testing-1
+  (is
+    (= 1 1)))
+
 
 (defn run-tests
   []
-
-
   (test-ns 'test.model))

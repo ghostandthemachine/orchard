@@ -37,12 +37,32 @@
 
 (defn by-id
   [id]
-  (.get (.find (body$) id) 0))
+  (.get (.find (body$) (str "#" id)) 0))
 
 
 (defn tab-elem
   [id]
   (.find (body$) (str "li a[href='" id "']")))
+
+
+(defn scroll-to
+  ([elem pos]
+    (scroll-to elem pos 1))
+  ([elem pos dur]
+    (.animate (js/$ elem)
+      (clj->js
+        {:scrollTop pos})
+      dur)))
+
+(defn scroll-to-top-of
+  [elem1 elem2]
+  (scroll-to elem1
+    (.-top (.offset (js/$ elem2)))))
+
+(defn scroll-to-end
+  [elem]
+  (scroll-to elem
+    (.-scrollHeight elem)))
 
 
 (defn append-message

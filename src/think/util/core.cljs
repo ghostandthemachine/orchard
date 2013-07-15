@@ -457,3 +457,11 @@
     (by-id js/document id))
   ([document id]
     (.getElementById document (name id))))
+
+(defn parse-int
+  [str-int]
+  (js/global.parseInt str-int))
+
+(defn computed-style
+  [elem]
+  (.getComputedStyle js/window elem))
