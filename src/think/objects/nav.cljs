@@ -124,7 +124,11 @@
 
 (defn format-width
   [width]
-  (- width (accum-btn-widths) 16))
+  (let [bounds (or (accum-btn-widths) 0)]
+    (- width
+      (if (> 0 bounds)
+        bounds
+        180))))
 
 (defn text-input
   [this]

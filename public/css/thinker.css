@@ -39,6 +39,7 @@ ul#nav-list {
   width: 100%;
   top: 0px;
   margin: 0;
+  overflow: hidden;
 }
 
 
@@ -67,9 +68,9 @@ ul#nav-list li.nav-element:hover {
 
 #nav-input {
   font-family: 'Helvetica', Arial, Lucida Grande, sans-serif !important;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.8;
-  width: 710px;
+  width: 70px;
   position: relative;
   top: 0px;
 }
@@ -77,6 +78,8 @@ ul#nav-list li.nav-element:hover {
 .nav-input-element input#nav-input {
   height: 22px;
   padding-left: 5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   margin: 4px;
 }
 
