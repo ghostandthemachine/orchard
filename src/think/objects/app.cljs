@@ -114,8 +114,7 @@
 
               (.tooltip (js/$ ".sidebar-tab-item"))
               (open-document :home)
-              (nw/show)
-              (.showDevTools win)))
+              (nw/show)))
 
 
 (object/behavior* ::quit

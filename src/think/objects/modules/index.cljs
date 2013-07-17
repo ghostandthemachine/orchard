@@ -70,6 +70,8 @@
                 :mode :present
                 :init (fn [this record]
                         (object/merge! this record)
+                        (log "creating index module")
+                        (log-obj (clj->js @this))
                         (bound-do (subatom this [:mode]) (partial render-module this))
                         (load-index this)
                         [:div.span12.module.index-module {:id (str "module-" (:id @this))}

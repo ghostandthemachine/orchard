@@ -46,7 +46,7 @@
 (object/object* :html-module
   :tags #{:module}
   :triggers #{:save :delete}
-  :behaviors [:think.objects.modules/save-module :think.objects.modules/delete-module]
+  :behaviors [:think.module/save-module :think.module/delete-module]
   :mode :present
   :editor nil
   :icon icon

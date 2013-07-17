@@ -39,7 +39,7 @@
 
 (defn try-connect
   [res-prom db-name]
-  (log "couchdb try-connect...")
+  (log "model try-connect...")
   (let [db-prom (db/open db-name)]
     (p/on-realised db-prom
                    (fn on-success []
@@ -58,7 +58,7 @@
    (db/start!)
    (let [res-prom (p/promise)]
      (log "loading database: " db-name)
-     (time/run-in CONNECT-RETRY-MS #(try-connect res-prom db-name))
+     (try-connect res-prom db-name)
      res-prom)))
 
 

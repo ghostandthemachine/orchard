@@ -31,38 +31,39 @@
 
 (object/behavior* ::save-template
   :triggers #{:save}
-  :reaction (fn [this]
-              (let [mod-ids      (map #(:id @%)
-                                   (filter
-                                     #(not= (:type @%) "module-selector-module") (:modules @this)))
-                    original-doc (first (:args @this))
-                    rev          (:rev original-doc)
-                    id           (:id original-doc)
-                    doc-keys     (into []
-                    								(distinct
-                    									(conj
-                    										(keys original-doc)
-                    										:id :rev)))
-                    orig-vals     (select-keys @this doc-keys)
-                    ;; TODO This should not need to be done so explicitly but
-                    ;; is not working without out associating the id and rev
-                    ;; specifically
-                    new-doc       (assoc orig-vals
-                    								:modules mod-ids
-                                    ;; get the most current rev,
-                    								:rev     (or (:rev @this) (:rev original-doc))
-                    								:id      (:id original-doc))]
-                (log "saving template document...")
-                (let [doc (model/save-document new-doc)]
-                  (p/on-realised doc
-                  	(fn []
-                        (let [rev (:rev @doc)]
-                          (log "done [rev = " rev "]")
-                          (object/assoc! this :rev rev)))
-                  	(fn [err]
-                      (log "error loading doc " err)
-                      (log "initial rev: " (:rev (first (:args @this))))
-                      (log "current rev: " (:rev @this))))))))
+  :reaction 
+  (fn [this]
+    (let [mod-ids      (map #(:id @%)
+                            (filter
+                              #(not= (:type @%) "module-selector-module") (:modules @this)))
+          original-doc (first (:args @this))
+          rev          (:rev original-doc)
+          id           (:id original-doc)
+          doc-keys     (into []
+                             (distinct
+                               (conj
+                                 (keys original-doc)
+                                 :id :rev)))
+          orig-vals     (select-keys @this doc-keys)
+          ;; TODO This should not need to be done so explicitly but
+          ;; is not working without out associating the id and rev
+          ;; specifically
+          new-doc       (assoc orig-vals
+                               :modules mod-ids
+                               ;; get the most current rev,
+                               :rev     (or (:rev @this) (:rev original-doc))
+                               :id      (:id original-doc))]
+      (log "saving template document...")
+      (let [doc (model/save-document new-doc)]
+        (p/on-realised doc
+                       (fn []
+                         (let [rev (:rev @doc)]
+                           (log "done [rev = " rev "]")
+                           (object/assoc! this :rev rev)))
+                       (fn [err]
+                         (log "error loading doc " err)
+                         (log "initial rev: " (:rev (first (:args @this))))
+                         (log "current rev: " (:rev @this))))))))
 
 
 (object/behavior* ::remove-module

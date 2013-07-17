@@ -23,7 +23,7 @@
             (cond
               (seq? x) (doall (map thisfn x))
               (coll? x) (into (empty x) (map thisfn x))
-              (goog.isArray x) (vec (map thisfn x))
+              (goog.isArray x) (vec (map thisfn (array-seq x)))
               (or force-obj
                   (identical? (type x) js/Object)
                   (identical? (type x) js/global.Object)) (into {} (for [k (js-keys x)]
