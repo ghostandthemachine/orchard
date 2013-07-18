@@ -22,6 +22,8 @@
 
 (defonce db-proc (os/process "couchdb"))
 
+(log "DB PROC")
+(log-obj db-proc)
 
 (defn- start-db
   []

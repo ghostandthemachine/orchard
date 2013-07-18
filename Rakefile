@@ -4,7 +4,7 @@ APP_SOURCES = "package.json public/index.html js css"
 VOICE_RATE = 280
 
 def node_webkit_path
-    return "/Applications/node-webkit.app/Contents/MacOS/node-webkit"
+    return "/Applications/Thinker.app/Contents/MacOS/node-webkit"
 end
 
 def node_running?
