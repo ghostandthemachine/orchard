@@ -6,7 +6,7 @@
   width: 96%;
   margin-left: 1%;
   position: absolute;
-  top: 30px;
+  top: 45px;
 }
 
 .header-label {
@@ -91,6 +91,7 @@ ul#nav-list li.nav-element:hover {
   position: absolute;
   left: 0px;
   z-index: 999;
+  height: 30px;
 }
 
 #sidebar-wrapper {

@@ -49,16 +49,15 @@
                 default-opts)]
       (object/assoc! this :editor cm)
       (.setValue cm (:text @this)))
-    (object/assoc! this :text (.getValue (:editor @this))))
-    (log (str "#module-" (:id @this) " .module-content a"))
-    (log (dom/$ (str "#module-" (:id @this) " .module-content a"))))
-
+    (do
+      (log "saving new markdown text...")
+      (object/assoc! this :text (.getValue (:editor @this))))))
 
 
 (object/object* :markdown-module
                 :tags #{:modules}
                 :triggers #{:delete-module :save}
-                :behaviors [:think.objects.modules/delete-module :think.objects.modules/save-module]
+                :behaviors [:think.module/delete-module :think.module/save-module]
                 :mode :present
                 :label "Markdown"
                 :icon icon
@@ -68,7 +67,8 @@
                         (bound-do (subatom this :mode)
                                   (partial render-module this))
                         (bound-do (subatom this :text)
-                                  (fn [_]
+                                  (fn [& args]
+                                    (log "inside :text handler...")
                                     (object/raise this :save)))
                         (module-view this
                           [:div.module-element (render-present this)])))

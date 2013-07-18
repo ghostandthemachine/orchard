@@ -1,24 +1,23 @@
 (defproject thinker "0.1.0-SNAPSHOT"
   :description "Organize your thoughts and things."
   :min-lein-version "2.0.0"
-  :dependencies [[node-webkit-cljs "0.1.4"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [org.clojure/clojurescript "0.0-1820"]
+                 [org.clojure/core.async "0.1.0-SNAPSHOT"]
+                 [com.cemerick/clojurescript.test "0.0.4"]
                  [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]
-                 ; [com.keminglabs/c2 "0.2.2"]
-                 [com.cemerick/clojurescript.test "0.0.4"]
-                 ;[org.clojure/clojurescript "0.0-1586"]
-                 ;[org.clojure/clojurescript "0.0-1835"]
-                 [org.clojure/core.async "0.1.0-SNAPSHOT"]]
+                 [node-webkit-cljs "0.1.4"]]
 
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds [{:source-paths ["src" "test"]
+                        :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/thinker.js"
-                                   :notify-command ["growlnotify" "-m" "%"]
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
