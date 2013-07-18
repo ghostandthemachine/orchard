@@ -1,11 +1,14 @@
 (ns think.couchdb
-  (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require-macros [think.macros :refer [defonce]])
-  (:require [redlobster.promise :as p]
-            [think.object :as object]
-            [think.util.core :as util]
-            [think.util.os :as os]
-            [think.util.log :refer (log log-obj log-err)]))
+  (:require-macros
+    [think.macros :refer [defonce]]
+    [redlobster.macros :refer [when-realised let-realised defer-node]]
+    [cljs.core.async.macros :as m :refer [go alt! alts!]])
+  (:require
+    [redlobster.promise :as p]
+    [think.object :as object]
+    [think.util.core :as util]
+    [think.util.os :as os]
+    [think.util.log :refer (log log-obj log-err)]))
 
 
 (def db* (atom nil))

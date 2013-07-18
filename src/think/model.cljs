@@ -1,14 +1,18 @@
 (ns think.model
-  (:refer-clojure  :exclude [create-node])
-  (:use [think.util.log :only [log log-obj]])
-  (:use-macros [redlobster.macros :only [when-realised let-realised defer-node]]
-               [think.macros :only [defui]])
-  (:require [think.util.core    :as util]
-            [think.util.time    :as time]
-            [think.couchdb      :as db]
-            [think.object       :as object]
-            [redlobster.promise :as p]
-            [dommy.template     :as tpl]))
+  (:refer-clojure :exclude [create-node])
+  (:require-macros
+    [redlobster.macros :refer [when-realised let-realised defer-node]]
+    [cljs.core.async.macros :as m :refer [go alt! alts!]])
+  (:require
+    [think.util.core    :as util]
+    [think.util.time    :as time]
+    [cljs.core.async :refer (chan >!! <!! close! thread)]
+    [think.util.log :refer (log log-obj)]
+    [clojure.string :as string]
+    [think.couchdb      :as db]
+    [think.object       :as object]
+    [redlobster.promise :as p]
+    [dommy.template     :as tpl]))
 
 
 (def do-log true)
