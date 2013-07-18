@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nw="/Applications/Thinker.app/Contents/MacOS/node-webkit"
+nw = "/Applications/Thinker.app/Contents/MacOS/node-webkit"
 
 if pgrep node
 then
