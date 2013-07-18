@@ -54,7 +54,7 @@ ul#nav-list li.nav-element:hover {
 
 .nav-element {
   margin: 0;
-  padding: 8px;
+  padding: 7px;
   height: 30px;
   -webkit-user-select: none;
   user-select: none;
