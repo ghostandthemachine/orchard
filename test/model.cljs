@@ -51,16 +51,17 @@
           (log "Error trying to load testing database"))))))
 
 
-(deftest testing-testing
-  (is (= 1 1)))
+(deftest testing-promise
+  (let-realised [d (model/get-document :home)]
+    (log "realizing document in test")
+    (log-obj @d)
+    (is (= @d @d))))
 
-
-(deftest testing-testing2
-  (is (= 1 0)))
+(deftest testing-1
+  (is
+    (= 1 1)))
 
 
 (defn run-tests
   []
-
-
   (test-ns 'test.model))

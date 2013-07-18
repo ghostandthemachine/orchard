@@ -36,10 +36,13 @@
 
 ;; CSS selection, modification
 
-(defn $$ [query elem]
+(defn $$
+  ([query]
+    ($$ query nil))
+  ([query elem]
   (let [elem (or elem js/document)
         res (.querySelectorAll elem (name query))]
-    res))
+    res)))
 
 
 (defn $

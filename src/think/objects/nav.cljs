@@ -4,7 +4,7 @@
   (:require [think.object :as object]
             [think.util.log :refer [log log-obj]]
             [think.util.core :as util]
-            [think.util.dom :refer [window-width]]
+            [think.util.dom :refer [window-width $$ $]]
             [think.objects.workspace :as workspace]
             [think.util.dom :as dom]
             [crate.binding :refer [map-bound bound subatom]]
@@ -111,9 +111,24 @@
             (object/raise think.objects.app/app :show-dev-tools)))
 
 
+(defn accum-btn-widths
+  []
+  (apply + (map #(aget % "offsetWidth") ($$ ".nav-element"))))
+
+(defn accum-padding
+  [elem]
+  (let [style (util/computed-style elem)]
+    (+
+      (util/parse-int (aget style "paddingLeft"))
+      (util/parse-int (aget style "paddingRight")))))
+
 (defn format-width
   [width]
-  (- width (* 6 BLOCK-SIZE) 5))
+  (let [bounds (or (accum-btn-widths) 0)]
+    (- width
+      (if (> 0 bounds)
+        bounds
+        180))))
 
 (defn text-input
   [this]
