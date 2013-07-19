@@ -2,9 +2,9 @@
 
 nw="/Applications/Thinker.app/Contents/MacOS/node-webkit"
 
-if pgrep node
+if pgrep app.js
 then
-      donothing=0
+    donothing=0
 else
     node app.js &
 fi

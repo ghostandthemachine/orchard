@@ -25,7 +25,6 @@
 
 (defonce db-proc (os/process "couchdb"))
 
-
 (defn- start-db
   []
   (doseq [pipe [(.-stdout db-proc) (.-stderr db-proc)]]

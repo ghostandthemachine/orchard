@@ -4,7 +4,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-1820"]
                  [org.clojure/core.async "0.1.0-SNAPSHOT"]
-                 [com.cemerick/clojurescript.test "0.0.4"]
+                 [com.cemerick/clojurescript.test "0.0.5-SNAPSHOT"]
                  [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
                  [org.bodil/redlobster "0.2.0"]
@@ -16,8 +16,8 @@
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds [{:source-paths ["src" "test"]
+                        :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/thinker.js"
-                                   :notify-command ["growlnotify" "-m" "%"]
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
