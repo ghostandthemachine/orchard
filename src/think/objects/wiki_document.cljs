@@ -1,15 +1,19 @@
 (ns think.objects.wiki-document
-  (:use-macros [think.macros :only [defui defgui]]
-               [redlobster.macros :only [let-realised]])
-  (:require [think.object :as object]
-            [think.model :as model]
-            [think.util.core :as util]
-            [think.util.dom :refer [set-frame-title]]
-            [think.objects.templates.single-column :as single-column]
-            [think.module :as modules]
-            [think.dispatch :as dispatch]
-            [crate.binding :refer [subatom bound]]
-            [think.util.log :refer [log log-obj]]))
+  (:require-macros 
+    [think.macros :refer [defui defgui]]
+    [cljs.core.async.macros :as m :refer [go alt! alts!]]
+    [redlobster.macros :refer [let-realised]])
+  (:require 
+    [cljs.core.async :refer (chan >!! <!! thread timeout)]
+    [think.object :as object]
+    [think.model :as model]
+    [think.util.core :as util]
+    [think.util.dom :refer [set-frame-title]]
+    [think.objects.templates.single-column :as single-column]
+    [think.module :as modules]
+    [think.dispatch :as dispatch]
+    [crate.binding :refer [subatom bound]]
+    [think.util.log :refer [log log-obj]]))
 
 
 (defui render-template
@@ -99,8 +103,9 @@
   :locked? true
   :title ""
   :init (fn [this document]
-          (let-realised [template (model/get-document (:template document))]
-            (let [tpl-obj (object/create (keyword (:type @template)) @template)]
+          (go
+            (let [template (<! (model/get-document (:template document)))
+                  tpl-obj  (object/create (keyword (:type template)) template)]
               (object/assoc! this :template tpl-obj)
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))

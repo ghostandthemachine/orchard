@@ -1,15 +1,18 @@
 (ns think.objects.templates.single-column
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [when-realised let-realised defer-node]])
-  (:require [think.object :as object]
-            [think.util.log :refer [log log-obj]]
-            [think.util.core :as util]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [think.module :refer [top-spacer spacer]]
-            [think.objects.modules.module-selector :as selector]
-            [crate.binding :refer [map-bound bound subatom]]
-            [redlobster.promise :as p]))
+  (:require-macros
+    [think.macros :refer [defui]]
+     [cljs.core.async.macros :as m :refer [go alt! alts!]])
+  (:require
+    [cljs.core.async :refer (chan >!! <!! close! thread timeout)]
+    [think.object :as object]
+    [think.util.log :refer [log log-obj]]
+    [think.util.core :as util]
+    [think.util.dom :as dom]
+    [think.model :as model]
+    [think.module :refer [top-spacer spacer]]
+    [think.objects.modules.module-selector :as selector]
+    [crate.binding :refer [map-bound bound subatom]]
+    [redlobster.promise :as p]))
 
 
 (object/behavior* ::ready
@@ -60,15 +63,16 @@
                                :id      (:id original-doc))]
       (log "saving template document...")
       (let [doc (model/save-document new-doc)]
-        (p/on-realised doc
-                       (fn []
-                         (let [rev (:rev @doc)]
-                           (log "done [rev = " rev "]")
-                           (object/assoc! this :rev rev)))
-                       (fn [err]
-                         (log "error loading doc " err)
-                         (log "initial rev: " (:rev (first (:args @this))))
-                         (log "current rev: " (:rev @this))))))))
+        (p/on-realised 
+          doc
+          (fn []
+            (let [rev (:rev @doc)]
+              (log "done [rev = " rev "]")
+              (object/assoc! this :rev rev)))
+          (fn [err]
+            (log "error loading doc " err)
+            (log "initial rev: " (:rev (first (:args @this))))
+            (log "current rev: " (:rev @this))))))))
 
 
 (object/behavior* ::remove-module
@@ -96,15 +100,12 @@
   :tags #{:template}
   :behaviors [::save-template ::ready ::remove-module ::add-module]
   :init (fn [this tpl]
-          (let-realised [mods (util/await (map model/get-document (:modules tpl)))]
-            (let [module-objs (map
-                                #(object/create
-                                   (keyword (:type %)) %)
-                                @mods)
-                  new-tpl     (assoc tpl :modules module-objs)]
-              (object/merge! this new-tpl)
-              (doseq [mod module-objs]
-                (object/parent! this mod))))
+          (doseq [ch (map model/get-document (:modules tpl))]
+            (go
+              (let [mod-record (<! ch)
+                    module (object/create (keyword (:type mod-record)) mod-record)]
+                (object/parent! this module)
+                (object/update! this [:modules] conj module))))
           [:div.template.single-column-template
            [:div.modules-container
             (bound (subatom this :modules)
@@ -117,4 +118,5 @@
     {:type :single-column-template
      :modules mod-ids
      :id (util/uuid)}))
+
 

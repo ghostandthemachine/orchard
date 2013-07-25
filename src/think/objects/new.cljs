@@ -1,17 +1,21 @@
 (ns think.objects.new
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised when-realised]])
-  (:require [think.object :as object]
-            [think.model :as model]
-            [dommy.core :as dommy]
-            [think.objects.templates.single-column :as single-column]
-            [think.objects.modules.markdown :as markdown]
-            [think.objects.wiki-document :as wiki-doc]
-            [think.objects.workspace :as workspace]
-            [think.module :as modules]
-            [crate.binding :refer [subatom bound]]
-            [think.util.log :refer [log log-obj]]
-            [think.util.dom :as dom]))
+  (:require-macros 
+    [think.macros :refer [defui]]
+    [cljs.core.async.macros :as m :refer [go]]
+    [redlobster.macros :refer [let-realised when-realised]])
+  (:require 
+    [think.object :as object]
+    [cljs.core.async :refer [chan >! <! timeout]]
+    [think.model :as model]
+    [dommy.core :as dommy]
+    [think.objects.templates.single-column :as single-column]
+    [think.objects.modules.markdown :as markdown]
+    [think.objects.wiki-document :as wiki-doc]
+    [think.objects.workspace :as workspace]
+    [think.module :as modules]
+    [crate.binding :refer [subatom bound]]
+    [think.util.log :refer [log log-obj]]
+    [think.util.dom :as dom]))
 
 
 ;TODO: once finer grain pouch queries are working the templates should be loaded not hard coded
@@ -56,12 +60,8 @@
     (let-realised [tpl-doc (case tpl
                             :single-column (single-column/single-column-template-doc @md-doc))]
       (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
-      	(let-realised [new-document-obj (model/load-document (:id @wiki-doc))]
-      		;; BUG
-      		;; For some reason the new-document-obj promise does not realize unless
-      		;; it is (redlobster) derefed with @
-      		;; (log-obj @new-document-obj)
-	        (object/raise workspace/workspace :show-document @new-document-obj))))))
+        (go
+          (object/raise workspace/workspace :show-document (<! (model/load-document (:id @wiki-doc)))))))))
 
 
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
