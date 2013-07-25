@@ -82,7 +82,6 @@
 (defn ready? [this]
   (= 0 (:delays @this)))
 
-
 (defn open-document
   [doc-id]
   (let-realised [doc (model/load-document doc-id)]
@@ -100,7 +99,7 @@
   :triggers #{:start}
   :reaction (fn [this]
               (setup-tray)
-              (restore-session)
+              ; (restore-session)
               (.on win "close"
                    (fn []
                      (save-session)
