@@ -1,9 +1,10 @@
 (ns think.couchdb
   (:require-macros
-    [think.macros :refer [defonce]]
+    [think.macros :refer [defonce node-chan]]
     [redlobster.macros :refer [when-realised let-realised defer-node]]
     [cljs.core.async.macros :as m :refer [go alt! alts!]])
   (:require
+    [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
     [redlobster.promise :as p]
     [think.object :as object]
     [think.util.core :as util]
@@ -78,7 +79,7 @@
   "List all the DBs available on this server."
   ([] (list-all nano))
   ([server]
-   (defer-node (.list (.-db server)) array-seq)))
+   (node-chan (.list (.-db server)) array-seq)))
 
 
 (defn replicate-db
@@ -89,22 +90,38 @@
   ([server src tgt]
    (defer-node (.replicate (.-db server) src tgt (clj->js {})))))
 
-
 (defn open
   "Open a database by name."
   ([db-name] (open nano db-name))
   ([server db-name]
    (let [db-promise (p/promise)]
-     (let-realised [dbs (list-all server)]
-       (if (some #{db-name} @dbs)
+     (go
+       (let [dbs (<! (list-all server))]
+         (log "got dbs: " dbs)
+       (if (some #{db-name} dbs)
          (do
            (log (str "Using existing database: " db-name))
            (p/realise db-promise (.use server db-name)))
          (do
            (log (str "Creating new database: " db-name))
            (let-realised [db-res (.create (.-db server) db-name)]
-           (p/realise db-promise (.use server db-name))))))
+           (p/realise db-promise (.use server db-name)))))))
      db-promise)))
+
+
+(comment defn open
+  "Open a database by name."
+  ([db-name] (open nano db-name))
+  ([server db-name]
+   (let [db-chan (chan)]
+     (go
+       (if (some #{db-name} (<! (list-all server)))
+           (log (str "Using existing database: " db-name))
+         (do
+           (log (str "Creating new database: " db-name))
+           (<! (node-chan (.create (.-db server) db-name)))))
+       (>! db-chan (.use server db-name)))
+     db-chan)))
 
 
 (defn delete-db

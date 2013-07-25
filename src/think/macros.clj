@@ -1,6 +1,7 @@
 (ns think.macros
   [:refer-clojure :exclude [defonce]]
   (:require [clojure.string :as str]
+            ;[cljs.core.async :refer [go chan >! <! put! timeout alts!]]
             [cljs.analyzer :refer (*cljs-ns* get-expander)]))
 
 
@@ -43,4 +44,22 @@
       (aget js/global (nssym ~n))
       (aset js/global (nssym ~n) ~value))))
 
+(defmacro node-chan
+  "Appends a callback to a given form which takes two arguments `[error value]`
+and executes it, returning a channel that will receive `error` if `error`
+is truthy, or `value` if `error` is falsy. This is a standard
+node.js callback scheme. For example:
+
+    (node-chan (.readFile fs \"/etc/passwd\"))
+"
+  ([form transformer]
+     `(let [chan# (cljs.core.async/chan)
+            callback# (fn [error# value#]
+                        (if error#
+                          (cljs.core.async/put! chan# error#)
+                          (cljs.core.async/put! chan# (~transformer value#))))]
+        (~@form callback#)
+        chan#))
+  ([form]
+     `(node-chan ~form identity)))
 
