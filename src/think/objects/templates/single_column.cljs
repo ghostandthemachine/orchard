@@ -14,7 +14,12 @@
 
 (object/behavior* ::ready
   :triggers #{:ready}
-  :reaction (fn [this id] ))
+  :reaction (fn [this id]
+              (log "Single Column template ready")
+              (log-obj (:modules @this))
+              (doseq [mod (:modules @this)]
+                (log (str "mod of type " (:type @mod) " ready"))
+                (object/raise mod :ready))))
 
 
 (defui render-modules

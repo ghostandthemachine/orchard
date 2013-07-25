@@ -111,6 +111,15 @@
     (object/parent! parent new-mod)))
 
 
+(defn init-tinymce
+  []
+  (log "Init tinyMCE")
+  (.init js/tinyMCE
+    (clj->js
+      {:mode "specific_textareas"
+       :editor_selector "tiny-mce-editor"})))
+
+
 (defui create-module-icon
   [template index icon create-fn]
   [:div.module-selector-icon
@@ -147,6 +156,9 @@
                   :content (object/parent module))]
     [:div.popover-container
       (for [icon [(create-module-icon template index
+                    think.objects.modules.tiny-mce/icon
+                    think.objects.modules.tiny-mce/create-module)
+                  (create-module-icon template index
                     think.objects.modules.markdown/icon
                     think.objects.modules.markdown/create-module)
                   (create-module-icon template index

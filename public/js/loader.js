@@ -12,9 +12,8 @@ var css_files = [
 
 var js_files = [
     "js/jquery-1.9.0.js",
-    "js/jquery.sortable.min.js",
-    "js/jquery-ui.js",
-    "js/throttle.js",
+    // "js/jquery.sortable.min.js",
+    // "js/throttle.js",
 
     "js/codemirror.js",
     "js/cm/clojure.js",
@@ -23,13 +22,16 @@ var js_files = [
 
     "js/markdown_parser.js",
 
+    "js/tinymce/tinymce.min.js",
+
+
     // "js/pdf/compatibility.js",
     // "js/pdf/l10n.js",
     "js/pdf.js",
     // "js/pdf/debugger.js",
     // "js/pdf/viewer.js",
 
-    "js/d3.v3.min.js",
+    // "js/d3.v3.min.js",
 
     "bootstrap/js/bootstrap.min.js",
     
