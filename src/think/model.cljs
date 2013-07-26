@@ -1,7 +1,7 @@
 (ns think.model
   (:refer-clojure :exclude [create-node])
   (:require-macros
-    [redlobster.macros :refer [when-realised let-realised defer-node]]
+    [redlobster.macros :refer [let-realised defer-node]]
     [cljs.core.async.macros :as m :refer [go alt! alts!]])
   (:require
     [think.util.core    :as util]
@@ -121,13 +121,16 @@
       []
       (util/await (map #(db/get-doc @model-db* (:id %)) (:rows @docs))))))
 
+
 (defn all-wiki-documents
   []
-  (let-realised [docs (db/view @model-db* :index :wiki-documents)]
-    (if (= (:total_rows @docs) 0)
-      []
-      (map #(assoc % :id (:_id %)) (map :value (:rows @docs))))))
-      ;(util/await (map #(db/get-doc @model-db* (:id %)) (:rows @docs))))))
+  (go
+    (let [docs (<! (db/view @model-db* :index :wiki-documents))]
+      (if (:error docs)
+        (log "Error: " (:error docs))
+        (if (= (:total_rows (:value docs)) 0)
+          []
+          (map #(assoc % :id (:_id %)) (map :value (:rows (:value docs)))))))))
 
 
 (defn delete-all-documents

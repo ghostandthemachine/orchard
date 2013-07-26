@@ -2,6 +2,7 @@
   (:use-macros [think.macros :only [defui]]
                [redlobster.macros :only [when-realised let-realised defer-node]])
   (:require [think.object :as object]
+            [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
             [crate.core :as crate]
             [redlobster.promise :as p]
             [think.util.core :refer [bound-do uuid]]
@@ -77,8 +78,9 @@
 (defn create-module
   []
   (let [mod-promise (p/promise)]
-    (let-realised [doc (markdown-doc)]
-      (let [obj (object/create :markdown-module @doc)]
+    (go
+      (let [doc (<! (markdown-doc))
+            obj (object/create :markdown-module @doc)]
         (p/realise mod-promise obj)))
     mod-promise))
 

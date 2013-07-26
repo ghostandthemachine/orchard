@@ -1,15 +1,19 @@
 (ns think.objects.modules.index
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised]])
-  (:require [think.object :as object]
-            [crate.core :as crate]
-            [redlobster.promise :as p]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [think.util.core :refer [bound-do]]
-            [think.util.log :refer [log log-obj]]
-            [crate.binding :refer [bound subatom]]
-            [dommy.core :as dommy]))
+  (:require-macros
+    [think.macros :refer [defui]]
+    [cljs.core.async.macros :as m :refer [go]]
+    [redlobster.macros :refer [let-realised]])
+  (:require
+    [cljs.core.async :refer [<!]]
+    [think.object :as object]
+    [crate.core :as crate]
+    [redlobster.promise :as p]
+    [think.util.dom :as dom]
+    [think.model :as model]
+    [think.util.core :refer [bound-do]]
+    [think.util.log :refer [log log-obj]]
+    [crate.binding :refer [bound subatom]]
+    [dommy.core :as dommy]))
 
 
 (defn module-btn-icon
@@ -52,8 +56,9 @@
 
 (defn load-index
   [this]
-  (let-realised [docs (model/all-wiki-documents)]
-    (dom/replace-with ($module this) (render-present @docs))))
+  (go
+    (let [docs (<! (model/all-wiki-documents))]
+      (dom/replace-with ($module this) (render-present docs)))))
 
 
 (defn render-module
@@ -83,3 +88,4 @@
   (fn [e]
     (think.objects.app/open-document (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
+

@@ -140,7 +140,7 @@
 (defn all-docs
   "Get all documents in the DB."
   [db & opts]
-  (defer-node (.list db (util/clj->js (merge {} opts)))
+  (node-chan (.list db (util/clj->js (merge {} opts)))
     #(util/js->clj % :keywordize-keys true)))
 
 
@@ -156,34 +156,59 @@
 (defn update-doc
   "Insert or modify a document. If the doc has an :id field it will be used as the document key."
   [db doc]
-  (log "update-doc:")
-  (log-obj (clj->js doc))
-  (let [doc-promise (p/promise)
-        cb (fn [err res]
-             (if err
-               (p/realise-error doc-promise (util/js->clj err))
-               (p/realise doc-promise (assoc doc :rev (.-rev res)))))]
-    (if-let [doc-id (:id doc)]
-      (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
-      (.insert db (clj->js (couch-ids doc)) cb))
-    doc-promise))
+  (let [res (if (:id doc)
+              (node-chan (.insert db (clj->js (couch-ids doc)) (str (:id doc))))
+              (node-chan (.insert db (clj->js (couch-ids doc)))))]
+    (go
+      (let [v (<! res)]
+        (if (:error v)
+          (do
+            (log "Error in update-doc:")
+            (log-obj (:error v)))
+          (-> (:value v)
+              js->clj
+              cljs-ids))))))
+
+
+;  (let [doc-promise (p/promise)
+;        cb (fn [err res]
+;             (if err
+;               (p/realise-error doc-promise (util/js->clj err))
+;               (p/realise doc-promise (assoc doc :rev (.-rev res)))))]
+;    (if-let [doc-id (:id doc)]
+;      (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
+;      (.insert db (clj->js (couch-ids doc)) cb))
+;    doc-promise))
 
 
 (defn view
   "Return a view result."
   [db design view-name]
-  (defer-node (.view db (name design) (name view-name)) #(util/js->clj % :keywordize-keys true)))
+  (node-chan (.view db (name design) (name view-name)) #(util/js->clj % :keywordize-keys true)))
+
+
+(defn create-view
+  [db design view-name map-str & [reduce-str]]
+  (let [design (str "_design/" design)
+        view (if reduce-str
+               {:map map-str :reduce reduce-str}
+               {:map map-str})
+        doc {:views {view-name view}}]
+    (go
+      (update-doc db (clj->js doc)))))
+
 
 """
 To create a view you need to create a design document, which can have a view.  In the futon utility for couch here http://localhost:5984/_utils/ you can create a temporary view and then save it permanently.  The view for the wiki-document index looks like this:
-
-  function(doc) {
-  if(doc.type == 'wiki-document' && doc._id != ':home') {
-    emit(doc._id, doc);
-  }
-}
-
 """
+
+(def index-view
+  "function(doc) {
+    if(doc.type == 'wiki-document' && doc._id != ':home') {
+        emit(doc._id, doc);
+      }
+}")
+
 
 (comment defn map-reduce
   "Generate a DB view using a mapping function, and optionally a reduce function."
