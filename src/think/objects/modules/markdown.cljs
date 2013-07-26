@@ -1,17 +1,20 @@
 (ns think.objects.modules.markdown
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [when-realised let-realised defer-node]])
-  (:require [think.object :as object]
-            [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
-            [crate.core :as crate]
-            [redlobster.promise :as p]
-            [think.util.core :refer [bound-do uuid]]
-            [think.util.dom :as dom]
-            [think.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
-            [think.util.log :refer [log log-obj]]
-            [crate.binding :refer [bound subatom]]
-            [think.model :as model]
-            [dommy.core :as dommy]))
+  (:require-macros
+    [think.macros :refer [defui]]
+    [cljs.core.async.macros :refer [go]]
+    [redlobster.macros :refer [when-realised let-realised defer-node]])
+  (:require
+    [think.object :as object]
+    [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
+    [crate.core :as crate]
+    [redlobster.promise :as p]
+    [think.util.core :refer [bound-do uuid]]
+    [think.util.dom :as dom]
+    [think.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
+    [think.util.log :refer [log log-obj]]
+    [crate.binding :refer [bound subatom]]
+    [think.model :as model]
+    [dommy.core :as dommy]))
 
 
 (defn markdown-doc
