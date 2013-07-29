@@ -43,3 +43,5 @@ couchdb.stdout
 
 .repl/
 .floo
+
+*.sublime-*
