@@ -24,9 +24,12 @@ repl
 build
 
 public/js/thinker.js
+public/js/logger.js
+public/js/tests.js
+public/js/bootstrap.js
+
 public/math.pdf
 public/flute.wav
-public/js/bootstrap.js
 
 public/images/OSX_bg.psd
 public/images/nav-bg.psd
@@ -34,9 +37,6 @@ public/images/nav-bg.psd
 
 couchdb.stderr
 couchdb.stdout
-
-public/js/logger.js
-public/js/tests.js
 
 *.dump
 *.zip
