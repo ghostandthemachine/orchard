@@ -102,9 +102,9 @@ function initialize() {
                     console.log("Loading unit tests...");
                     //load_script("js/test.js");
                     console.log("Running unit tests...");
-                    var results = test.model.run_tests();
+                    //var results = test.model.run_tests();
                     //var results = cemerick.cljs.test.run_all_tests();
-                    console.log("\n\n\n\n" + results + "\n\n\n\n");
+                    //console.log("\n\n\n\n" + results + "\n\n\n\n");
                     gui.App.quit();
                 } else {
                     console.log("Starting application...");

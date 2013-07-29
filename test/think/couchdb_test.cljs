@@ -1,4 +1,4 @@
-(ns test.thnk.couchdb
+(ns test.think.couchdb-tests
   (:refer-clojure  :exclude [create-node])
   (:require
     [think.util.core    :as util]
@@ -8,21 +8,20 @@
     [cljs.core.async    :refer (chan >! <! close!)]
     [cemerick.cljs.test :refer [test-ns]])
   (:require-macros
-    [cljs.core.async.test-helpers :as h :refer [is= is deftest testing runner]]
+    [test.helpers :as h :refer [is= is deftest testing runner]]
     [cljs.core.async.macros :refer (go alt! alts!)]))
 
 
 (deftest couch-ids-test
-  (is
-    (= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})
-    "should convert both id and rev keys to _id and _rev"))
+  (testing "should convert both id and rev keys to _id and _rev"
+    (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
 
 
 (deftest cljs-ids-test
-  (is= (select-keys (db/cljs-ids {:_id "test-id" :_rev "rev-id"})
-                    [:id :rev])
-       {:id "test-id" :rev "rev-id"})
-  "should convert both \"_id\" and \"_rev\" keys to :id and :rev")
+  (testing "should convert both \"_id\" and \"_rev\" keys to :id and :rev"
+    (is= (select-keys (db/cljs-ids {:_id "test-id" :_rev "rev-id"})
+                      [:id :rev])
+         {:id "test-id" :rev "rev-id"})))
 
 
 (deftest list-all-test
