@@ -1,10 +1,9 @@
 (ns think.objects.wiki-document
   (:require-macros 
     [think.macros :refer [defui defgui]]
-    [cljs.core.async.macros :as m :refer [go alt! alts!]]
-    [redlobster.macros :refer [let-realised]])
+    [cljs.core.async.macros :refer [go alt! alts!]])
   (:require 
-    [cljs.core.async :refer (chan >!! <!! thread timeout)]
+    [cljs.core.async :refer [chan >!! <!! thread timeout]]
     [think.object :as object]
     [think.model :as model]
     [think.util.core :as util]

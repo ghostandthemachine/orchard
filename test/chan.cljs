@@ -6,8 +6,9 @@
     [test.core       :refer (test-async)])
   (:require-macros
     [test.macros :refer (is)]
-    [cljs.core.async.macros :as m :refer (go alt! alts!)]))
-
+    [cljs.core.async.test-helpers :as h :refer [is= is deftest testing runner]]
+    [cljs.core.async.macros :refer (go alt! alts!)]))
+ 
 
 ;(def loc-div (.getElementById js/document "container"))
 ;

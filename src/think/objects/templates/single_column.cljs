@@ -11,18 +11,16 @@
     [think.model :as model]
     [think.module :refer [top-spacer spacer]]
     [think.objects.modules.module-selector :as selector]
-    [crate.binding :refer [map-bound bound subatom]]
-    [redlobster.promise :as p]))
+    [crate.binding :refer [map-bound bound subatom]]))
 
 
 (object/behavior* ::ready
   :triggers #{:ready}
-  :reaction (fn [this id]
-              (log "Single Column template ready")
-              (log-obj (:modules @this))
-              (doseq [mod (:modules @this)]
-                (log (str "mod of type " (:type @mod) " ready"))
-                (object/raise mod :ready))))
+              (fn [this]
+                (log-obj (:modules @this))
+                (doseq [mod (:modules @this)]
+                  (log (str "mod of type " (:type @mod) " ready"))
+                  (object/raise mod :ready))))
 
 
 (defui render-modules
