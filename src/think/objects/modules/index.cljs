@@ -88,4 +88,3 @@
   (fn [e]
     (think.objects.app/open-document (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
-

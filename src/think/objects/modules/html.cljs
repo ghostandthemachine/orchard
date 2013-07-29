@@ -84,4 +84,3 @@
       (keyword
         (last (clojure.string/split (.-href (.-target e)) #"/::"))))
     (.preventDefault e)))
-

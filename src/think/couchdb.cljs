@@ -23,7 +23,6 @@
   []
   (if @db* true false))
 
-
 (defonce db-proc (os/process "couchdb"))
 
 (defn- start-db
@@ -217,6 +216,5 @@ To create a view you need to create a design document, which can have a view.  I
     (if reduce-fn
       (defer-node (.query db (util/clj->js {:map mapper}) (util/clj->js {:reduce reduce-fn})) util/js->clj)
       (defer-node (.query db (clj->js {:map mapper})) util/js->clj))))
-
 
 

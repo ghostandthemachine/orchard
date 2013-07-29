@@ -63,4 +63,3 @@ node.js callback scheme. For example:
         chan#))
   ([form]
      `(node-chan ~form identity)))
-
