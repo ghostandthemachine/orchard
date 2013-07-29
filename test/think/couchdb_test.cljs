@@ -12,6 +12,9 @@
     [cljs.core.async.macros :refer (go alt! alts!)]))
 
 
+(db/create-db db/nano "couchdb-test-db")
+
+
 (deftest couch-ids-test
   (testing "should convert both id and rev keys to _id and _rev"
     (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
@@ -26,5 +29,21 @@
 
 (deftest list-all-test
   (go
-    (is= ["foo" "bar"] (<! (db/list-all)))))
+    (is= ["_replicator" "_users" "projects"] (<! (db/list-all)))))
 
+
+(deftest create-db-test
+  (let [db-name "create-db-test-db"]
+    (testing "should create a new db"
+      (go
+        (<! (db/create db/name db-name))
+        (is
+          (not (nil? (some #{db-name} (<! (db/list-all))))))))
+
+    (testing "should delete a db"
+      (go
+        (is 
+          (nil? (some #{db-name} (<! (db/list-all)))))))))
+
+
+(db/delete-db "couchdb-test-db")
