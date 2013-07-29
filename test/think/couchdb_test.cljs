@@ -13,7 +13,7 @@
 
 (go
   (let [test-db* (<! (db/open "test-db"))]
-        
+
     (deftest couch-ids-test
       (testing "should convert both id and rev keys to _id and _rev"
         (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
@@ -40,7 +40,7 @@
 
         (testing "should delete a db"
           (go
-            (is 
+            (is
               (nil? (some #{db-name} (<! (db/list-all)))))))))
 
 
@@ -69,3 +69,7 @@
       (is=
         ["_replicator" "_users" "projects"]
         (:value (<! (db/list-all)))))))
+
+(defn perf-test
+  []
+  )

@@ -23,7 +23,7 @@
   [ms func]
   (js/setTimeout func ms))
 
-(defn now 
+(defn now
   "Get the current time/date."
   []
   (.getTime (js/Date.)))
