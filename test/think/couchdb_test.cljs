@@ -5,15 +5,13 @@
     [think.couchdb      :as db]
     [think.object       :as object]
     [think.util.log     :refer (log log-obj)]
-    [cljs.core.async    :refer (chan >! <! close!)]
-    [cemerick.cljs.test :refer (test-ns)])
+    [cljs.core.async    :refer (chan >! <! close!)])
   (:require-macros
     [test.think.helpers :refer [is= is deftest testing runner]]
     [cljs.core.async.macros :refer (go)]))
 
 
 (go
-
   (let [test-db* (<! (db/open "test-db"))]
         
     (deftest couch-ids-test
@@ -31,7 +29,6 @@
     (deftest list-all-test
       (go
         (is= ["_replicator" "_users" "projects" "test-db"] (<! (db/list-all)))))
-
 
     (deftest create-delete-db-test
       (let [db-name "create-db-test-db"]
@@ -65,3 +62,10 @@
 
 
     (db/delete-db "test-db")))
+
+(deftest list-all-test
+  (testing "should look up all available couch databases"
+    (go
+      (is=
+        ["_replicator" "_users" "projects"]
+        (:value (<! (db/list-all)))))))
