@@ -79,7 +79,9 @@ function load_css(path, isFile) {
 
 function initialize() {
     var test_mode = false;
-
+    if (gui.App.argv.indexOf('-test') > -1) {
+        test_mode = true;
+    }
     try {
         process.on("uncaughtException", log_error);
         window.onerror = log_error;
@@ -89,19 +91,19 @@ function initialize() {
             load_css(path, false);
         });
 
+
         console.log("Loading Javascript files...");
         js_files.forEach(function(path) {
+
             load_script(path, false);
         });
 
         script.onload = function() {
             try {
                 var gui = require("nw.gui");
-                if (gui.App.argv.indexOf('-test') > -1) {
+                if (test_mode) {
                     test_mode = true;
-                    console.log("Loading unit tests...");
                     //load_script("js/test.js");
-                    console.log("Running unit tests...");
                     //var results = test.model.run_tests();
                     //var results = cemerick.cljs.test.run_all_tests();
                     //console.log("\n\n\n\n" + results + "\n\n\n\n");

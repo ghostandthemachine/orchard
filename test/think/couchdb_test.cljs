@@ -25,6 +25,12 @@
 
 
 (deftest list-all-test
-  (go
-    (is= ["foo" "bar"] (<! (db/list-all)))))
+  (testing "should look up all available couch databases"
+    (go
+      (is=
+        ["asd_replicator" "_users" "projects"]
+        (:value (<! (db/list-all)))))))
+
+
+
 
