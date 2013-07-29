@@ -42,3 +42,4 @@ public/js/tests.js
 *.zip
 
 .repl/
+.floo
