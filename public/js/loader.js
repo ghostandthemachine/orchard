@@ -78,10 +78,9 @@ function load_css(path, isFile) {
 }
 
 function initialize() {
-    var test_mode = false;
-    if (gui.App.argv.indexOf('-test') > -1) {
-        test_mode = true;
-    }
+    var gui = require("nw.gui");
+    var test_mode = (gui.App.argv.indexOf('-test') > -1) ? true : false;
+
     try {
         process.on("uncaughtException", log_error);
         window.onerror = log_error;
@@ -94,19 +93,15 @@ function initialize() {
 
         console.log("Loading Javascript files...");
         js_files.forEach(function(path) {
-
+            if (test_mode && path == "js/thinker.js") {
+                console.log("Running unit tests");
+            }
             load_script(path, false);
         });
 
         script.onload = function() {
             try {
-                var gui = require("nw.gui");
                 if (test_mode) {
-                    test_mode = true;
-                    //load_script("js/test.js");
-                    //var results = test.model.run_tests();
-                    //var results = cemerick.cljs.test.run_all_tests();
-                    //console.log("\n\n\n\n" + results + "\n\n\n\n");
                     gui.App.quit();
                 } else {
                     console.log("Starting application...");

@@ -6,10 +6,12 @@
     [think.object       :as object]
     [think.util.log     :refer [log log-obj]]
     [cljs.core.async    :refer (chan >! <! close!)]
-    [cemerick.cljs.test :refer [test-ns]])
+    [cemerick.cljs.test :refer [test-ns]]
+    [cljs.core.async.impl.ioc-helpers :as ioch])
   (:require-macros
-    [test.helpers :as h :refer [is= is deftest testing runner]]
-    [cljs.core.async.macros :refer (go alt! alts!)]))
+    [test.think.test-helpers :refer (is= is deftest testing runner)]
+    [cljs.core.async.macros :refer (go alt! alts!)]
+    [cljs.core.async.impl.ioc-macros :as ioc]))
 
 
 (deftest couch-ids-test
@@ -30,7 +32,5 @@
       (is=
         ["asd_replicator" "_users" "projects"]
         (:value (<! (db/list-all)))))))
-
-
 
 
