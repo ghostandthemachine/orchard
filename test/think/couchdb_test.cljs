@@ -9,7 +9,7 @@
     [cemerick.cljs.test :refer [test-ns]]
     [cljs.core.async.impl.ioc-helpers :as ioch])
   (:require-macros
-    [test.think.test-helpers :refer (is= is deftest testing runner)]
+    [test.helpers :refer (is= is deftest testing runner)]
     [cljs.core.async.macros :refer (go alt! alts!)]
     [cljs.core.async.impl.ioc-macros :as ioc]))
 
