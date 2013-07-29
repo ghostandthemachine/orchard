@@ -32,7 +32,7 @@
     (is= ["_replicator" "_users" "projects"] (<! (db/list-all)))))
 
 
-(deftest create-db-test
+(deftest create-delete-db-test
   (let [db-name "create-db-test-db"]
     (testing "should create a new db"
       (go
