@@ -61,16 +61,8 @@
                                :id      (:id original-doc))]
       (log "saving template document...")
       (let [doc (model/save-document new-doc)]
-        (p/on-realised 
-          doc
-          (fn []
-            (let [rev (:rev @doc)]
-              (log "done [rev = " rev "]")
-              (object/assoc! this :rev rev)))
-          (fn [err]
-            (log "error loading doc " err)
-            (log "initial rev: " (:rev (first (:args @this))))
-            (log "current rev: " (:rev @this))))))))
+        (go 
+          (object/assoc! this :rev (:rev (<! doc))))))))
 
 
 (object/behavior* ::remove-module

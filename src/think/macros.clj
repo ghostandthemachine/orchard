@@ -39,7 +39,7 @@
     "Clojurescript version of defonce.
     Stores variables in the javascript global function. They will persist through browser refreshes."}
   [n value]
-  `(def ~n
+ `(def ~n
     (or
       (aget js/global (nssym ~n))
       (aset js/global (nssym ~n) ~value))))
@@ -53,6 +53,8 @@ node.js callback scheme. For example:
 
     (node-chan (.readFile fs \"/etc/passwd\"))
 "
+  ([form]
+     `(node-chan ~form identity))
   ([form transformer]
      `(let [chan# (cljs.core.async/chan)
             callback# (fn [error# value#]
@@ -60,6 +62,4 @@ node.js callback scheme. For example:
                           (cljs.core.async/put! chan# {:error error# :value nil})
                           (cljs.core.async/put! chan# {:error nil :value (~transformer value#)})))]
         (~@form callback#)
-        chan#))
-  ([form]
-     `(node-chan ~form identity)))
+        chan#)))

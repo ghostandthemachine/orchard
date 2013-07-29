@@ -12,38 +12,58 @@
     [cljs.core.async.macros :refer (go alt! alts!)]))
 
 
-(db/create-db db/nano "couchdb-test-db")
+(def nano db/nano)
 
 
-(deftest couch-ids-test
-  (testing "should convert both id and rev keys to _id and _rev"
-    (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
+; (db/create-db nano "test-db")
 
 
-(deftest cljs-ids-test
-  (testing "should convert both \"_id\" and \"_rev\" keys to :id and :rev"
-    (is= (select-keys (db/cljs-ids {:_id "test-id" :_rev "rev-id"})
-                      [:id :rev])
-         {:id "test-id" :rev "rev-id"})))
+; (deftest couch-ids-test
+;   (testing "should convert both id and rev keys to _id and _rev"
+;     (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
 
 
-(deftest list-all-test
-  (go
-    (is= ["_replicator" "_users" "projects"] (<! (db/list-all)))))
+; (deftest cljs-ids-test
+;   (testing "should convert both \"_id\" and \"_rev\" keys to :id and :rev"
+;     (is= (select-keys (db/cljs-ids {:_id "test-id" :_rev "rev-id"})
+;                       [:id :rev])
+;          {:id "test-id" :rev "rev-id"})))
 
 
-(deftest create-delete-db-test
-  (let [db-name "create-db-test-db"]
-    (testing "should create a new db"
-      (go
-        (<! (db/create db/name db-name))
-        (is
-          (not (nil? (some #{db-name} (<! (db/list-all))))))))
-
-    (testing "should delete a db"
-      (go
-        (is 
-          (nil? (some #{db-name} (<! (db/list-all)))))))))
+; (deftest list-all-test
+;   (go
+;     (is= ["_replicator" "_users" "projects"] (<! (db/list-all)))))
 
 
-(db/delete-db "couchdb-test-db")
+; (deftest create-delete-db-test
+;   (let [db-name "create-db-test-db"]
+;     (testing "should create a new db"
+;       (go
+;         (<! (db/create db/name db-name))
+;         (is
+;           (not (nil? (some #{db-name} (<! (db/list-all))))))))
+
+;     (testing "should delete a db"
+;       (go
+;         (is 
+;           (nil? (some #{db-name} (<! (db/list-all)))))))))
+
+
+; (deftest create-delete-doc
+;   (let [doc-id   "create-delete-doc"
+;         test-doc {:id   doc-id
+;                   :foo  "bar"}]
+;     (testing "should create a new document record"
+;       (go
+;         (db/update-doc nano test-doc)
+;         (is= test-doc (<! (db/get-doc nano doc-id)))))
+
+;     ; (testing "should delete a new document record"
+;     ;   (go
+;     ;     (<! (db/delete-doc nano doc-id))
+;     ;     (is
+;     ;       (not ))))
+;     ))
+
+
+; (db/delete-db "test-db")

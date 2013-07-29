@@ -5,7 +5,7 @@
     [redlobster.macros :refer [when-realised let-realised defer-node]])
   (:require
     [think.object :as object]
-    [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
+    [cljs.core.async :refer [chan >! <! timeout]]
     [crate.core :as crate]
     [redlobster.promise :as p]
     [think.util.core :refer [bound-do uuid]]
@@ -67,6 +67,8 @@
                 :icon icon
                 :editor nil
                 :init (fn [this record]
+                  (log "creating markdown module")
+                  (log-obj (clj->js record))
                         (object/merge! this record)
                         (bound-do (subatom this :mode)
                                   (partial render-module this))
@@ -83,7 +85,8 @@
   (let [mod-promise (p/promise)]
     (go
       (let [doc (<! (markdown-doc))
-            obj (object/create :markdown-module @doc)]
+        _ (log "markdown-doc: " doc)
+            obj (object/create :markdown-module doc)]
         (p/realise mod-promise obj)))
     mod-promise))
 

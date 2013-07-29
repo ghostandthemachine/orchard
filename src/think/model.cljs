@@ -95,11 +95,7 @@
 (defn get-document
   [id]
   (m-log "get-document: " id)
-  (go
-    (let [res (<! (db/get-doc @model-db* id))]
-      (if (:error res)
-        nil
-        (:value res)))))
+  (db/get-doc @model-db* id))
 
 
 (defn load-document

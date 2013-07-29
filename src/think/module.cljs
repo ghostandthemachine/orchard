@@ -1,14 +1,18 @@
 (ns think.module
-  (:use-macros [think.macros :only [defui defgui]]
-               [redlobster.macros :only [let-realised]])
-  (:require [think.object :as object]
-            [think.util.dom :as dom]
-            [crate.core :as crate]
-            [think.util.log :refer [log log-obj]]
-            [think.util.core :refer [index-of]]
-            [crate.binding :refer [bound subatom]]
-            [think.model :as model]
-            [dommy.core :as dommy]))
+  (:require-macros 
+    [think.macros :refer [defui defgui]]
+    [cljs.core.async.macros :refer [go]]
+    [redlobster.macros :refer [let-realised]])
+  (:require 
+    [think.object :as object]
+    [think.util.dom :as dom]
+    [crate.core :as crate]
+    [think.util.log :refer [log log-obj]]
+    [cljs.core.async :refer [chan >! <! timeout]]
+    [think.util.core :refer [index-of]]
+    [crate.binding :refer [bound subatom]]
+    [think.model :as model]
+    [dommy.core :as dommy]))
 
 
 (defn index-of-module
@@ -72,10 +76,8 @@
               (let [original-doc (first (:args @this))
                     doc-keys     (conj (keys original-doc) :id :rev)
                     new-doc      (select-keys @this doc-keys)]
-                (let-realised [doc (model/save-document new-doc)]
-                  (log "save handler...")
-                  ;; (log-obj @doc)
-                  (object/assoc! this :rev (:rev @doc))))))
+                (go
+                  (object/assoc! this :rev (:rev (<! (model/save-document new-doc))))))))
 
 
 (defn swap-modules

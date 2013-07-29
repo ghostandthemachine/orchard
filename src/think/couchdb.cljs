@@ -2,9 +2,9 @@
   (:require-macros
     [think.macros :refer [defonce node-chan]]
     [redlobster.macros :refer [when-realised let-realised defer-node]]
-    [cljs.core.async.macros :as m :refer [go alt! alts!]])
+    [cljs.core.async.macros :as m :refer [go]])
   (:require
-    [cljs.core.async :refer [chan >! <! >!! <!! put! timeout alts! close!]]
+    [cljs.core.async :refer [chan >! <! put! timeout close!]]
     [redlobster.promise :as p]
     [think.object :as object]
     [think.util.core :as util]
@@ -78,7 +78,9 @@
   "List all the DBs available on this server."
   ([] (list-all nano))
   ([server]
-   (node-chan (.list (.-db server)) array-seq)))
+   (go
+    (:value
+      (<! (node-chan (.list (.-db server)) array-seq))))))
 
 
 (defn replicate-db
@@ -87,13 +89,17 @@
   ([src tgt]
    (replicate-db nano src tgt))
   ([server src tgt]
-   (defer-node (.replicate (.-db server) src tgt (clj->js {})))))
+   (go
+    (:value 
+      (<! (node-chan (.replicate (.-db server) src tgt (clj->js {}))))))))
 
 
 (defn create-db
   "Create a new database on the server."
   [server db-name]
-  (node-chan (.create (.-db server) db-name)))
+  (go
+    (:value 
+      (<! (node-chan (.create (.-db server) db-name))))))
 
 
 (defn open
@@ -102,54 +108,57 @@
   ([server db-name]
    (go
      (let [dbs (<! (list-all server))]
-       (if (:error dbs)
-         (do
-           (log (str "Got error trying to connect to DB: " db-name))
-           (log-obj (:error dbs))
-           nil)
-         (do
-           (if (some #{db-name} (:value dbs))
-           (log (str "Using existing database: " db-name))
-           (do
-             (log (str "Creating new database: " db-name))
-             (<! (create-db server db-name))))
-           (.use server db-name)))))))
+       (if (some #{db-name} dbs))
+       (log (str "Using existing database: " db-name))
+       (do
+         (log (str "Creating new database: " db-name))
+         (<! (create-db server db-name))))
+       (.use server db-name))))
 
 
 (defn delete-db
   "Delete a database."
   [db-name]
-  (defer-node (.destroy (.-db nano) db-name) util/js->clj))
+  (go
+    (:value (<! (node-chan (.destroy (.-db nano) db-name) util/js->clj)))))
 
 
 (defn info
   "Returns some info about the state of the DB."
   ([db-name] (info nano db-name))
   ([server db-name]
-   (defer-node (.get (.-db server) db-name))))
+   (go
+    (:value 
+      (<! (node-chan (.get (.-db server) db-name)))))))
 
 
 (defn delete-doc
   "Delete a document."
   ([db doc] (delete-doc db (:id doc) (:rev doc)))
   ([db doc-id doc-rev]
-   (defer-node (.destroy db doc-id doc-rev) util/js->clj)))
+   (go
+    (:value 
+      (<! (node-chan (.destroy db doc-id doc-rev) util/js->clj))))))
 
 
 (defn all-docs
   "Get all documents in the DB."
   [db & opts]
-  (node-chan (.list db (util/clj->js (merge {} opts)))
-    #(util/js->clj % :keywordize-keys true)))
+  (go
+    (:value 
+      (<! (node-chan (.list db (util/clj->js (merge {} opts)))
+    #(util/js->clj % :keywordize-keys true))))))
 
 
 (defn get-doc
   "Get a single document by ID."
   [db id & opts]
   (let [id-str (str id)]
-    (node-chan (.get db id-str (clj->js (merge {} opts)))
-      (fn [doc]
-        (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true))))))
+    (go
+      (:value
+        (<! (node-chan (.get db id-str (clj->js (merge {} opts)))
+              (fn [doc]
+                (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true)))))))))
 
 
 (defn update-doc
@@ -159,25 +168,14 @@
               (node-chan (.insert db (clj->js (couch-ids doc)) (str (:id doc))))
               (node-chan (.insert db (clj->js (couch-ids doc)))))]
     (go
-      (let [v (<! res)]
+      (let [v (js->clj (<! res))]
+        (log "update-doc result:")
+        (log-obj v)
         (if (:error v)
           (do
             (log "Error in update-doc:")
             (log-obj (:error v)))
-          (-> (:value v)
-              js->clj
-              cljs-ids))))))
-
-
-;  (let [doc-promise (p/promise)
-;        cb (fn [err res]
-;             (if err
-;               (p/realise-error doc-promise (util/js->clj err))
-;               (p/realise doc-promise (assoc doc :rev (.-rev res)))))]
-;    (if-let [doc-id (:id doc)]
-;      (.insert db (clj->js (couch-ids doc)) (str doc-id) cb)
-;      (.insert db (clj->js (couch-ids doc)) cb))
-;    doc-promise))
+          doc)))))
 
 
 (defn view
