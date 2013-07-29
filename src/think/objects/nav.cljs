@@ -2,7 +2,7 @@
   (:use-macros [think.macros :only [defui]]
                [redlobster.macros :only [when-realised let-realised defer-node]])
   (:require [think.object :as object]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [think.util.core :as util]
             [think.util.dom :refer [window-width $$ $]]
             [think.objects.workspace :as workspace]

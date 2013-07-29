@@ -3,7 +3,7 @@
             [think.objects.canvas :as canvas]
             [think.objects.sidebar :as sidebar]
             [think.util.dom :as dom]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [think.util.cljs :refer [->dottedkw]]
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))

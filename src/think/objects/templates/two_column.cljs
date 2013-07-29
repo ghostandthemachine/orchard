@@ -1,7 +1,7 @@
 (ns think.objects.templates.two-column
   (:use-macros [think.macros :only [defui]])
   (:require [think.object :as object]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [think.util.core :refer [uuid]]
             [crate.binding :refer [map-bound bound subatom]]))
 

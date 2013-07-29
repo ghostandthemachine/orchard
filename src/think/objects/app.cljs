@@ -9,7 +9,7 @@
     [think.model :as model]
     [think.util.time :refer [now]]
     [think.util.os :as os]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [think.util.dom  :as dom]
     [think.util.core :as util]
     [think.objects.nav :as nav]

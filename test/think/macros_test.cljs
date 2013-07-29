@@ -1,7 +1,7 @@
 (ns test.think.macros
   (:require-macros [think.macros :refer [defonce]]
                    [cemerick.cljs.test :refer [is deftest]])
-  (:require [think.util.log :refer [log log-obj]]
+  (:require [think.util.log :refer (log log-obj)]
             [test. :refer [test-ns]]))
 
 
@@ -19,7 +19,7 @@
 ; (ns test.defonce2
 ; 	(:require-macros [think.macros :refer [defonce]]
 ; 									 [cemerick.cljs.test :refer [is deftest]])
-; 	(:require [think.util.log :refer [log log-obj]]
+; 	(:require [think.util.log :refer (log log-obj)]
 ; 				    [test. :refer [test-ns]]))
 
 ; (defonce ::foo "woz")

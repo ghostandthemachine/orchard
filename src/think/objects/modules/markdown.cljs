@@ -11,7 +11,7 @@
     [think.util.core :refer [bound-do uuid]]
     [think.util.dom :as dom]
     [think.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [crate.binding :refer [bound subatom]]
     [think.model :as model]
     [dommy.core :as dommy]))

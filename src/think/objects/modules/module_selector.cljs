@@ -13,7 +13,7 @@
             [think.objects.modules.visualizer :as viz]
             [think.objects.modules.html :as html]
             [think.util.core :refer [bound-do uuid]]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))
 

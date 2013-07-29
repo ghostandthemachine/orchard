@@ -1,4 +1,4 @@
-(ns test.helpers
+(ns test.think.helpers
   (:require [cljs.core.async.impl.ioc-macros :as ioc]))
 
 (defmacro runner

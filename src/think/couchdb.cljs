@@ -120,7 +120,8 @@
   "Delete a database."
   [db-name]
   (go
-    (:value (<! (node-chan (.destroy (.-db nano) db-name) util/js->clj)))))
+    (:value
+      (<! (node-chan (.destroy (.-db nano) db-name) util/js->clj)))))
 
 
 (defn info

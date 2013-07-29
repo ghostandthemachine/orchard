@@ -11,7 +11,7 @@
     [think.util.dom :as dom]
     [think.model :as model]
     [think.util.core :refer [bound-do]]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [crate.binding :refer [bound subatom]]
     [dommy.core :as dommy]))
 

@@ -1,6 +1,6 @@
 (ns think.css
   ; (:refer-clojure :exclude [+])
-  (:require [think.util.log :refer [log log-obj]]))
+  (:require [think.util.log :refer (log log-obj)]))
 
 ; (deftype HexColor [value])
 

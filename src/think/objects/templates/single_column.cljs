@@ -5,7 +5,7 @@
   (:require
     [cljs.core.async :refer (chan >!! <!! close! thread timeout)]
     [think.object :as object]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [think.util.core :as util]
     [think.util.dom :as dom]
     [think.model :as model]

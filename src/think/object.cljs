@@ -3,7 +3,7 @@
   (:require [crate.core :as crate]
             [clojure.set :as set]
             ; [think.util.js :refer [throttle debounce]]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [think.util.dom :refer [replace-with]]
             [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]))
 

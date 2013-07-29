@@ -6,7 +6,7 @@
             [crate.core :as crate]
             [think.util.core :refer [bound-do]]
             [think.util.dom :as dom]
-            [think.util.log :refer [log log-obj]]
+            [think.util.log :refer (log log-obj)]
             [crate.binding :refer [bound subatom]]
             [think.model :as model]
             [dommy.core :as dommy]))

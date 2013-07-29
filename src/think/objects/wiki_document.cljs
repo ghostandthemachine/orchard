@@ -12,7 +12,7 @@
     [think.module :as modules]
     [think.dispatch :as dispatch]
     [crate.binding :refer [subatom bound]]
-    [think.util.log :refer [log log-obj]]))
+    [think.util.log :refer (log log-obj)]))
 
 
 (defui render-template

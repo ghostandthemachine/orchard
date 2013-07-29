@@ -7,7 +7,7 @@
     [think.object :as object]
     [think.util.dom :as dom]
     [crate.core :as crate]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [cljs.core.async :refer [chan >! <! timeout]]
     [think.util.core :refer [index-of]]
     [crate.binding :refer [bound subatom]]

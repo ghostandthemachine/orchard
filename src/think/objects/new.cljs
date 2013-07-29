@@ -14,7 +14,7 @@
     [think.objects.workspace :as workspace]
     [think.module :as modules]
     [crate.binding :refer [subatom bound]]
-    [think.util.log :refer [log log-obj]]
+    [think.util.log :refer (log log-obj)]
     [think.util.dom :as dom]))
 
 
