@@ -72,4 +72,3 @@
           $title-input (dom/$ :#new-document-title)
           title        (.-value $title-input)]
       (create-document title tpl-type))))
-

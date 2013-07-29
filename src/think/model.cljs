@@ -180,4 +180,3 @@
          :id         (util/uuid)
          :created-at (util/date-json)
          :updated-at (util/date-json)))
-
