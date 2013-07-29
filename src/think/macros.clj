@@ -44,6 +44,7 @@
       (aget js/global (nssym ~n))
       (aset js/global (nssym ~n) ~value))))
 
+
 (defmacro node-chan
   "Appends a callback to a given form which takes two arguments `[error value]`
 and executes it, returning a channel that will receive `error` if `error`
@@ -56,10 +57,9 @@ node.js callback scheme. For example:
      `(let [chan# (cljs.core.async/chan)
             callback# (fn [error# value#]
                         (if error#
-                          (cljs.core.async/put! chan# error#)
-                          (cljs.core.async/put! chan# (~transformer value#))))]
+                          (cljs.core.async/put! chan# {:error error# :value nil})
+                          (cljs.core.async/put! chan# {:error nil :value (~transformer value#)})))]
         (~@form callback#)
         chan#))
   ([form]
      `(node-chan ~form identity)))
-

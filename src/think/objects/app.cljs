@@ -1,22 +1,25 @@
 (ns think.objects.app
   (:require-macros [redlobster.macros :refer [let-realised]]
-                   [think.macros :refer [defonce]])
-  (:require [think.object :as object]
-            [think.objects.context :as ctx]
-            [think.model :as model]
-            [think.util.time :refer [now]]
-            [think.util.os :as os]
-            [think.util.log :refer [log log-obj]]
-            [think.util.dom  :as dom]
-            [think.util.core :as util]
-            [think.objects.nav :as nav]
-            [think.objects.sidebar :as sidebar]
-            [think.util.nw  :as nw]
-            [think.dispatch :as dispatch]
-            [think.objects.workspace :as workspace]
-            think.kv-store
-            think.objects.wiki-document
-            [redlobster.promise :as p]))
+                   [think.macros :refer [defonce]]
+                   [cljs.core.async.macros :as m :refer [go]])
+  (:require 
+    [cljs.core.async :refer [chan >! <! timeout]]
+    [think.object :as object]
+    [think.objects.context :as ctx]
+    [think.model :as model]
+    [think.util.time :refer [now]]
+    [think.util.os :as os]
+    [think.util.log :refer [log log-obj]]
+    [think.util.dom  :as dom]
+    [think.util.core :as util]
+    [think.objects.nav :as nav]
+    [think.objects.sidebar :as sidebar]
+    [think.util.nw  :as nw]
+    [think.dispatch :as dispatch]
+    [think.objects.workspace :as workspace]
+    think.kv-store
+    think.objects.wiki-document
+    [redlobster.promise :as p]))
 
 
 (def gui (js/require "nw.gui"))
@@ -84,9 +87,10 @@
 
 (defn open-document
   [doc-id]
-  (let-realised [doc (model/load-document doc-id)]
-    (object/raise workspace/workspace :show-document @doc)
-    (dispatch/fire :open-document @@doc)))
+  (go
+    (let [doc (<! (model/load-document doc-id))]
+      (object/raise workspace/workspace :show-document doc)
+      (dispatch/fire :open-document @doc))))
 
 
 (object/behavior* ::refresh
@@ -153,9 +157,10 @@
   (log "think.objects.app.init")
   (log "starting repl server...")
   (util/start-repl-server)
-  (let-realised [db (model/load-db)]
+  (.showDevTools win)
+  (go
+    (<! (model/load-db))
     (log "db ready, starting app")
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
-

@@ -1,4 +1,4 @@
-(ns test.defonce
+(ns test.think.macros
   (:require-macros [think.macros :refer [defonce]]
                    [cemerick.cljs.test :refer [is deftest]])
   (:require [think.util.log :refer [log log-obj]]
