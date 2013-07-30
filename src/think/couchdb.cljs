@@ -108,12 +108,12 @@
   ([server db-name]
    (go
      (let [dbs (<! (list-all server))]
-       (if (some #{db-name} dbs))
-       (log (str "Using existing database: " db-name))
+       (if (some #{db-name} dbs)
+         (log (str "Using existing database: " db-name))
        (do
          (log (str "Creating new database: " db-name))
          (<! (create-db server db-name))))
-       (.use server db-name))))
+       (.use server db-name)))))
 
 
 (defn delete-db
