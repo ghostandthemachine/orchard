@@ -1,4 +1,4 @@
-(ns test.think.helpers
+(ns test.helpers
   (:require [cljs.core.async.impl.ioc-macros :as ioc]))
 
 
