@@ -120,8 +120,12 @@
   "Delete a database."
   [db-name]
   (go
-    (:value
-      (<! (node-chan (.destroy (.-db nano) db-name) util/js->clj)))))
+    (let [res (<! (node-chan (.destroy (.-db nano) db-name) util/js->clj))]
+      (if (:error res)
+        (do
+          (log "Error in delete-db:")
+          (log-obj (:error res)))
+        (:value res)))))
 
 
 (defn info
@@ -137,9 +141,13 @@
   "Delete a document."
   ([db doc] (delete-doc db (:id doc) (:rev doc)))
   ([db doc-id doc-rev]
-   (go
-    (:value 
-      (<! (node-chan (.destroy db doc-id doc-rev) util/js->clj))))))
+    (go
+      (let [res (<! (node-chan (.destroy db doc-id doc-rev) util/js->clj))]
+        (if (:error res)
+          (do
+            (log "Error in delete-doc:")
+            (log-obj (:error res)))
+          (:value res))))))
 
 
 (defn all-docs
@@ -155,11 +163,11 @@
   "Get a single document by ID."
   [db id & opts]
   (let [id-str (str id)]
-    (go {:id id :type :test-doc})))
-      ; (:value
-      ;   (<! (node-chan (.get db id-str (clj->js (merge {} opts)))
-      ;         (fn [doc]
-      ;           (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true)))))))))
+    (go
+      (:value
+        (<! (node-chan (.get db id-str (clj->js (merge {} opts)))
+              (fn [doc]
+                (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true)))))))))
 
 
 (defn update-doc
