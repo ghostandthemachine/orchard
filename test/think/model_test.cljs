@@ -3,7 +3,7 @@
             [think.couchdb      :as db]
             [think.model        :as model]
             [think.util.log     :refer (log log-obj)])
-  (:require-macros [test.think.helpers :refer [deftest is is= testing]]))
+  (:require-macros [test.helpers :refer [deftest is is= testing]]))
 
 ;
 ;(defn test-doc
