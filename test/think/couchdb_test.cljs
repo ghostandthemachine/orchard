@@ -11,6 +11,10 @@
     [test.helpers :refer [is= is deftest testing runner]]
     [cljs.core.async.macros :refer (go)]))
 
+(defn rand-doc
+  []
+  {:id (util/uuid)
+   :type "test-doc"})
 
 (defn all-tests
   [db]
@@ -19,34 +23,30 @@
     (testing "should convert both id and rev keys to _id and _rev"
       (is= (db/couch-ids {:id "test-id" :rev "rev-id"}) {"_id" "test-id" "_rev" "rev-id"})))
 
-
   (deftest cljs-ids-test
     (testing "should convert both \"_id\" and \"_rev\" keys to :id and :rev"
       (is= (select-keys (db/cljs-ids {:_id "test-id" :_rev "rev-id"})
                         [:id :rev])
            {:id "test-id" :rev "rev-id"})))
 
-
   (deftest list-all-test
     (go
       (is= ["_replicator" "_users" "projects" "test-db"] (<! (db/list-all)))))
 
+  (deftest create-delete-db-test
+    (go
+      (let [db-name "create-db-test-db"
+            db        (<! (db/open db-name))
+            db-list   (<! (db/list-all))
+            res       (<! (db/delete-db db-name))
+            del-list  (<! (db/list-all))]
+        (testing "should create a new db"
+          (is
+            (not (nil? (some #{db-name} db-list)))))
 
-  ; (deftest create-delete-db-test
-  ;   (go
-  ;     (let [db-name "create-db-test-db"
-  ;           db        (<! (db/create db/name db-name))
-  ;           db-list   (<! (db/list-all))
-  ;           res       (<! (db/delete-db db-name))
-  ;           del-list  (<! (db/list-all))]
-  ;       (testing "should create a new db"
-  ;         (is
-  ;           (not (nil? (some #{db-name} db-list)))))
-
-  ;       (testing "should delete a db"
-  ;         (is 
-  ;           (nil? (some #{db-name} (<! (db/list-all)))))))))
-
+        (testing "should delete a db"
+          (is 
+            (nil? (some #{db-name} del-list)))))))
 
   (deftest create-delete-doc
     (go
@@ -61,14 +61,30 @@
           (is= test-doc (dissoc res-doc :rev)))
 
         (testing "should delete a new document record"
-          (is (nil? del-doc)))))))
+          (is (nil? del-doc))))))
+
+  (deftest get-doc
+    (go
+      (let [d       (rand-doc)
+            new-doc (<! (db/update-doc db d))
+            res-doc (<! (db/get-doc db (:id d)))]
+        (testing "should get a new doc"
+          (is= d (dissoc res-doc :rev))))))
+
+  (deftest update-doc
+    (go
+      (let [d           (rand-doc)
+            _           (<! (db/update-doc db d))
+            new-doc     (<! (db/get-doc db (:id d)))
+            updated-doc (assoc new-doc :foo "bar")
+            res-doc     (<! (db/update-doc db updated-doc))]
+        (testing "should update a doc"
+          (is= updated-doc res-doc))))))
 
 (defn create-test-docs
   [db n]
   (go
-    ; (log "Creating test docs")
     (loop [i 0]
-      ; (log "new doc: " i)
       (when (< i n)
         (<!
           (db/update-doc db
@@ -80,9 +96,7 @@
 (defn read-test-docs
   [db n]
   (go
-    ; (log "Reading test docs")
     (loop [i 0]
-      ; (log "reading doc: " i)
       (when (< i n)
         (<!
           (db/get-doc db i))
@@ -92,15 +106,15 @@
 (defn perf-test
   [db]
   (go
-    (let [num-docs    5
-          init-time   (now) 
-          _           (<! (create-test-docs db num-docs))
-          create-time (now) 
-          _           (<! (read-test-docs db num-docs))
-          read-time   (now)
-          create-time (/ (- create-time init-time) num-docs)
-          read-time   (/ (- (now) create-time) num-docs)
-          total-time  (+ read-time create-time)]
+    (let [num-docs      5
+          init-time     (now) 
+          _             (<! (create-test-docs db num-docs))
+          _create-time  (now) 
+          _             (<! (read-test-docs db num-docs))
+          _read-time    (now)
+          create-time   (/ (- _create-time init-time) num-docs)
+          read-time     (/ (- _read-time _create-time) num-docs)
+          total-time    (+ read-time create-time)]
       (log "")
       (log "Created and read " num-docs " documents in " (/ total-time 1000) "s")
       (log "")
