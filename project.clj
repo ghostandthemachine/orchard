@@ -15,14 +15,25 @@
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
-  :cljsbuild {:builds [{:source-paths ["src" "test"]
+  :cljsbuild {:builds [{:id "whitespace"
+                        :source-paths ["src" "test"]
                         :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/thinker.js"
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
 
-                       {:source-paths ["test" "src"]
+                       {:id "advanced"
+                        :source-paths ["src"]
+                        :notify-command ["growlnotify" "-m"]
+                        :compiler {:output-to "public/js/thinker.js"
+                                   :optimizations :advanced
+                                   :warnings      true
+                                   :pretty-print  false
+                                   :externs ["resources/externs.js"]}}
+
+                       {:id "test"
+                        :source-paths ["test" "src"]
                         :compiler {:output-to "public/js/tests.js"
                                    :optimizations :whitespace
                                    :warnings      true

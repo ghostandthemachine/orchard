@@ -5,7 +5,6 @@
   (:require 
     [cljs.core.async :refer [chan >! <! timeout]]
     [think.object :as object]
-    [think.objects.context :as ctx]
     [think.model :as model]
     [think.util.time :refer [now]]
     [think.util.os :as os]
@@ -140,8 +139,7 @@
                 :triggers [:quit :show-dev-tools :start :refresh]
                 :behaviors [::quit ::show-dev-tools ::start ::refresh]
                 :delays 0
-                :init (fn [this]
-                        (ctx/in! :app this)))
+                :init (fn [this]))
 
 
 (when-not js/global.windows

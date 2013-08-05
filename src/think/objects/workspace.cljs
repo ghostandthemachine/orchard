@@ -1,6 +1,5 @@
 (ns think.objects.workspace
   (:require [think.object :as object]
-            [think.objects.canvas :as canvas]
             [think.objects.sidebar :as sidebar]
             [think.util.dom :as dom]
             [think.util.log :refer (log log-obj)]
@@ -76,4 +75,6 @@
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
 
 (def workspace (object/create ::workspace))
-(canvas/add! workspace)
+(dom/append (dom/$ :#container) (:content @workspace))
+
+
