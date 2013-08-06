@@ -1,11 +1,11 @@
 (ns think.model
   (:refer-clojure :exclude [create-node])
   (:require-macros
-    [cljs.core.async.macros :as m :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt! alts!]])
   (:require
     [think.util.core    :as util]
     [think.util.time    :as time]
-    [cljs.core.async    :refer (chan >!! <!! close! thread timeout)]
+    [cljs.core.async    :refer (chan >! <! timeout)]
     [think.util.log     :refer (log log-obj)]
     [clojure.string     :as string]
     [think.couchdb      :as db]

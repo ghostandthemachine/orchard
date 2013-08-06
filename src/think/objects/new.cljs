@@ -1,7 +1,7 @@
 (ns think.objects.new
   (:require-macros
     [think.macros :refer [defui]]
-    [cljs.core.async.macros :as m :refer [go]])
+    [cljs.core.async.macros :refer [go]])
   (:require
     [think.object :as object]
     [cljs.core.async :refer [chan >! <! timeout]]

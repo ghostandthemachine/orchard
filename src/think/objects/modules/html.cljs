@@ -1,8 +1,10 @@
 (ns think.objects.modules.html
-  (:require-macros 
+  (:require-macros
+    [cljs.core.async.macros :refer [go]]
     [think.macros :refer [defui]])
-  (:require 
-    [think.object :as object]
+  (:require
+    [cljs.core.async :refer (chan >! <!)]
+    [think.object    :as object]
     [crate.core :as crate]
     [think.util.dom :as dom]
     [think.model :as model]

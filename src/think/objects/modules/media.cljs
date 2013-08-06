@@ -1,17 +1,19 @@
 (ns think.objects.modules.media
   (:require-macros
+    [cljs.core.async.macros :refer [go]]
     [dommy.macros :refer [sel]]
     [think.macros :refer [defui]])
-  (:require 
-    [think.object :as object]
-    [think.module :refer [module-btn-icon module-btn]]
+  (:require
+    [cljs.core.async :refer (chan >! <!)]
+    [think.object    :as object]
+    [think.module    :refer [module-btn-icon module-btn]]
     [think.util.core :refer [bound-do]]
-    [think.util.dom :as dom]
-    [think.model :as model]
-    [think.util.log :refer [log log-obj uuid]]
-    [crate.core :as crate]
-    [crate.binding :refer [bound subatom]]
-    [clojure.string :as string]))
+    [think.util.dom  :as dom]
+    [think.model     :as model]
+    [think.util.log  :refer [log log-obj uuid]]
+    [crate.core      :as crate]
+    [crate.binding   :refer [bound subatom]]
+    [clojure.string  :as string]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
