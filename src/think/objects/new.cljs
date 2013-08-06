@@ -1,9 +1,9 @@
 (ns think.objects.new
-  (:require-macros 
+  (:require-macros
     [think.macros :refer [defui]]
     [cljs.core.async.macros :as m :refer [go]]
-    [redlobster.macros :refer [let-realised when-realised]])
-  (:require 
+    [redlobster.macros :refer [let-realised]])
+  (:require
     [think.object :as object]
     [cljs.core.async :refer [chan >! <! timeout]]
     [think.model :as model]
@@ -56,12 +56,13 @@
 
 (defn create-document
   [title tpl]
-  (let-realised [md-doc (markdown/markdown-doc)]
-    (let-realised [tpl-doc (case tpl
-                            :single-column (single-column/single-column-template-doc @md-doc))]
-      (let-realised [wiki-doc (wiki-doc/wiki-doc title @tpl-doc)]
-        (go
-          (object/raise workspace/workspace :show-document (<! (model/load-document (:id @wiki-doc)))))))))
+  (go
+    (let [md-doc   (<! (markdown/markdown-doc))
+          tpl-doc  (<! (case tpl
+                        :single-column (single-column/single-column-template-doc md-doc)))
+          wiki-doc (<! (wiki-doc/wiki-doc title tpl-doc))
+          doc      (<! (model/load-document (:id wiki-doc)))]
+      (object/raise workspace/workspace :show-document doc))))
 
 
 (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click

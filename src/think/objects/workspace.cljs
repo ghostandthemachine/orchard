@@ -7,8 +7,8 @@
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 
-(def default-width 950)
 
+(def default-width 950)
 
 (defui render-document
   [this doc]

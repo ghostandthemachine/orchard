@@ -1,16 +1,16 @@
 (ns think.objects.sidebar
-  (:require-macros [redlobster.macros :refer [let-realised]]
-  						     [think.macros :refer [defui defgui]])
-  (:require [think.object :as object]
-            [think.util.log :refer (log log-obj)]
-            [think.util.dom  :as dom]
-            [think.util.core :refer [by-id]]
-            [think.objects.sidebar.modules-selector :refer [sidebar-modules]]
-            [think.objects.sidebar.projects-selector :refer [sidebar-projects]]
-            [crate.core :as crate]
-            [crate.binding :refer [map-bound bound subatom]]
-            [think.objects.animations :as anim]
-            [redlobster.promise :as p]))
+  (:require-macros 
+    [think.macros :refer [defui defgui]])
+  (:require 
+    [think.object :as object]
+    [think.util.log :refer (log log-obj)]
+    [think.util.dom  :as dom]
+    [think.util.core :refer [by-id]]
+    [think.objects.sidebar.modules-selector :refer [sidebar-modules]]
+    [think.objects.sidebar.projects-selector :refer [sidebar-projects]]
+    [crate.core :as crate]
+    [crate.binding :refer [map-bound bound subatom]]
+    [think.objects.animations :as anim]))
 
 (def DEFAULT-MAX-WIDTH 120)
 

@@ -1,8 +1,7 @@
 (ns think.objects.modules.markdown
   (:require-macros
     [think.macros :refer [defui]]
-    [cljs.core.async.macros :refer [go]]
-    [redlobster.macros :refer [when-realised let-realised defer-node]])
+    [cljs.core.async.macros :refer [go]])
   (:require
     [think.object :as object]
     [cljs.core.async :refer [chan >! <! timeout]]

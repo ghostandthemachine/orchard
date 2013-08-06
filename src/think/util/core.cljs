@@ -132,11 +132,6 @@
   (js/window.location.reload true))
 
 
-(defn promise-logger
-  [prom]
-  (p/on-realised prom log-obj log-obj))
-
-
 (defn itemized-seq
   ([l] (itemized-seq l 0))
   ([l n]

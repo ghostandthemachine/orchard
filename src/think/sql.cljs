@@ -1,10 +1,10 @@
 (ns think.sql
   "SQL Database API."
-  (:use-macros [redlobster.macros :only [when-realised defer-node let-realised]])
-  (:require [redlobster.promise :as p]
-            [think.util.core :as util]
-            [think.util.log :refer (log log-obj log-err)]))
-
+  (:require-macros
+    [cljs.core.async.macros :refer [go]])
+  (:require
+    [cljs.core.async :refer [chan >! <! put! timeout close!]]
+    [think.util.log :refer (log log-obj)]))
 
 
 (def DEFAULT-SQL-DB-SIZE (* 1024 1024))
@@ -20,12 +20,13 @@
 (defn run
   "Execute a SQL statement on the db."
   [db stmt]
-  (let [res-promise (p/promise)]
-    (.transaction db
-      (fn [tx]
-        (.executeSql tx stmt (clj->js [])
-          (fn [tx results]
-            (p/realise res-promise results)))))
-    res-promise))
+  (let [res-chan (chan)]
+    (go
+      (.transaction db
+        (fn [tx]
+          (.executeSql tx stmt (clj->js [])
+                       (fn [tx results]
+                         (>! res-chan results))))))
+      res-chan))
 
 

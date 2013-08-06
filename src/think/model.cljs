@@ -1,17 +1,15 @@
 (ns think.model
   (:refer-clojure :exclude [create-node])
   (:require-macros
-    [redlobster.macros :refer [let-realised defer-node]]
     [cljs.core.async.macros :as m :refer [go alt! alts!]])
   (:require
     [think.util.core    :as util]
     [think.util.time    :as time]
-    [cljs.core.async :refer (chan >!! <!! close! thread timeout)]
-    [think.util.log :refer (log log-obj)]
-    [clojure.string :as string]
+    [cljs.core.async    :refer (chan >!! <!! close! thread timeout)]
+    [think.util.log     :refer (log log-obj)]
+    [clojure.string     :as string]
     [think.couchdb      :as db]
     [think.object       :as object]
-    [redlobster.promise :as p]
     [dommy.template     :as tpl]))
 
 
@@ -110,12 +108,14 @@
             :no-matching-document-type))))))
 
 
+; TODO: test me!  Not sure if mapping like this will work correctly.
 (defn all-documents
   []
-  (let-realised [docs (db/all-docs @model-db*)]
-    (if (= (:total_rows @docs) 0)
-      []
-      (util/await (map #(db/get-doc @model-db* (:id %)) (:rows @docs))))))
+  (go
+    (let [docs (<! (db/all-docs @model-db*))]
+      (if (= (:total_rows docs) 0)
+        []
+        (map #(db/get-doc @model-db* (:id %)) (:rows docs))))))
 
 
 (defn all-wiki-documents
@@ -132,8 +132,9 @@
 (defn delete-all-documents
   "Delete all documents."
   []
-  (let-realised [docs (all-documents)]
-    (util/await (doall (map #(db/delete-doc @model-db* %) @docs)))))
+  (go
+    (doseq [doc (<! (db/all-docs @model-db*))]
+      (db/delete-doc @model-db* doc))))
 
 
 (defn format-request
