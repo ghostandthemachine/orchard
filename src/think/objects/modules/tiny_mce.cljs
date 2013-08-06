@@ -1,16 +1,17 @@
 (ns think.objects.modules.tiny-mce
   (:require-macros
+    [cljs.core.async.macros :refer [go]]
     [think.macros :refer [defui]])
-  (:require [think.object :as object]
-            [crate.core :as crate]
+  (:require [think.object    :as object]
+            [crate.core      :as crate]
             [think.util.core :refer [bound-do uuid]]
-            [think.util.dom :as dom]
-            [think.module :refer [module-view spacer default-opts
+            [think.util.dom  :as dom]
+            [think.module    :refer [module-view spacer default-opts
                                   edit-module-btn-icon delete-btn edit-btn]]
-            [think.util.log :refer (log log-obj)]
-            [crate.binding :refer [bound subatom]]
-            [think.model :as model]
-            [dommy.core :as dommy]))
+            [think.util.log  :refer (log log-obj)]
+            [crate.binding   :refer [bound subatom]]
+            [think.model     :as model]
+            [dommy.core      :as dommy]))
 
 
 (defn tiny-mce-doc
@@ -41,12 +42,10 @@
        :editor_selector "tiny-mce-editor"})))
 
 
-
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
                 (init-tinymce)))
-
 
 
 (object/object* :tiny-mce-module
