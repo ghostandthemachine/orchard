@@ -1,13 +1,12 @@
 (ns think.objects.logger
-  (:require-macros [redlobster.macros :refer [let-realised]]
-  						     [think.macros :refer [defui defgui defonce]])
+  (:require-macros 
+    [think.macros :refer [defui defgui defonce]])
   (:require [think.object :as object]
             [think.util.log :refer (log log-obj)]
             [think.util.dom  :as dom]
             [think.util.core :as util]
             [think.dispatch :as dispatch]
-            [crate.core :as crate]
-            [redlobster.promise :as p]))
+            [crate.core :as crate]))
 
 
 (defonce logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))

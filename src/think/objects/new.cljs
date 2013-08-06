@@ -1,8 +1,7 @@
 (ns think.objects.new
   (:require-macros
     [think.macros :refer [defui]]
-    [cljs.core.async.macros :as m :refer [go]]
-    [redlobster.macros :refer [let-realised]])
+    [cljs.core.async.macros :as m :refer [go]])
   (:require
     [think.object :as object]
     [cljs.core.async :refer [chan >! <! timeout]]

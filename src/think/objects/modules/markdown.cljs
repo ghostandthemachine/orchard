@@ -6,7 +6,6 @@
     [think.object :as object]
     [cljs.core.async :refer [chan >! <! timeout]]
     [crate.core :as crate]
-    [redlobster.promise :as p]
     [think.util.core :refer [bound-do uuid]]
     [think.util.dom :as dom]
     [think.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
@@ -81,13 +80,11 @@
 
 (defn create-module
   []
-  (let [mod-promise (p/promise)]
-    (go
-      (let [doc (<! (markdown-doc))
-        _ (log "markdown-doc: " doc)
+  (go
+    (let [doc (<! (markdown-doc))
+          _ (log "markdown-doc: " doc)
             obj (object/create :markdown-module doc)]
-        (p/realise mod-promise obj)))
-    mod-promise))
+      obj)))
 
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click

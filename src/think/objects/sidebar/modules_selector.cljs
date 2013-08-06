@@ -1,9 +1,10 @@
 (ns think.objects.sidebar.modules-selector
-  (:require-macros [redlobster.macros :refer [let-realised]]
-  						     [think.macros :refer [defui defgui]])
-  (:require [think.object :as object]
-            [think.util.log :refer (log log-obj)]
-            [crate.binding :refer [map-bound bound subatom]]))
+  (:require-macros 
+    [think.macros :refer [defui defgui]])
+  (:require 
+    [think.object :as object]
+    [think.util.log :refer (log log-obj)]
+    [crate.binding :refer [map-bound bound subatom]]))
 
 
 (defui module-item

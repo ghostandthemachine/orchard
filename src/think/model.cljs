@@ -151,13 +151,15 @@
 
 (defn synch-documents
   []
-  (log "synch-docs")
-  (let [target  (format-request account)
-        src     (:root account)
-        putp    (db/replicate-db target src)
-        getp    (db/replicate-db src target)]
-    (util/await [putp getp])))
-
+  (go
+    (log "synch-docs")
+    (let [target (format-request account)
+          src    (:root account)
+          put-c  (db/replicate-db target src)
+          get-c  (db/replicate-db src target)
+          a      (<! put-c)
+          b      (<! get-c)]
+      [a b])))
 
 
 (defn media-document

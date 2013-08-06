@@ -7,7 +7,6 @@
                  [com.cemerick/clojurescript.test "0.0.5-SNAPSHOT"]
                  [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
-                 [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]
                  [node-webkit-cljs "0.1.4"]]
 
