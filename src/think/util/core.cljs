@@ -465,3 +465,8 @@
 (defn computed-style
   [elem]
   (.getComputedStyle js/window elem))
+
+
+(defn has?
+  [coll k]
+  (not (nil? (some #{k} coll))))
