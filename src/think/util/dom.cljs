@@ -53,6 +53,21 @@
     res)))
 
 
+(defn by-id
+  [id]
+  (js/$ (str "#" id)))
+
+
+(defn by-tag
+  [tag]
+  (js->clj (js/document.getElementsByTagName)))
+
+
+(defn by-class
+  [class]
+  (js/$ (str "." class)))
+
+
 (defn append [parent child]
   (.appendChild parent child)
   parent)
@@ -61,6 +76,12 @@
 (defn add-class [elem class]
   (when elem
     (.add (.-classList elem) (name class))))
+
+
+(defn add-id
+  [elem id]
+  (when elem
+    (aset elem "id" (name id))))
 
 (defn remove-class [elem class]
   (when elem
@@ -260,3 +281,39 @@
   [title]
   (aset js/document "title" title))
 
+
+(defn gdata
+  "Get data attribute values and convert them to JSON."
+  [elem & ks]
+  (let [dataset (.-dataset elem)
+        values  (js->clj
+                  (reduce
+                    (fn [values k]
+                      (conj values (aget dataset (name k))))
+                    []
+                    ks))]
+    (->
+      (if (= (count values) 1)
+        (first values)
+        values)
+      js/JSON.parse
+      js->clj)))
+
+(defn sdata
+  "Set data attribute values. Currently does not suuport keyword values (they are converted strings)."
+  [elem & attrs]
+  (let [dataset (.-dataset elem)]
+    (doseq [[k v] (partition 2 attrs)]
+      (aset dataset (name k) (js/JSON.stringify (clj->js v))))
+    (js->clj dataset)))
+
+
+(defn create
+  "Creates an HTML element. Optionally takes a list of attributes"
+ ([s]
+  (create s nil))
+ ([s & args]
+  (let [elem (.createElement js/document (name s))]
+    (when args
+      (sdata elem args))
+    elem)))

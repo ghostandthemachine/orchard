@@ -88,9 +88,9 @@
      (tab "#log" "Log" :active)
      (tab "#couchdb" "Couchdb")]]
    [:div.tab-content.logger-content-panes
-    [:div.tab-pane.log-pane.active {:id "log"}
+    [:div#log.tab-pane.log-pane.active
      [:ul.log-list]]
-    [:div.tab-pane.log-pane  {:id "couchdb"}
+    [:div#couchdb.tab-pane.log-pane
      [:ul.log-list]]]])
 
 
