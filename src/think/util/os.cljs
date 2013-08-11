@@ -1,8 +1,7 @@
 (ns think.util.os
-  (:use [think.util.log :only (log log-obj)])
   (:require-macros [think.macros :refer [defonce]])
-  (:require [redlobster.promise   :as p]
-            [clojure.browser.repl :as repl]))
+  (:require [clojure.browser.repl :as repl]
+            [think.util.log :refer (log log-obj)]))
 
 (def ^:private fs            (js/require "fs"))
 (def ^:private child-process (js/require "child_process"))

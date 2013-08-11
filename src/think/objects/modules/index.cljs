@@ -1,19 +1,17 @@
 (ns think.objects.modules.index
   (:require-macros
     [think.macros :refer [defui]]
-    [cljs.core.async.macros :as m :refer [go]]
-    [redlobster.macros :refer [let-realised]])
+    [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<!]]
-    [think.object :as object]
-    [crate.core :as crate]
-    [redlobster.promise :as p]
-    [think.util.dom :as dom]
-    [think.model :as model]
-    [think.util.core :refer [bound-do]]
-    [think.util.log :refer (log log-obj)]
-    [crate.binding :refer [bound subatom]]
-    [dommy.core :as dommy]))
+    [cljs.core.async    :refer [<!]]
+    [think.object       :as object]
+    [crate.core         :as crate]
+    [think.util.dom     :as dom]
+    [think.model        :as model]
+    [think.util.core    :refer [bound-do]]
+    [think.util.log     :refer (log log-obj)]
+    [crate.binding      :refer [bound subatom]]
+    [dommy.core         :as dommy]))
 
 
 (defn module-btn-icon

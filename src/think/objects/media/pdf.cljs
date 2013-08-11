@@ -1,7 +1,7 @@
 (ns think.objects.media.pdf
-  (:use-macros [dommy.macros :only [sel]]
-               [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised defer-node]])
+  (:require-macros
+    [dommy.macros :refer [sel]]
+    [think.macros :refer [defui]])
   (:require [think.object :as object]
             [crate.core :as crate]
             [think.util.core :refer [bound-do]]

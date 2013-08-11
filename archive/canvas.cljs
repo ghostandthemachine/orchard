@@ -1,162 +1,141 @@
-(ns think.canvas)
+(ns think.objects.canvas
+  (:refer-clojure :exclude [rem reset!])
+  (:require [think.object :as object]
+            ;[think.objects.context :as ctx]
+            [think.util.dom :refer [$ html parent toggle-class append remove prevent stop-propagation css] :as dom])
+  (:use [crate.binding :only [bound]])
+  (:use-macros [crate.def-macros :only [defpartial]]
+               [think.macros :only [defui]]))
 
-; Taken from https://github.com/jonase/mlx/wiki/Animating-Bezier-curves-in-ClojureScript
 
-;; From http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-(def request-animation-frame ;js/webkitRequestAnimationFrame)
-  (js* "(function(){
-      return  window.requestAnimationFrame       ||
-              window.webkitRequestAnimationFrame ||
-              window.mozRequestAnimationFrame    ||
-              window.oRequestAnimationFrame      ||
-              window.msRequestAnimationFrame     ||
-              function(/* function */ callback, /* DOMElement */ element){
-                window.setTimeout(callback, 1000 / 60);
-              };
-    })();"))
+(declare position!)
+(declare ->rep)
+(declare get-rep)
+(declare rem!)
 
-;; Functions on canvas
 
-(defn context [canvas]
-  (.getContext canvas "2d"))
+(object/behavior* ::refresh
+                  :triggers #{:refresh}
+                  :reaction (fn [obj]
+                              (js/window.location.reload true)))
 
-(defn width [canvas]
-  (.width canvas))
+(object/behavior* ::remove-on-destroy
+                  :triggers #{:destroy}
+                  :reaction (fn [obj]
+                              (rem! obj)))
 
-(defn height [canvas]
-  (.height canvas))
+(object/behavior* ::rep-on-redef
+                  :triggers #{:redef}
+                  :reaction (fn [obj]
+                              (->rep obj)))
 
-(defn clear [canvas]
-  (set! (.-width canvas) (.width canvas)))
+(object/behavior* ::alt-down-drag
+                  :triggers #{:object.mousedown}
+                  :reaction (fn [canv obj e]
+                              (when (.-altKey e)
+                                (object/merge! canv {:dragging obj})
+                                (dom/prevent e)
+                                (dom/stop-propagation e))))
 
-;; Functions on context
-(defn save [ctx]
-  (. ctx (save)))
+(object/behavior* ::dragging
+                  :triggers #{:mousemove}
+                  :reaction (fn [canv e]
+                              (when-let [obj (:dragging @canv)]
+                                (let [$drag (get-rep obj)]
+                                  (dom/css $drag {:position "absolute"
+                                              :margin 0
+                                              :z-index 1})
+                                  (comment
+                                    (object/merge! obj {::position {:top (- (.-pageY e) (/ (dom/height $drag) 2))
+                                                                    :left (-  (.-pageX e) (/ (dom/width $drag) 2))}}
+                                                   ))
+                                  (position! obj {:top (- (.-pageY e) (/ (dom/height $drag) 2))
+                                                                  :left (-  (.-pageX e) (/ (dom/width $drag) 2))})))))
+(object/behavior* ::drag-end
+                  :triggers #{:mouseup}
+                  :reaction (fn [canv e]
+                              (when-let [obj (:dragging @canv)]
+                                (let [$drag (get-rep obj)]
+                                  (css $drag {:z-index 0})
+                                  (object/merge! canv {:dragging nil})))))
 
-(defn restore [ctx]
-  (. ctx (restore)))
+(defui canvas-elem [obj]
+  [:div#canvas.unselectble]
+  :mousemove (fn [e]
+               (object/raise obj :mousemove e))
+  :click (fn [e]
+           (object/raise obj :click e))
+  :mousedown (fn [e] (object/raise obj :mousedown e))
+  :mouseup (fn [e] (object/raise obj :mouseup e))
+  :contextmenu (fn [e] (object/raise obj :contextmenu e)))
 
-(defn fill-style! [ctx style]
-  (set! (.-fillStyle ctx) style))
+(defn ->rep [obj canvas]
+  (let [content (:content @obj)]
+    (dom/attr content {:objId (object/->id obj)})
+    (comment
+    (dom/on-event* content {:mouseup (fn [e]
+                                 (object/raise canvas :object.mouseup obj e))
+                      :mousemove  (fn [e]
+                                   (object/raise canvas :object.mousemove obj e))
+                      :mousedown (fn [e]
+                                   (object/raise canvas :object.mousedown obj e))
+                      :contextmenu (fn [e]
+                                     (object/raise canvas :object.contextmenu obj e))
+                      :click (fn [e]
+                               (object/raise canvas :object.click obj e))}))
+    content))
 
-(defn stroke-style! [ctx style]
-  (set! (.-strokeStyle ctx) style))
 
-(defn line-width! [ctx w]
-  (set! (.-lineWidth ctx) w))
 
-(defn fill-rect [ctx x y w h]
-  (.fillRect ctx x y w h))
+(object/object* ::canvas
+                :triggers [:mousemove :mousedown :mouseup :contextmenu :click
+                           :object.mousemove :object.mousedown :object.mouseup
+                           :object.click :object.contextmenu]
+                :behaviors [::alt-down-drag ::dragging ::drag-end]
+                :init (fn [obj]
+                        (canvas-elem obj)))
 
-(defn clear-rect
-  ([ctx] (clear-rect ctx
-                     [0 0]
-                     [(width (.canvas ctx))
-                      (height (.canvas ctx))]))
-  ([ctx [x y] [w h]] (.clearRect ctx x y w h)))
+(def canvas (object/create ::canvas))
 
-;; Paths
-(defn move-to [ctx [x y]]
-  (.moveTo ctx x y))
+(defn add! [obj & [position?]]
+  (object/add-behavior! obj ::remove-on-destroy)
+  (object/add-behavior! obj ::rep-on-redef)
+  (let [rep (->rep obj canvas)]
+    (dom/append (:content @canvas) rep)
+    (object/raise obj :show rep)
+    (when position?
+      (object/merge! obj {::position {:top 50 :right 10}})
+      (position! obj {:top 50 :right 10}))))
 
-(defn line-to [ctx [x y]]
-  (.lineTo ctx x y))
 
-(defn arc
-  ([ctx p radius start-angle end-angle]
-     (arc ctx p radius start-angle end-angle true))
-  ([ctx [x y] radius start-angle end-angle anticlockwise?]
-     (.arc ctx x y radius start-angle end-angle anticlockwise?)))
+(defn get-rep [obj]
+  ($ (str "[objid='" (object/->id obj) "']") (:content @canvas)))
 
-(defn arc-to [ctx [x1 y1] [x2 y2] r]
-  (.arcTo ctx x1 y1 x2 y2 r))
+(defn position! [obj pos]
+  (css (get-rep obj) (merge {:position "absolute"
+                             :left "auto"
+                             :right "auto"
+                             :bottom "auto"
+                             :top "auto"} pos)))
 
-(defn quadratic-curve-to [ctx [cx cy] [px py]]
-  (.quadraticCurveTo ctx cx cy px py))
+(defn rem! [obj]
+  (when-let [rep (get-rep obj)]
+    (dom/remove rep))
+  (object/raise obj :object.remove))
 
-(defn bezier-curve-to [ctx [c1x c1y] [c2x c2y] [px py]]
-  (.bezierCurveTo ctx c1x c1y c2x c2y px py))
 
-(defn begin-path [ctx]
-  (. ctx (beginPath)))
+(defn replace! [obj1 obj2]
+  (rem! obj1)
+  (add! canvas obj2))
 
-(defn stroke [ctx]
-  (. ctx (stroke)))
+(defn reset!
+  [obj1 obj2]
+  (dom/empty obj1)
+  (add! canvas obj2))
 
-(defn fill [ctx]
-  (. ctx (fill)))
+(defn ->px [s]
+  (str (or s 0) "px"))
 
-(defn close-path [ctx]
-  (. ctx (closePath)))
+(dom/append (dom/$ :#container) (:content @canvas))
 
-;; Text
-(defn text-align! [ctx value]
-  (set! (.-textAlign ctx) value))
-
-(defn text-baseline! [ctx value]
-    (set! (.-textBaseline ctx) value))
-
-(defn font! [ctx value]
-  (set! (.-font ctx) value))
-
-(defn stroke-text
-  ([ctx text [x y]] (.strokeText ctx text x y))
-  ([ctx text [x y] max-width] (.strokeText ctx text x y max-width)))
-
-(defn fill-text
-  ([ctx text [x y]] (.fillText ctx text x y))
-  ([ctx text [x y] max-width] (.fillText ctx text x y max-width)))
-
-;; Gradients
-(defn create-linear-gradient [ctx [x1 y1] [x2 y2]]
-  (.createLinearGradient ctx x1 y1 x2 y2))
-
-(defn add-color-stop [gradient position color]
-  (.addColorStop gradient position color))
-
-;; Custom
-(defn- rounded-rect [ctx [x y] w h r]
-  (let [x1 (+ x r)
-        x2 (+ x w)
-        x3 (- x2 r)
-        y1 (+ y r)
-        y2 (+ y h)
-        y3 (- y2 r)]
-    (doto ctx
-      (move-to [x1 y])
-      (line-to [x3 y])
-      (arc-to [x2 y] [x2 y1] r)
-      (line-to [x2 y3])
-      (arc-to [x2 y2] [x3 y2] r)
-      (line-to [x1 y2])
-      (arc-to [x y2] [x y3] r)
-      (line-to [x y1])
-      (arc-to [x y] [x1 y] r))))
-
-(defn stroke-rounded-rect [ctx p w h r]
-  (doto ctx
-    begin-path
-    (rounded-rect p w h r)
-    stroke
-    close-path))
-
-(defn fill-rounded-rect [ctx p w h r]
-  (doto ctx
-    begin-path
-    (rounded-rect p w h r)
-    fill
-    close-path))
-
-(defn circle
-  "A circle with midpoint p and radius r"
-  [ctx p r]
-  (arc ctx p r 0 (* 2 (. js/Math PI))))
-
-(defn lerp
-  "Linear interpolation between the points p and q interpolated by
-  a. a = 0 is at point p, a = 1 is at point q, a = 0.5 is half way
-  between p and q"
-  [[px py] [qx qy] a]
-  [(+ px (* (- qx px) a))
-   (+ py (* (- qy py) a))])
-
+;(ctx/in! :global canvas)

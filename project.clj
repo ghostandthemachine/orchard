@@ -7,7 +7,6 @@
                  [com.cemerick/clojurescript.test "0.0.5-SNAPSHOT"]
                  [prismatic/dommy "0.1.1"]
                  [org.clojure/data.json "0.2.1"]
-                 [org.bodil/redlobster "0.2.0"]
                  [crate "0.2.4"]
                  [node-webkit-cljs "0.1.4"]]
 
@@ -15,14 +14,25 @@
 
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
-  :cljsbuild {:builds [{:source-paths ["src"]
+  :cljsbuild {:builds [{:id "whitespace"
+                        :source-paths ["src"]
                         :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/thinker.js"
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
 
-                       {:source-paths ["src" "test"]
+                       {:id "advanced"
+                        :source-paths ["src"]
+                        :notify-command ["growlnotify" "-m"]
+                        :compiler {:output-to "public/js/thinker.js"
+                                   :optimizations :advanced
+                                   :warnings      true
+                                   :pretty-print  false
+                                   :externs ["resources/externs.js"]}}
+
+                       {:id "test"
+                        :source-paths ["test" "src"]
                         :compiler {:output-to "public/js/tests.js"
                                    :optimizations :whitespace
                                    :warnings      true

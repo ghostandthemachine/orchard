@@ -1,8 +1,7 @@
 (ns think.module
   (:require-macros 
     [think.macros :refer [defui defgui]]
-    [cljs.core.async.macros :refer [go]]
-    [redlobster.macros :refer [let-realised]])
+    [cljs.core.async.macros :refer [go]])
   (:require 
     [think.object :as object]
     [think.util.dom :as dom]
@@ -127,8 +126,9 @@
   [:div.module-selector-icon
     icon]
   :click (fn [e]
-          (let-realised [mod (create-fn)]
-            (object/raise template :add-module template @mod index))))
+          (go
+            (let [module (<! (create-fn))]
+              (object/raise template :add-module template module index)))))
 
 
 (defn module-btn-icon

@@ -1,7 +1,6 @@
 (ns think.objects.synch-btn
   (:use-macros [think.macros :only [defui defgui]]
-               [dommy.macros :only [sel sel1]]
-               [redlobster.macros :only [let-realised when-realised]])
+               [dommy.macros :only [sel sel1]])
   (:require [think.object :as object]
             [think.model :as model]
             [crate.binding :refer [subatom bound]]
@@ -10,10 +9,7 @@
 
 
 ; (def account (js->clj js/account))
-
-
 ; (def p (replicate-db "projects" "http://jon:celerycatstick@lifeisagraph.com:5984/projects"))
-
 
 
 (defui btn-view

@@ -1,17 +1,19 @@
 (ns think.objects.modules.media
-  (:use-macros [dommy.macros :only [sel]]
-               [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised defer-node]])
-  (:require [think.object :as object]
-            [think.module :refer [module-btn-icon module-btn]]
-            [think.util.core :refer [bound-do]]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [think.util.log :refer [log log-obj uuid]]
-            [redlobster.promise :as p]
-            [crate.core :as crate]
-            [crate.binding :refer [bound subatom]]
-            [clojure.string :as string]))
+  (:require-macros
+    [cljs.core.async.macros :refer [go]]
+    [dommy.macros :refer [sel]]
+    [think.macros :refer [defui]])
+  (:require
+    [cljs.core.async :refer (chan >! <!)]
+    [think.object    :as object]
+    [think.module    :refer [module-btn-icon module-btn]]
+    [think.util.core :refer [bound-do]]
+    [think.util.dom  :as dom]
+    [think.model     :as model]
+    [think.util.log  :refer [log log-obj uuid]]
+    [crate.core      :as crate]
+    [crate.binding   :refer [bound subatom]]
+    [clojure.string  :as string]))
 
 
 (def ^:private gui     (js/require "nw.gui"))
@@ -225,10 +227,9 @@
 
 (defn create-module
   []
-  (let [mod-promise (p/promise)]
-    (let-realised [doc (media-doc)]
-      (let [obj (object/create :media-module @doc)]
-        (p/realise mod-promise obj)))
-    mod-promise))
+  (go
+    (let [doc (<! (media-doc))
+          obj (object/create :media-module doc)]
+      obj)))
 
 

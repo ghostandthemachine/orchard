@@ -1,6 +1,5 @@
 (ns think.objects.workspace
   (:require [think.object :as object]
-            [think.objects.canvas :as canvas]
             [think.objects.sidebar :as sidebar]
             [think.util.dom :as dom]
             [think.util.log :refer (log log-obj)]
@@ -8,8 +7,8 @@
             [crate.binding :refer [map-bound bound subatom]])
   (:require-macros [think.macros :refer [defui]]))
 
-(def default-width 950)
 
+(def default-width 950)
 
 (defui render-document
   [this doc]
@@ -76,4 +75,6 @@
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
 
 (def workspace (object/create ::workspace))
-(canvas/add! workspace)
+(dom/append (dom/$ :#container) (:content @workspace))
+
+

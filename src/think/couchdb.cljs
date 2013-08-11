@@ -1,18 +1,18 @@
 (ns think.couchdb
   (:require-macros
     [think.macros :refer [defonce node-chan]]
-    [redlobster.macros :refer [when-realised let-realised defer-node]]
-    [cljs.core.async.macros :as m :refer [go]])
+    [cljs.core.async.macros :refer [go]])
   (:require
     [cljs.core.async :refer [chan >! <! put! timeout close!]]
-    [redlobster.promise :as p]
     [think.object :as object]
     [think.util.core :as util]
     [think.util.os :as os]
     [think.util.log :refer (log log-obj log-err)]))
 
 
-(def db* (atom nil))
+(defonce db-proc (os/process "couchdb"))
+(defonce db*     (atom nil))
+
 
 (defn log-handler
   [log-id msg]
@@ -23,7 +23,6 @@
   []
   (if @db* true false))
 
-(defonce db-proc (os/process "couchdb"))
 
 (defn- start-db
   []
@@ -40,6 +39,7 @@
 
 (def ^:private couch-server (js/require "nano"))
 (def ^:private nano         (couch-server "http://localhost:5984"))
+
 
 (defn couch-ids
   [x]
@@ -64,14 +64,6 @@
     (assoc x :id id :rev rev :type type)))
 
 
-(defn promise-callback
-  [p]
-  (fn [err res]
-    (if err
-      (p/realise-error p (util/js->clj err))
-      (p/realise p res))))
-
-
 ;; Document Database API
 
 (defn list-all
@@ -90,7 +82,7 @@
    (replicate-db nano src tgt))
   ([server src tgt]
    (go
-    (:value 
+    (:value
       (<! (node-chan (.replicate (.-db server) src tgt (clj->js {}))))))))
 
 
@@ -98,7 +90,7 @@
   "Create a new database on the server."
   [server db-name]
   (go
-    (:value 
+    (:value
       (<! (node-chan (.create (.-db server) db-name))))))
 
 
@@ -133,7 +125,7 @@
   ([db-name] (info nano db-name))
   ([server db-name]
    (go
-    (:value 
+    (:value
       (<! (node-chan (.get (.-db server) db-name)))))))
 
 
@@ -151,12 +143,12 @@
 
 
 (defn all-docs
-  "Get all documents in the DB."
+  "Get all documents in the DB. Returns a seq of {:id ... :rev ...} maps."
   [db & opts]
   (go
-    (:value 
+    (:value
       (<! (node-chan (.list db (util/clj->js (merge {} opts)))
-    #(util/js->clj % :keywordize-keys true))))))
+                     #(util/js->clj % :keywordize-keys true))))))
 
 
 (defn get-doc
@@ -248,13 +240,5 @@ To create a view you need to create a design document, which can have a view.  I
       }
 }")
 
-
-(comment defn map-reduce
-  "Generate a DB view using a mapping function, and optionally a reduce function."
-  [db map-fn & [reduce-fn]]
-  (let [mapper (fn [doc emit] (map-fn (js->clj doc) emit))]
-    (if reduce-fn
-      (defer-node (.query db (util/clj->js {:map mapper}) (util/clj->js {:reduce reduce-fn})) util/js->clj)
-      (defer-node (.query db (clj->js {:map mapper})) util/js->clj))))
 
 

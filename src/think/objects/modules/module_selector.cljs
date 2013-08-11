@@ -1,21 +1,21 @@
 (ns think.objects.modules.module-selector
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised]])
-  (:require [think.object :as object]
-            [crate.core :as crate]
-            [redlobster.promise :as p]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [think.module :refer [module-btn module-btn-icon]]
-            [think.module :as modules]
-            [think.objects.modules.markdown :as md]
-            [think.objects.modules.media :as media]
-            [think.objects.modules.visualizer :as viz]
-            [think.objects.modules.html :as html]
-            [think.util.core :refer [bound-do uuid]]
-            [think.util.log :refer (log log-obj)]
-            [crate.binding :refer [bound subatom]]
-            [dommy.core :as dommy]))
+  (:require-macros
+    [think.macros :refer [defui]])
+  (:require 
+    [think.object :as object]
+    [crate.core :as crate]
+    [think.util.dom :as dom]
+    [think.model :as model]
+    [think.module :refer [module-btn module-btn-icon]]
+    [think.module :as modules]
+    [think.objects.modules.markdown :as md]
+    [think.objects.modules.media :as media]
+    [think.objects.modules.visualizer :as viz]
+    [think.objects.modules.html :as html]
+    [think.util.core :refer [bound-do uuid]]
+    [think.util.log :refer (log log-obj)]
+    [crate.binding :refer [bound subatom]]
+    [dommy.core :as dommy]))
 
 
 (object/object* :module-selector-module

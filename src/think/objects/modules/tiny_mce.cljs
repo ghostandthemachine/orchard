@@ -1,16 +1,17 @@
 (ns think.objects.modules.tiny-mce
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [when-realised let-realised defer-node]])
-  (:require [think.object :as object]
-            [crate.core :as crate]
-            [redlobster.promise :as p]
+  (:require-macros
+    [cljs.core.async.macros :refer [go]]
+    [think.macros :refer [defui]])
+  (:require [think.object    :as object]
+            [crate.core      :as crate]
             [think.util.core :refer [bound-do uuid]]
-            [think.util.dom :as dom]
-            [think.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
-            [think.util.log :refer (log log-obj)]
-            [crate.binding :refer [bound subatom]]
-            [think.model :as model]
-            [dommy.core :as dommy]))
+            [think.util.dom  :as dom]
+            [think.module    :refer [module-view spacer default-opts
+                                  edit-module-btn-icon delete-btn edit-btn]]
+            [think.util.log  :refer (log log-obj)]
+            [crate.binding   :refer [bound subatom]]
+            [think.model     :as model]
+            [dommy.core      :as dommy]))
 
 
 (defn tiny-mce-doc
@@ -41,12 +42,10 @@
        :editor_selector "tiny-mce-editor"})))
 
 
-
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
                 (init-tinymce)))
-
 
 
 (object/object* :tiny-mce-module
@@ -71,11 +70,10 @@
 
 (defn create-module
   []
-  (let [mod-promise (p/promise)]
-    (let-realised [doc (tiny-mce-doc)]
-      (let [obj (object/create :tiny-mce-module @doc)]
-        (p/realise mod-promise obj)))
-    mod-promise))
+  (go
+    (let [doc (tiny-mce-doc)
+          obj (object/create :tiny-mce-module doc)]
+      obj)))
 
 
 (dommy/listen! [(dom/$ :body) :.tiny-mce-module-content :a] :click

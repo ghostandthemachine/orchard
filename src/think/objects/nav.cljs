@@ -1,16 +1,17 @@
 (ns think.objects.nav
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [when-realised let-realised defer-node]])
-  (:require [think.object :as object]
-            [think.util.log :refer (log log-obj)]
-            [think.util.core :as util]
-            [think.util.dom :refer [window-width $$ $]]
-            [think.objects.workspace :as workspace]
-            [think.util.dom :as dom]
-            [crate.binding :refer [map-bound bound subatom]]
-            [think.model :as model]
-            [think.dispatch :as dispatch]
-            [redlobster.promise :as p]))
+  (:require-macros
+    [think.macros :refer (defui defonce node-chan)]
+    [cljs.core.async.macros :refer (go)])
+  (:require
+    [think.object    :as object]
+    [cljs.core.async :refer [chan >! <!]]
+    [think.util.log  :refer (log log-obj)]
+    [think.util.core :as util]
+    [think.util.dom  :as dom]
+    [crate.binding   :refer [map-bound bound subatom]]
+    [think.model     :as model]
+    [think.dispatch  :as dispatch]))
+
 
 (def BLOCK-SIZE 30)  ;; default nav (and sidebar btn) btn size
 
@@ -95,12 +96,12 @@
 (defui synch-btn
   []
   [:li.nav-element
-    [:i.icon-sitemap.icon-white]]
+   [:i.icon-sitemap.icon-white]]
   :click (fn [e]
-            (log "synch projects")
-            (let-realised [p (model/synch-documents)]
-              (log "Documents synched")
-              (log-obj @p))))
+           (log "synch projects")
+           (go
+             (<! (model/synch-documents))
+             (log "Documents synched"))))
 
 
 (defui dev-tools-btn
@@ -113,7 +114,7 @@
 
 (defn accum-btn-widths
   []
-  (apply + (map #(aget % "offsetWidth") ($$ ".nav-element"))))
+  (apply + (map #(aget % "offsetWidth") (dom/$$ ".nav-element"))))
 
 (defn accum-padding
   [elem]
@@ -148,7 +149,7 @@
   :triggers #{:add!}
   :behaviors [::add!]
   :locked? true
-  :window-width (window-width)
+  :window-width (dom/window-width)
   :init (fn [this]
           [:div#nav-wrapper
             [:ul#nav-list

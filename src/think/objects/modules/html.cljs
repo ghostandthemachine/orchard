@@ -1,16 +1,18 @@
 (ns think.objects.modules.html
-  (:use-macros [think.macros :only [defui]]
-               [redlobster.macros :only [let-realised]])
-  (:require [think.object :as object]
-            [crate.core :as crate]
-            [redlobster.promise :as p]
-            [think.util.dom :as dom]
-            [think.model :as model]
-            [think.util.core :refer [bound-do uuid]]
-            [think.module :refer [module-view default-opts edit-module-btn-icon delete-btn edit-btn]]
-            [think.util.log :refer (log log-obj)]
-            [crate.binding :refer [bound subatom]]
-            [dommy.core :as dommy]))
+  (:require-macros
+    [cljs.core.async.macros :refer [go]]
+    [think.macros :refer [defui]])
+  (:require
+    [cljs.core.async :refer (chan >! <!)]
+    [think.object    :as object]
+    [crate.core :as crate]
+    [think.util.dom :as dom]
+    [think.model :as model]
+    [think.util.core :refer [bound-do uuid]]
+    [think.module :refer [module-view default-opts edit-module-btn-icon delete-btn edit-btn]]
+    [think.util.log :refer (log log-obj)]
+    [crate.binding :refer [bound subatom]]
+    [dommy.core :as dommy]))
 
 
 (defui render-present
@@ -69,12 +71,10 @@
 
 (defn create-module
   []
-  (let [mod-promise (p/promise)]
-    (let-realised [doc (html-doc)]
-      (let [obj (object/create :html-module @doc)]
-        (p/realise mod-promise obj)))
-    mod-promise))
-
+  (go
+    (let [doc (<! (html-doc))
+          obj (object/create :html-module doc)]
+      obj)))
 
 
 (dommy/listen! [(dom/$ :body) :.html-module-content :a] :click

@@ -1,11 +1,10 @@
 (ns think.objects.app
-  (:require-macros [redlobster.macros :refer [let-realised]]
-                   [think.macros :refer [defonce]]
-                   [cljs.core.async.macros :as m :refer [go]])
-  (:require 
+  (:require-macros
+    [think.macros :refer [defonce]]
+    [cljs.core.async.macros :refer [go]])
+  (:require
     [cljs.core.async :refer [chan >! <! timeout]]
     [think.object :as object]
-    [think.objects.context :as ctx]
     [think.model :as model]
     [think.util.time :refer [now]]
     [think.util.os :as os]
@@ -18,8 +17,7 @@
     [think.dispatch :as dispatch]
     [think.objects.workspace :as workspace]
     think.kv-store
-    think.objects.wiki-document
-    [redlobster.promise :as p]))
+    think.objects.wiki-document))
 
 
 (def gui (js/require "nw.gui"))
@@ -140,8 +138,7 @@
                 :triggers [:quit :show-dev-tools :start :refresh]
                 :behaviors [::quit ::show-dev-tools ::start ::refresh]
                 :delays 0
-                :init (fn [this]
-                        (ctx/in! :app this)))
+                :init (fn [this]))
 
 
 (when-not js/global.windows

@@ -1,11 +1,12 @@
 (ns think.util.core
   (:refer-clojure :exclude [js->clj clj->js])
-  (:use-macros [dommy.macros :only (sel sel1)])
-  (:use [think.util.log :only (log log-obj)])
-  (:require [redlobster.promise :as p]
-            [clojure.browser.repl :as repl]
-            [dommy.core :as dom]
-            [goog.i18n.DateTimeFormat :as date-format]))
+  (:require-macros
+    [dommy.macros :refer (sel sel1)])
+  (:require
+    [think.util.log :refer (log log-obj)]
+    [clojure.browser.repl :as repl]
+    [dommy.core :as dom]
+    [goog.i18n.DateTimeFormat :as date-format]))
 
 
 (def ^:private url     (js/require "url"))
@@ -32,6 +33,7 @@
               :else x))]
     (f x)))
 
+
 (defn clj->js
   "Recursively transforms ClojureScript maps into Javascript objects,
    other ClojureScript colls into JavaScript arrays, and ClojureScript
@@ -44,6 +46,7 @@
                (assoc m (clj->js k) (clj->js v))) {} x))
     (coll? x) (apply array (map clj->js x))
     :else x))
+
 
 (defn clj->json
   "Returns a JSON string from ClojureScript data."
@@ -130,11 +133,6 @@
 
 (defn refresh-window []
   (js/window.location.reload true))
-
-
-(defn promise-logger
-  [prom]
-  (p/on-realised prom log-obj log-obj))
 
 
 (defn itemized-seq
@@ -364,38 +362,11 @@
   (repl/connect "http://127.0.0.1:9000/repl"))
 
 
-(defn await
-  "Takes a seq of promises and produces a promise that will resolve to a seq of
-  their values."
-  [promises]
-  (let [await-all (= (first promises) :all)
-        promises (if await-all (rest promises) promises)
-        p (p/promise)
-        total (count promises)
-        count (atom 0)
-        done (atom false)]
-    (doseq [subp promises]
-      (let [succ (fn [_]
-                   (when (not @done)
-                     (swap! count inc)
-                     (when (= total @count)
-                       (reset! done true)
-                       (p/realise p (doall (map #(js->clj (deref %)) promises))))))
-            fail (if await-all succ
-                     (fn [err]
-                       (when (not @done)
-                         (reset! done true)
-                         (p/realise-error p err))))]
-        (p/on-realised subp succ fail)))
-    p))
-
-
 (defn bound-do
   [a* handler]
   (add-watch a* :mode-toggle-watch
     (fn [k elem* ov nv]
       (handler nv))))
-
 
 
 (defn mixin
