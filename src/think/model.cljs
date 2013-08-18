@@ -134,6 +134,15 @@
         (map #(db/get-doc @model-db* (:id %)) (:rows docs))))))
 
 
+(defn load-cache
+  []
+  (go
+    (reset! cache* (reduce (fn [docs doc]
+                             (assoc docs (:id doc) doc))
+                           {}
+                           (<! (all-documents))))))
+
+
 (defn all-wiki-documents
   []
   (log "all-wiki-documents")

@@ -157,6 +157,7 @@
   (.showDevTools win)
   (go
     (<! (model/load-db))
+    (model/load-cache)
     (log "db ready, starting app")
     (object/raise app :start)))
 
