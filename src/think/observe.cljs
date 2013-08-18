@@ -61,12 +61,12 @@
 
 (defn handle-node-ready
   [node chan mutations]
-  (.log js/console mutations)
-  (doseq [m mutations]
-    (.log js/console m)
+  ; (.log js/console mutations)
+  ; (doseq [m mutations]
+    ; (.log js/console m)
     ; (swap! mutations* #(assoc % :list (conj (:list %) m)
     ;                             :mutations mutations))
-    )
+    ; )
   ; (let [addmutations (map #(.-addedNodes %) mutations)]
         
   ;   (.log js/console "handle-node-ready mutations")
@@ -86,7 +86,7 @@
     (log "add ready observer")
     (let [node (:content @obj)
           ready-chan (chan)
-          observer (observe js/document (partial handle-node-ready node ready-chan) :child-list :subtree)]
+          observer (observe js/document (partial handle-node-ready node ready-chan) :attributes :character-data :child-list :subtree)]
       ; (go
       ;   (let [created (<! ready-chan)]
       ;     (.disconnect observer)
