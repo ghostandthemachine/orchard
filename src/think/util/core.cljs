@@ -307,18 +307,6 @@
   (-nth [this n not-found]
         (or (.item this n) not-found)))
 
-; (extend-type js/Array
-;   ISeqable
-;   (-seq [this] (itemized-seq this))
-
-;   ICounted
-;   (-count [this] (.-length this))
-
-;   IIndexed
-;   (-nth [this n]
-;     (.item this n))
-;   (-nth [this n not-found]
-;         (or (.item this n) not-found)))
 
 (defn refresh
   "Refresh the current page."
@@ -441,3 +429,13 @@
 (defn has?
   [coll k]
   (not (nil? (some #{k} coll))))
+
+
+(defn node->tag
+  [node]
+  (str
+    (clojure.string/lower-case (aget node "tagName"))
+    (when (> (count (.-id node)) 0)
+      (str "#" (.-id node)))
+    (when (> (count (.-className node)) 0)
+      (str "." (clojure.string/replace (.-className node) #" " ".")))))

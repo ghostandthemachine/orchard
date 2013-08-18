@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [set! assoc! dissoc! children])
   (:require [crate.core :as crate]
             [clojure.set :as set]
-            ; [think.util.js :refer [throttle debounce]]
+            [think.observe :refer [add-ready-observer]]
             [think.util.log :refer (log log-obj)]
             [think.util.dom :refer [replace-with]]
             [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]))
@@ -87,7 +87,7 @@
     (doseq [o (instances-by-type id)
             :let [o (deref o)
                   args (:args o)
-                  old (:content o)
+                  old  (:content o)
                   behs (set (:behaviors o))
                   inst (@instances (->id o))
                   neue (when (:init odef)
@@ -195,6 +195,7 @@
     (add-watch inst ::change (fn [_ _ _ _]
                                (raise inst :object.change)))
     (raise inst :init)
+    (add-ready-observer inst)
     inst))
 
 (defn refresh! [obj]

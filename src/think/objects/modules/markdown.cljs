@@ -65,8 +65,8 @@
                 :icon icon
                 :editor nil
                 :init (fn [this record]
-                  (log "creating markdown module")
-                  (log-obj (clj->js record))
+                  ; (log "creating markdown module")
+                  ; (log-obj (clj->js record))
                         (object/merge! this record)
                         (bound-do (subatom this :mode)
                                   (partial render-module this))

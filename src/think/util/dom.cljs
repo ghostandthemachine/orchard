@@ -323,32 +323,12 @@
   [s]
   (.createElement js/document (name s)))
 
-(defn component
-  [s & opts]
-  (let [elem      (.createElement js/document (name s))
-        content?  (has? opts :content)
-        data      (if content?
-                    (reduce
-                      (fn [res [k v]]
-                        (when (not= :content k)
-                          (conj res k v)))
-                      []
-                      (partition 2 opts))
-                    opts)]
-    (when content?
-      (html elem (aget (crate.core/html [:div (:content (apply hash-map opts))]) "innerHTML")))
-    (sdata elem opts)
-    elem))
 
-
-(comment
-
-(create :div)
-
-(component :test-obj
-  :data {"boner" "loner"}
-  :foo "bar"
-  :wiz "woz"
-  :content [:div [:h3 "TEsting"]])
-
-)
+(defn child-of
+  [c p]
+  (if c
+    (loop [parent (.-parentNode c)]
+      (if (= parent p)
+        true
+        (if parent (recur (.-parentNode parent)) false)))
+    false))

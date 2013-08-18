@@ -42,10 +42,11 @@
        :editor_selector "tiny-mce-editor"})))
 
 
-(object/behavior* ::ready
-  :triggers #{:ready}
-  :reaction (fn [this]
-                (init-tinymce)))
+(defn ready
+  [content]
+  (log "Call ready")
+  (log-obj content)
+  (init-tinymce))
 
 
 (object/object* :tiny-mce-module
@@ -55,6 +56,7 @@
                 :label "TinyMCE"
                 :icon icon
                 :editor nil
+                :ready ready
                 :init (fn [this record]
                         (object/merge! this record)
                         (bound-do (subatom this :text)
