@@ -12,6 +12,7 @@
     [think.util.dom  :as dom]
     [think.util.core :as util]
     [think.objects.nav :as nav]
+    [think.objects.logger :as logger]
     [think.objects.sidebar :as sidebar]
     [think.util.nw  :as nw]
     [think.dispatch :as dispatch]
@@ -122,7 +123,6 @@
   :triggers #{:quit}
   :reaction (fn [this]
               (log "Quitting...")
-              (object/raise think.objects.logger/logger :quit)
               (os/kill-children)
               (nw/quit)))
 
@@ -158,6 +158,7 @@
   (go
     (<! (model/load-db))
     (log "db ready, starting app")
+    (logger/ready)
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))

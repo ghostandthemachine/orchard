@@ -5,6 +5,7 @@
   (:require
     [cljs.core.async :refer [chan >! <! put! timeout close!]]
     [think.object :as object]
+    [think.objects.logger :as logger]
     [think.util.core :as util]
     [think.util.os :as os]
     [think.util.log :refer (log log-obj log-err)]))
@@ -16,7 +17,7 @@
 
 (defn log-handler
   [log-id msg]
-  (object/raise think.objects.logger/logger :post log-id msg))
+  (logger/post log-id msg))
 
 
 (defn running?

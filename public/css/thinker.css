@@ -54,7 +54,7 @@ ul#nav-list li.nav-element:hover {
 
 .nav-element {
   margin: 0;
-  padding: 8px;
+  padding: 7px;
   height: 30px;
   -webkit-user-select: none;
   user-select: none;
@@ -370,10 +370,21 @@ li.modules-item {
     Logger
 ***************************************************************************/
 
+#logger {
+  visibility: hidden;
+  position: absolute;
+  width: 98%;
+  height: 200px;
+  margin: 0;
+  padding: 0;
+  bottom: 0;
+  z-index: 999999999999999;
+  background: white;
+}
+
 .log-list {
   list-style: none;
   margin-left: 10px;
-  margin-right: 10px;
 }
 
 .log-row {
@@ -400,18 +411,15 @@ li.modules-item {
 }
 
 .logger-content-panes {
-  margin-top: 40px;
 }
 
 .tabs-container {
-  position: fixed;
-  top: 0px;
   width: 100%;
 }
 
 .log-pane {
-  overflow: scroll;
 }
+
 
 /**************************************************************************
     Draggable
