@@ -3,45 +3,27 @@
     [think.macros :refer [defui defgui defonce]])
   (:require [think.object :as object]
             [think.util.log :refer (log log-obj)]
-            [think.util.dom  :as dom]
+            [think.util.dom :as dom]
             [think.util.core :as util]
             [think.dispatch :as dispatch]
             [crate.core :as crate]))
 
-
-(defonce logger-win (.open js/window "http://localhost:3000/logger.html", "Logger", "left=0, top=0"))
-
-
-(defn log-doc
-  []
-  (.-document logger-win))
-
-
-(defn body
-  []
-  (.getElementById (log-doc) "logger"))
-
-(defn body$ [] (js/$ (body)))
-
+(def ready* (atom false))
+(defn ready? [] @ready*)
 
 (defn tab-content
   [id]
-  (.getElementById (log-doc) id))
+  (dom/$ (str "#" id)))
 
 
-(defn tab-content$
+(defn tab-ul
   [id]
-  (.find (js/$ (log-doc)) (str "#" id " ul")))
-
-
-(defn by-id
-  [id]
-  (.get (.find (body$) (str "#" id)) 0))
+  (dom/$ (str "#" id " ul")))
 
 
 (defn tab-elem
   [id]
-  (.find (body$) (str "li a[href='" id "']")))
+  (dom/$ (str "li a[href='" id "']")))
 
 
 (defn scroll-to
@@ -65,10 +47,13 @@
 
 
 (defn append-message
-  [log-id msg & args]
-  (let [tab (tab-content$ log-id)]
-    (.append tab (crate/html [:li.log-row [:p (str msg args)]]))
-    (set! (.-scrollTop tab) (.-scrollHeight tab))))
+  [log-id msg]
+  (when (ready?)
+    (let [tab (tab-ul log-id)]
+      (dom/append tab
+        (crate/html
+          [:li.log-row
+            [:p (str msg)]])))))
 
 
 (defgui tab
@@ -87,81 +72,55 @@
      (tab "#log" "Log" :active)
      (tab "#couchdb" "Couchdb")]]
    [:div.tab-content.logger-content-panes
-    [:div.tab-pane.log-pane.active {:id "log"}
+    [:div#log.tab-pane.log-pane.active
      [:ul.log-list]]
-    [:div.tab-pane.log-pane  {:id "couchdb"}
+    [:div#couchdb.tab-pane.log-pane
      [:ul.log-list]]]])
 
 
-(defui logger-content
-  []
-  [:div.row-fluid
-   (tabs)])
-
-
-(object/behavior* ::post-message
-  :triggers #{:post}
-  :reaction (fn [this type msg & args]
-              (let [log-type   (str (name type))]
-                (if-let [elem       (tab-content log-type)]
-                  (let [height     (.-scrollHeight elem)
-                        cur-scroll (.-scrollTop elem)]
-                    (if (= height cur-scroll)
-                      (do
-                        (append-message log-type msg)
-                        (set! (.-scrollTop elem) height))
-                      (append-message log-type msg)))
-                  (append-message log-type msg)))))
-
-
-(defn ready
-  [this]
-  (let [log-panes (.find (js/$ (log-doc)) ".log-pane")]
-    (for [i (.size log-panes)]
-      (let [elem       (.get log-panes i)
-            height     (.-scrollHeight elem)
-            cur-scroll (.-scrollTop elem)]
-        ; (log "set log pane top " height cur-scroll)
-        (set! (.-scrollTop elem) height)
-        ;(log "scrollTop for elem " height)
-        (.on logger-win "close"
-          (fn []
-            (this-as this (.close this true))))
-        ))
-    (dom/append
-      (body)
-      (:content @this))
-    (.tab (js/$ "#logger-tabs a:last") "show")))
-
-
-(object/behavior* ::quit
-  :triggers #{:quit}
-  :reaction (fn [this]
-              (log "Closing Logger")
-              (.close logger-win)))
-
-
-(defn show-dev-tools
-  []
-  (log "Show Logger Dev Tools")
-  (.showDevTools logger-win))
+(defn post
+  [type msg]
+  (append-message (name type) msg))
 
 
 (object/object* :logger
   :tags #{:logger}
-  :triggers [:quit :show-dev-tools :init-window :post]
-  :behaviors [::quit ::show-dev-tools ::init-window ::post-message]
+  :triggers []
+  :behaviors []
   :delays 0
   :init (fn [this]
-          (logger-content)))
+          (tabs)))
 
 
 (def logger (object/create :logger))
 
-(aset logger-win "onload" (partial ready logger))
+; (aset logger-win "onload" (partial ready logger))
+
+
+(defn ready
+  []
+  (let [log-panes (js/$ js/document ".log-pane")]
+    (for [i (.size log-panes)]
+      (let [elem       (.get log-panes i)
+            height     (.-scrollHeight elem)
+            cur-scroll (.-scrollTop elem)]))
+    (dom/append
+      (dom/$ "#logger")
+      (:content @logger))
+    (.tab (js/$ "#logger-tabs a:last") "show")
+    (reset! ready* true)))
+
+
 
 (dispatch/react-to #{:log-message}
                    (fn [ev & [data]]
-                     (object/raise logger :post :log data)))
+                     (post :log data)))
 
 
+(defn toggle
+  [b]
+  (dom/css (dom/$ "#logger") {:visibility (if b "visible" "hidden")}))
+
+
+(defn show-logger [] (toggle true))
+(defn hide-logger [] (toggle false))

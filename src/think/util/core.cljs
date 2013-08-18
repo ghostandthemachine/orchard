@@ -357,7 +357,7 @@
     (dt/node [:script {:src file-name}])))
 
 
-(defn start-repl-server
+(defn ^:export start-repl-server
   []
   (repl/connect "http://127.0.0.1:9000/repl"))
 
@@ -436,3 +436,8 @@
 (defn computed-style
   [elem]
   (.getComputedStyle js/window elem))
+
+
+(defn has?
+  [coll k]
+  (not (nil? (some #{k} coll))))

@@ -4,7 +4,9 @@
   "name": "Thinker",
   "version": "0.1.0",
 
-  "chromium-args": "--allow-file-access-from-files --disable-web-security",
+  "chromium-args": ["--allow-file-access-from-files",
+                    "--disable-web-security",
+                    "--enable-experimental-web-platform-features"],
 
   "window": {
       "title": "Thinker",

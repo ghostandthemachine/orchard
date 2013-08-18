@@ -5,6 +5,7 @@
   (:require
     [cljs.core.async :refer [chan >! <! put! timeout close!]]
     [think.object :as object]
+    [think.objects.logger :as logger]
     [think.util.core :as util]
     [think.util.os :as os]
     [think.util.log :refer (log log-obj log-err)]))
@@ -16,7 +17,7 @@
 
 (defn log-handler
   [log-id msg]
-  (object/raise think.objects.logger/logger :post log-id msg))
+  (logger/post log-id msg))
 
 
 (defn running?
@@ -179,13 +180,46 @@
               (node-chan (.insert db (clj->js (couch-ids doc)))))]
     (go
       (let [v (js->clj (<! res))]
-        ; (log "update-doc result:")
-        ; (log-obj v)
         (if (:error v)
           (do
             (log "Error in update-doc:")
             (log-obj (:error v)))
           doc)))))
+
+
+(defn bulk
+  "Bulk update/insert multiple docs."
+  [db docs & opts]
+  (go
+    (let [res (<! (node-chan (.bulk db (clj->js {:docs (map couch-ids docs)}) (clj->js (merge {} opts)))
+                (fn [docs]
+                  (map #(cljs-ids (js->clj % :keywordize-keys true :forc-obj true)) docs))))]
+      (if (:error res)
+        (do
+          (log "Error in bulk docs:")
+          (log-obj (:error res)))
+        (:value res)))))
+
+
+(defn fetch
+  "Bulk fetch multiple documents."
+  [db ids & opts]
+  (log "handle fetch docs")
+  (go
+    (let [res (<! (node-chan (.fetch db (clj->js {:keys ids}) (clj->js (merge {} opts)))
+                (fn [response]
+                  (let [rows (.-rows response)
+                        docs (do (map js->clj rows))]
+                    docs))))]
+      (log "Fetch obj")
+      (log-obj res)
+
+      (if (:error res)
+        (do
+          (log "Error in fetch docs:")
+          (log-obj (:error res)))
+        (:value res)))))
+
 
 
 (defn view

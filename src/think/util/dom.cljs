@@ -1,6 +1,11 @@
 (ns think.util.dom
   (:refer-clojure :exclude [parents remove next val empty]))
 
+(defn has?
+  [coll k]
+  (not (nil? (some #{k} coll))))
+
+
 (defn- lazy-nl-via-item
   ([nl] (lazy-nl-via-item nl 0))
   ([nl n] (when (< n (. nl -length))
@@ -8,18 +13,20 @@
              (cons (. nl (item n))
                    (lazy-nl-via-item nl (inc n)))))))
 
+
 (extend-type js/HTMLCollection
-  ISeqable
-  (-seq [this] (lazy-nl-via-item this))
-
-  ICounted
-  (-count [this] (.-length this))
-
   IIndexed
   (-nth [this n]
     (.item this n))
   (-nth [this n not-found]
-        (or (.item this n) not-found)))
+        (or (.item this n) not-found))
+
+  ISeqable
+  (-seq [this] (lazy-nl-via-item this))
+
+  ICounted
+  (-count [this] (.-length this)))
+
 
 (extend-type js/NodeList
   ISeqable
@@ -53,6 +60,21 @@
     res)))
 
 
+(defn by-id
+  [id]
+  (js/$ (str "#" id)))
+
+
+(defn by-tag
+  [tag]
+  (js->clj (js/document.getElementsByTagName (name tag))))
+
+
+(defn by-class
+  [class]
+  (js/$ (str "." class)))
+
+
 (defn append [parent child]
   (.appendChild parent child)
   parent)
@@ -61,6 +83,12 @@
 (defn add-class [elem class]
   (when elem
     (.add (.-classList elem) (name class))))
+
+
+(defn add-id
+  [elem id]
+  (when elem
+    (aset elem "id" (name id))))
 
 (defn remove-class [elem class]
   (when elem
@@ -260,3 +288,67 @@
   [title]
   (aset js/document "title" title))
 
+
+(defn gdata
+  "Get data attribute values and convert them to JSON."
+  [elem k]
+  (let [ks      (if (seq? k)
+                  k
+                  [k])
+        dataset (.-dataset elem)
+        values  (js->clj
+                  (reduce
+                    (fn [values k]
+                      (conj values (aget dataset (name k))))
+                    []
+                    ks))]
+    (->
+      (if (= (count values) 1)
+        (first values)
+        values)
+      js/JSON.parse
+      js->clj)))
+
+(defn sdata
+  "Set data attribute values. Currently does not suuport keyword values (they are converted strings)."
+  [elem & opts]
+  (let [dataset (.-dataset elem)]
+    (doseq [[k v] (partition 2 (flatten opts))]
+      (aset dataset (name k) (js/JSON.stringify (clj->js v))))
+    (js->clj dataset)))
+
+
+(defn create
+  "Creates an HTML element. Optionally takes a list of attributes"
+  [s]
+  (.createElement js/document (name s)))
+
+(defn component
+  [s & opts]
+  (let [elem      (.createElement js/document (name s))
+        content?  (has? opts :content)
+        data      (if content?
+                    (reduce
+                      (fn [res [k v]]
+                        (when (not= :content k)
+                          (conj res k v)))
+                      []
+                      (partition 2 opts))
+                    opts)]
+    (when content?
+      (html elem (aget (crate.core/html [:div (:content (apply hash-map opts))]) "innerHTML")))
+    (sdata elem opts)
+    elem))
+
+
+(comment
+
+(create :div)
+
+(component :test-obj
+  :data {"boner" "loner"}
+  :foo "bar"
+  :wiz "woz"
+  :content [:div [:h3 "TEsting"]])
+
+)

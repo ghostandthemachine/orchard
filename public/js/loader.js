@@ -34,9 +34,7 @@ var js_files = [
     // "js/d3.v3.min.js",
 
     "bootstrap/js/bootstrap.min.js",
-    
-    "js/thinker.js",
-    //"js/test.js"
+    "js/thinker.js"
     ];
 
 

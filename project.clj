@@ -15,7 +15,7 @@
   :plugins [[lein-cljsbuild "0.3.0"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds [{:id "whitespace"
-                        :source-paths ["src" "test"]
+                        :source-paths ["src"]
                         :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/thinker.js"
                                    :optimizations :whitespace
