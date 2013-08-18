@@ -13,6 +13,9 @@
     [dommy.template     :as tpl]))
 
 
+(def ^:private cache* (atom {}))
+
+
 (def do-log true)
 
 (defn m-log
@@ -66,6 +69,7 @@
 (defn delete-document
   [doc]
   (m-log "delete-document")
+  (swap! cache* dissoc (:id doc))
   (db/delete-doc @model-db* doc))
 
 
@@ -73,10 +77,14 @@
   [doc]
   (m-log "save-document: ")
   (m-log-obj doc)
-  (db/update-doc @model-db*
-                 (if (and (contains? doc :rev) (nil? (:rev doc)))
-                   (dissoc doc :rev)
-                   doc)))
+  (go
+    (if-let [res (db/update-doc @model-db*
+                                (if (and (contains? doc :rev) (nil? (:rev doc)))
+                                  (dissoc doc :rev)
+                                  doc))]
+      (do
+        (swap! cache* assoc (:id doc) doc)
+        doc))))
 
 
 (comment defn docs-of-type
@@ -93,7 +101,14 @@
 (defn get-document
   [id]
   (m-log "get-document: " id)
-  (db/get-doc @model-db* id))
+  (go
+    (if-let [cached-doc (get @cache* id)]
+      (do
+        (log "cached...")
+        cached-doc)
+      (let [doc (<! (db/get-doc @model-db* id))]
+        (swap! cache* assoc id doc)
+        doc))))
 
 
 (defn load-document
@@ -111,6 +126,7 @@
 ; TODO: test me!  Not sure if mapping like this will work correctly.
 (defn all-documents
   []
+  (log "all-documents")
   (go
     (let [docs (<! (db/all-docs @model-db*))]
       (if (= (:total_rows docs) 0)
@@ -120,6 +136,7 @@
 
 (defn all-wiki-documents
   []
+  (log "all-wiki-documents")
   (go
     (let [docs (<! (db/view @model-db* :index :wiki-documents))]
       (if (:error docs)
@@ -134,7 +151,7 @@
   []
   (go
     (doseq [doc (<! (db/all-docs @model-db*))]
-      (db/delete-doc @model-db* doc))))
+      (delete-document doc))))
 
 
 (defn format-request

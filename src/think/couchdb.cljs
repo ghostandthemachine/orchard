@@ -37,8 +37,17 @@
   (reset! db* (start-db)))
 
 
+
+(def ^:private agent-keep-alive (js/require "agentkeepalive"))
+(def ^:private nano-agent (agent-keep-alive.
+                            (clj->js {"maxSockets" 50
+                                      "maxKeepAliveRequests" 0
+                                      "maxKeepAliveTime" 30000})))
+
 (def ^:private couch-server (js/require "nano"))
-(def ^:private nano         (couch-server "http://localhost:5984"))
+(def ^:private nano
+  (couch-server (clj->js {"url" "http://localhost:5984"
+                          "request_defaults" {"agent" nano-agent}})))
 
 
 (defn couch-ids
