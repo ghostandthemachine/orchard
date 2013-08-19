@@ -155,7 +155,7 @@
   (log "starting repl server...")
   (util/start-repl-server)
   (.showDevTools win)
-  (set-window-menu)
+  ;(set-window-menu)
   (go
     (<! (model/load-db))
     (model/load-cache)

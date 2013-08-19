@@ -1,7 +1,7 @@
 (ns think.util.dom
   (:require-macros
     [cljs.core.async.macros :refer [go]])
-  (:refer-clojure :exclude [parents remove next val empty])
+  (:refer-clojure :exclude [parents remove next val empty find])
   (:require
     [cljs.core.async :refer [chan >! <! timeout]]))
 
@@ -333,7 +333,6 @@
   (.createElement js/document (name s)))
 
 
-<<<<<<< HEAD
 (defn observer-chan
 
   "Returns a [dom-observer channel] tuple.  The channel will receive a stream
