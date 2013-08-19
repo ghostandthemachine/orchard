@@ -17,7 +17,7 @@
 
 (defn wiki-doc
   []
-  (:wiki-document @workspace/workspace))
+  (:wiki-document @think.objects.workspace/workspace))
 
 
 (defn locked?
@@ -48,6 +48,7 @@
 
 (defn lock-handler
   [this e]
+  (log "lock-handler")
   (let [lock (not (:locked? @this))]
     (object/assoc! this :locked? lock)
     (object/raise (wiki-doc)
@@ -126,7 +127,8 @@
 (defn format-width
   [width]
   (let [bounds (or (accum-btn-widths) 0)]
-    (- width
+    (log "BOUNDS " bounds)
+    (- width 4
       (if (> 0 bounds)
         bounds
         180))))

@@ -307,18 +307,6 @@
   (-nth [this n not-found]
         (or (.item this n) not-found)))
 
-; (extend-type js/Array
-;   ISeqable
-;   (-seq [this] (itemized-seq this))
-
-;   ICounted
-;   (-count [this] (.-length this))
-
-;   IIndexed
-;   (-nth [this n]
-;     (.item this n))
-;   (-nth [this n not-found]
-;         (or (.item this n) not-found)))
 
 (defn refresh
   "Refresh the current page."
@@ -441,3 +429,29 @@
 (defn has?
   [coll k]
   (not (nil? (some #{k} coll))))
+
+
+(defn node->tag
+  [node]
+  (str
+    (clojure.string/lower-case (aget node "tagName"))
+    (when (> (count (.-id node)) 0)
+      (str "#" (.-id node)))
+    (when (> (count (.-className node)) 0)
+      (str "." (clojure.string/replace (.-className node) #" " ".")))))
+
+
+(defn js-style-name
+  [attr-name]
+  (let [start   (re-seq #"^[A-Za-z0-9]+" attr-name)
+        end     (re-seq #"\-[A-Za-z][a-z0-9]*" attr-name)
+        cleaned (map #(clojure.string/capitalize (apply str (rest %))) end)]
+    (apply str (flatten (merge cleaned start)))))
+
+
+(defn clj-style-name
+  [attr-name]
+  (let [start   (re-seq #"^[a-z0-9]+" attr-name)
+        end     (re-seq #"[A-Z][a-z0-9]*" attr-name)
+        cleaned (map #(str "-" (clojure.string/lower-case %)) end)]
+    (apply str (flatten (merge cleaned start)))))

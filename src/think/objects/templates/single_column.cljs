@@ -25,7 +25,7 @@
 
 (defui render-modules
   [this modules]
-  [:ul.modules.connected-sortable {:id (str "sortable-" (:id @this))}
+  [:ul.modules.connected-sortable
     [:li.modules-item
       (top-spacer this)]
     (for [module modules]

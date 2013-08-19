@@ -333,6 +333,7 @@
   (.createElement js/document (name s)))
 
 
+<<<<<<< HEAD
 (defn observer-chan
 
   "Returns a [dom-observer channel] tuple.  The channel will receive a stream
@@ -404,3 +405,33 @@
 ;(.appendChild body zone)
 ;(.addEventListener zone "dragover" handle-drag-over false)
 ;(.addEventListener zone "drop" handle-file-select false)))
+
+
+(defn child-of
+  [c p]
+  (if c
+    (loop [parent (.-parentNode c)]
+      (if (= parent p)
+        true
+        (if parent (recur (.-parentNode parent)) false)))
+    false))
+
+
+(defn node->tag
+  [node]
+  (str
+    (aget node "tagName")
+    (when (> (count (.-id node)) 0)
+      (str "#" (.-id node)))
+    (when (> (count (.-className node)) 0)
+      (str "." (clojure.string/replace (.-className node) #" " ".")))))
+
+
+(defn find
+  [c p]
+  (if (and c p)
+    (let [elems (.querySelectorAll p (node->tag c))]
+      (first
+        (filter #(= c %) elems)))
+    nil))
+
