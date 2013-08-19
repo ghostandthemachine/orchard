@@ -439,3 +439,19 @@
       (str "#" (.-id node)))
     (when (> (count (.-className node)) 0)
       (str "." (clojure.string/replace (.-className node) #" " ".")))))
+
+
+(defn js-style-name
+  [attr-name]
+  (let [start   (re-seq #"^[A-Za-z0-9]+" attr-name)
+        end     (re-seq #"\-[A-Za-z][a-z0-9]*" attr-name)
+        cleaned (map #(clojure.string/capitalize (apply str (rest %))) end)]
+    (apply str (flatten (merge cleaned start)))))
+
+
+(defn clj-style-name
+  [attr-name]
+  (let [start   (re-seq #"^[a-z0-9]+" attr-name)
+        end     (re-seq #"[A-Z][a-z0-9]*" attr-name)
+        cleaned (map #(str "-" (clojure.string/lower-case %)) end)]
+    (apply str (flatten (merge cleaned start)))))

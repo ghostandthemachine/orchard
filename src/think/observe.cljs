@@ -1,94 +1,44 @@
 (ns think.observe
+  (:refer-clojure :exclude [find])
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [think.util.dom :refer (append $ by-id)]
+  (:require [think.util.dom :refer (append $ by-id find)]
+            [think.util.core :refer [js-style-name]]
             [cljs.core.async :refer [chan >! <! put! timeout close!]]
             [think.util.log :refer (log log-obj)]))
-
-
-(defn js-style-name
-  [attr-name]
-  (let [start   (re-seq #"^[A-Za-z0-9]+" attr-name)
-        end     (re-seq #"\-[A-Za-z][a-z0-9]*" attr-name)
-        cleaned (map #(clojure.string/capitalize (apply str (rest %))) end)]
-    (apply str (flatten (merge cleaned start)))))
-
-(defn clj-style-name
-  [attr-name]
-  (let [start   (re-seq #"^[a-z0-9]+" attr-name)
-        end     (re-seq #"[A-Z][a-z0-9]*" attr-name)
-        cleaned (map #(str "-" (clojure.string/lower-case %)) end)]
-    (apply str (flatten (merge cleaned start)))))
-
-(def last-mutation* (atom nil))
-
-(defn handle-mutations
-  [mutations]
-  (doseq [mutation mutations]
-    (.log js/console (reset! last-mutation* mutation))))
-
-
-(defn handle-summary
-  [summaries]
-  (doseq [summary summaries]
-    (log-obj summary)))
 
 
 (defn observer [handler]
   (new js/WebKitMutationObserver handler))
 
 
-; (defn init-summary-observer
-;   ([handler]
-;     (summary-observer handler [{:all true}]))
-;   ([handler queries]
-;     (new js/MutationSummary (clj->js {:callback handler :queries queries}))))
-
-
 (defn observe
   [node handler & config]
-  (.observe (observer handler) node (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))))
-
-
-(defn add-test-elem []
-  (append js/document.body
-    (crate.core/html
-      [:div#test-elem])))
-
-
-(def mutations* (atom {:mutations nil
-                       :list []}))
+  (let [obs (observer handler)]
+    (.observe obs node (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config)))
+    obs))
 
 
 (defn handle-node-ready
-  [node chan mutations]
-  ; (.log js/console mutations)
-  ; (doseq [m mutations]
-    ; (.log js/console m)
-    ; (swap! mutations* #(assoc % :list (conj (:list %) m)
-    ;                             :mutations mutations))
-    ; )
-  ; (let [addmutations (map #(.-addedNodes %) mutations)]
-        
-  ;   (.log js/console "handle-node-ready mutations")
-  ;   (.log js/console node)
-  ;   (.log js/console  addmutations)
-  ;   (when-let [created (first (filter #(= node %) addmutations))]
-  ;     (.log js/console  created)
-  ;     (go
-  ;       (>! chan created))
-  ;     ))
-  )
+  "Given a node to query for, a channel, and an Array of MutationRecords,
+  the querried node will be pushed onto the chanel once found."
+  [node chan records]
+  (let [node-lists (filter #(> (count %) 0)
+                    (map (fn [mr] (aget mr "addedNodes")) records))]
+    (doseq [nl node-lists]
+      (doseq [parent (distinct nl)]
+        (when-let [child (find node parent)]
+          (go
+            (>! chan child)))))))
 
 
 (defn add-ready-observer
+  "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
   [obj]
   (when (:ready @obj)
-    (log "add ready observer")
     (let [node (:content @obj)
           ready-chan (chan)
-          observer (observe js/document (partial handle-node-ready node ready-chan) :attributes :character-data :child-list :subtree)]
-      ; (go
-      ;   (let [created (<! ready-chan)]
-      ;     (.disconnect observer)
-      ;     (apply (:ready @obj) obj)))
-      )))
+          observer (observe js/document.body (partial handle-node-ready node ready-chan) :child-list :subtree)]
+      (go
+        (let [created (<! ready-chan)]
+          (.disconnect observer)
+          ((:ready @obj) obj))))))

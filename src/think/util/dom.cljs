@@ -1,5 +1,5 @@
 (ns think.util.dom
-  (:refer-clojure :exclude [parents remove next val empty]))
+  (:refer-clojure :exclude [parents remove next val empty find]))
 
 (defn has?
   [coll k]
@@ -332,3 +332,22 @@
         true
         (if parent (recur (.-parentNode parent)) false)))
     false))
+
+
+(defn node->tag
+  [node]
+  (str
+    (aget node "tagName")
+    (when (> (count (.-id node)) 0)
+      (str "#" (.-id node)))
+    (when (> (count (.-className node)) 0)
+      (str "." (clojure.string/replace (.-className node) #" " ".")))))
+
+
+(defn find
+  [c p]
+  (if (and c p)
+    (let [elems (.querySelectorAll p (node->tag c))]
+      (first
+        (filter #(= c %) elems)))
+    nil))
