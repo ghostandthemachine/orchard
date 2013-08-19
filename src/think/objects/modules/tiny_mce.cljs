@@ -26,7 +26,7 @@
   [this]
   (let [el [:div.module-content.tiny-mce-module-content
              [:form {:method "post"}
-              [:textarea.tiny-mce-editor]]]
+              [:textarea.tiny-mce-editor {:id (str "tiny-mce" (:id @this))}]]]
         html (crate.core/html el)]
     html))
 
@@ -35,18 +35,10 @@
 
 (defn init-tinymce
   []
-  (log "Init TinyMCE")
   (.init js/tinyMCE
     (clj->js
       {:mode "specific_textareas"
        :editor_selector "tiny-mce-editor"})))
-
-
-(defn ready
-  [content]
-  (log "Call ready")
-  (log-obj content)
-  (init-tinymce))
 
 
 (object/object* :tiny-mce-module
@@ -56,9 +48,10 @@
                 :label "TinyMCE"
                 :icon icon
                 :editor nil
-                :ready ready
                 :init (fn [this record]
-                        (object/merge! this record)
+                        (object/merge! this record
+                          {:ready (partial init-tinymce
+                                    (str "module-" (:id @this) "textarea.tiny-mce-editor"))})
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (log "inside :text handler...")
@@ -73,7 +66,7 @@
 (defn create-module
   []
   (go
-    (let [doc (tiny-mce-doc)
+    (let [doc (<! (tiny-mce-doc))
           obj (object/create :tiny-mce-module doc)]
       obj)))
 

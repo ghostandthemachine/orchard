@@ -341,13 +341,20 @@
     (when (> (count (.-id node)) 0)
       (str "#" (.-id node)))
     (when (> (count (.-className node)) 0)
-      (str "." (clojure.string/replace (.-className node) #" " ".")))))
+      (let [classes (filter 
+                      #(not= ":" (first %)) ;; hack to prevent bug with :tiny-mce-module class being added
+                      (clojure.string/split (.-className node) #" "))]
+        (str "." (str (interpose "." classes)))))))
 
 
 (defn find
   [c p]
   (if (and c p)
+    (do
+    (.log js/console "query tag")
+    (.log js/console (node->tag c))
     (let [elems (.querySelectorAll p (node->tag c))]
       (first
         (filter #(= c %) elems)))
+    )
     nil))

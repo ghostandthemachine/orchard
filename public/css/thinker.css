@@ -370,10 +370,7 @@ li.modules-item {
 #logger {
   visibility: hidden;
   position: absolute;
-  width: 98%;
-  height: 200px;
-  margin: 0;
-  padding: 0;
+  width: 100%;
   bottom: 0;
   z-index: 999999999999999;
   background: white;
@@ -405,6 +402,7 @@ li.modules-item {
 #logger-tabs {
   background: white;
   width: 100%;
+  margin-bottom: 0px;
 }
 
 .logger-content-panes {
@@ -418,6 +416,8 @@ li.modules-item {
 }
 
 .log-pane {
+  height: 200px;
+  overflow-y: scroll;
 }
 
 

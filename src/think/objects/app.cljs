@@ -54,13 +54,37 @@
   (js/window.location.reload true))
 
 
-(defn set-window-menu
+(defn menu-item
+  [m]
+  (.MenuItem gui (clj->js m)))
+
+
+(defn menu-seperator
   []
-  (let [menu (.Menu gui
-                (clj->js
-                  {:type "menubar"}))
-        win (.Window.get gui)]
-    (set! (.-menu win) menu)))
+  (menu-item {:type "serperator"}))
+
+
+(defn menu [items]
+  (let [menu (.Menu gui)]
+    (doseq [i items]
+      (.append menu (menu-item i)))
+    menu))
+
+
+(def file-menu
+ [{:type "normal"
+   :label "New File"}
+  {:type "normal"
+   :label "Open..."}
+  {:type "normal"
+   :label "Save"}])
+
+
+(defn set-main-menu
+  []
+  (let [main-menu (.Menu gui)
+        file (menu file-menu)]
+    (.append main-menu file)))
 
 
 (defn open-window []
@@ -102,6 +126,7 @@
   :triggers #{:start}
   :reaction (fn [this]
               (setup-tray)
+              ; (set-main-menu)
               ; (restore-session)
               (.on win "close"
                    (fn []
@@ -113,7 +138,6 @@
               (sidebar/init)
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
-
               (.tooltip (js/$ ".sidebar-tab-item"))
               (open-document :home)
               (nw/show)))
