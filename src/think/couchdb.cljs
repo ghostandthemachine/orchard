@@ -172,36 +172,7 @@
                 (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true)))))))))
 
 
-(defn update-doc
-  "Insert or modify a document. If the doc has an :id field it will be used as the document key."
-  [db doc]
-  (let [res (if (:id doc)
-              (node-chan (.insert db (clj->js (couch-ids doc)) (str (:id doc))))
-              (node-chan (.insert db (clj->js (couch-ids doc)))))]
-    (go
-      (let [v (js->clj (<! res))]
-        (if (:error v)
-          (do
-            (log "Error in update-doc:")
-            (log-obj (:error v)))
-          doc)))))
-
-
-(defn bulk
-  "Bulk update/insert multiple docs."
-  [db docs & opts]
-  (go
-    (let [res (<! (node-chan (.bulk db (clj->js {:docs (map couch-ids docs)}) (clj->js (merge {} opts)))
-                (fn [docs]
-                  (map #(cljs-ids (js->clj % :keywordize-keys true :forc-obj true)) docs))))]
-      (if (:error res)
-        (do
-          (log "Error in bulk docs:")
-          (log-obj (:error res)))
-        (:value res)))))
-
-
-(defn fetch
+(defn bulk-get
   "Bulk fetch multiple documents."
   [db ids & opts]
   (log "handle fetch docs")
@@ -219,6 +190,36 @@
           (log "Error in fetch docs:")
           (log-obj (:error res)))
         (:value res)))))
+
+
+(defn update-doc
+  "Insert or modify a document. If the doc has an :id field it will be used as the document key."
+  [db doc]
+  (let [res (if (:id doc)
+              (node-chan (.insert db (clj->js (couch-ids doc)) (str (:id doc))))
+              (node-chan (.insert db (clj->js (couch-ids doc)))))]
+    (go
+      (let [v (js->clj (<! res))]
+        (if (:error v)
+          (do
+            (log "Error in update-doc:")
+            (log-obj (:error v)))
+          doc)))))
+
+
+(defn bulk-update
+  "Bulk update/insert multiple docs."
+  [db docs & opts]
+  (go
+    (let [res (<! (node-chan (.bulk db (clj->js {:docs (map couch-ids docs)}) (clj->js (merge {} opts)))
+                (fn [docs]
+                  (map #(cljs-ids (js->clj % :keywordize-keys true :forc-obj true)) docs))))]
+      (if (:error res)
+        (do
+          (log "Error in bulk docs:")
+          (log-obj (:error res)))
+        (:value res)))))
+
 
 
 

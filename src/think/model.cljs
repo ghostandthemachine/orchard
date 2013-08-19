@@ -127,14 +127,17 @@
 (defn all-documents
   []
   (log "all-documents")
-  (go
-    (let [docs (<! (db/all-docs @model-db*))]
-      (if (= (:total_rows docs) 0)
-        []
-        (map #(db/get-doc @model-db* (:id %)) (:rows docs))))))
+  (let [c (chan 10)]
+    (go
+      (let [docs (<! (db/all-docs @model-db*))]
+        (if (= (:total_rows docs) 0)
+          []
+          (doseq [doc-row (:rows docs)]
+                 (>! c (<! (db/get-doc @model-db* (:id doc-row))))))))))
 
 
 (defn load-cache
+  "Load the cache with all documents in the DB."
   []
   (go
     (reset! cache* (reduce (fn [docs doc]
