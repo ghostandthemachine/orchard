@@ -9,7 +9,7 @@
     [think.util.time :refer [now]]
     [think.util.os :as os]
     [think.util.log :refer (log log-obj)]
-    [think.util.dom  :as dom]
+    [think.util.dom :as dom]
     [think.util.core :as util]
     [think.objects.nav :as nav]
     [think.objects.logger :as logger]
@@ -186,3 +186,25 @@
     (object/raise app :start)))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
+
+
+;; Global Key events
+
+(def last-key (atom nil))
+
+
+(def ctrl-events
+  { ;; logger show/hide
+    12 think.objects.logger/toggle})
+
+(defn handle-keypress
+  [e]
+  (when (.-ctrlKey e)
+    (let [key-code  (.-keyCode e)
+          f         (get ctrl-events (.-keyCode e))]
+      (when (util/has? (keys ctrl-events) key-code)
+        (f)))))
+
+
+(aset js/window "onkeypress" handle-keypress)
+

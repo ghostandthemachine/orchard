@@ -48,7 +48,6 @@
 
 (defn lock-handler
   [this e]
-  (log "lock-handler")
   (let [lock (not (:locked? @this))]
     (object/assoc! this :locked? lock)
     (object/raise (wiki-doc)
@@ -127,7 +126,6 @@
 (defn format-width
   [width]
   (let [bounds (or (accum-btn-widths) 0)]
-    (log "BOUNDS " bounds)
     (- width 4
       (if (> 0 bounds)
         bounds

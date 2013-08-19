@@ -57,7 +57,6 @@
           pheight (- (.-scrollHeight parent) 200) ;; remove 200px padding???
           diff    (- ptop pheight)
           scroll? (< diff MAX-DIFF)]
-      (.log js/console "scrollHeight " pheight " top " ptop)
       (dom/append tab
         (crate/html
           [:li.log-row
@@ -124,10 +123,13 @@
                    (fn [ev & [data]]
                      (post :log data)))
 
+(def visible* (atom false))
 
 (defn toggle
-  [b]
-  (dom/css (dom/$ "#logger") {:visibility (if b "visible" "hidden")}))
+  ([]
+    (toggle (not @visible*)))
+  ([b]
+    (dom/css (dom/$ "#logger") {:visibility (if (reset! visible* b) "visible" "hidden")})))
 
 
 (defn show-logger [] (toggle true))
