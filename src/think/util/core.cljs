@@ -438,7 +438,7 @@
     (when (> (count (.-id node)) 0)
       (str "#" (.-id node)))
     (when (> (count (.-className node)) 0)
-      (str "." (clojure.string/replace (.-className node) #" " ".")))))
+      (apply str "." (interpose "." (clojure.string/split (.-className node) #" "))))))
 
 
 (defn js-style-name
