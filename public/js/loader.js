@@ -22,7 +22,7 @@ var js_files = [
 
     "js/markdown_parser.js",
 
-    "js/tinymce/tinymce.min.js",
+    "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
 
 
     // "js/pdf/compatibility.js",

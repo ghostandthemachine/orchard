@@ -45,15 +45,24 @@
   (scroll-to elem
     (.-scrollHeight elem)))
 
+(def MAX-DIFF 10)
+
 
 (defn append-message
   [log-id msg]
   (when (ready?)
-    (let [tab (tab-ul log-id)]
+    (let [tab     (tab-ul log-id)
+          parent  (dom/$ (str "#" log-id))
+          ptop    (.-scrollTop parent)
+          pheight (- (.-scrollHeight parent) 200) ;; remove 200px padding???
+          diff    (- ptop pheight)
+          scroll? (< diff MAX-DIFF)]
       (dom/append tab
         (crate/html
           [:li.log-row
-            [:p (str msg)]])))))
+            [:p (str msg)]]))
+      (when scroll?
+        (scroll-to-end parent)))))
 
 
 (defgui tab
@@ -94,8 +103,6 @@
 
 (def logger (object/create :logger))
 
-; (aset logger-win "onload" (partial ready logger))
-
 
 (defn ready
   []
@@ -116,10 +123,13 @@
                    (fn [ev & [data]]
                      (post :log data)))
 
+(def visible* (atom false))
 
 (defn toggle
-  [b]
-  (dom/css (dom/$ "#logger") {:visibility (if b "visible" "hidden")}))
+  ([]
+    (toggle (not @visible*)))
+  ([b]
+    (dom/css (dom/$ "#logger") {:visibility (if (reset! visible* b) "visible" "hidden")})))
 
 
 (defn show-logger [] (toggle true))

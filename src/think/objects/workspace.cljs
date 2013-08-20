@@ -56,7 +56,7 @@
 
 (defn left-offset
   [offset]
-  (str (or offset 0) "px"))
+  (str (+ 30 (or offset 0)) "px"))
 
 
 (object/object* ::workspace
