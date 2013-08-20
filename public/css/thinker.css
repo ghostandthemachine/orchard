@@ -4,9 +4,13 @@
 
 .document-container {
   width: 96%;
-  margin-left: 1%;
-  position: absolute;
-  top: 45px;
+  margin-left: 0;
+  margin-right: 0px;
+  position: relative;
+  top: 34px;
+  left: 30px;
+  padding-right: 0;
+  padding-left: 0;
 }
 
 .header-label {
@@ -101,7 +105,7 @@ ul#sidebar-tabs {
   margin: 0px;
   width: 30px; /*block btn size*/
   background: rgb(220, 220, 220);
-  position: absolute;
+  position: fixed;
   top: 30px; /*block btn size*/
   left: 0px;
 }
@@ -369,7 +373,7 @@ li.modules-item {
 
 #logger {
   visibility: hidden;
-  position: absolute;
+  position: fixed;
   width: 100%;
   bottom: 0;
   z-index: 999999999999999;

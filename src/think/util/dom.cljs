@@ -337,11 +337,7 @@
 (defn find
   [c p]
   (if (and c p)
-    (do
-    (.log js/console "query tag")
-    (.log js/console (think.util.core/node->tag c))
     (let [elems (.querySelectorAll p (think.util.core/node->tag c))]
       (first
         (filter #(= c %) elems)))
-    )
     nil))
