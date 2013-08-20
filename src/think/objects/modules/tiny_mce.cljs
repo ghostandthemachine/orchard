@@ -6,11 +6,13 @@
             [crate.core      :as crate]
             [think.util.core :refer [bound-do uuid]]
             [think.util.dom  :as dom]
+            [cljs.core.async :refer [chan >! <!]]
             [think.module    :refer [module-view spacer default-opts
                                   edit-module-btn-icon delete-btn edit-btn]]
             [think.util.log  :refer (log log-obj)]
             [crate.binding   :refer [bound subatom]]
             [think.model     :as model]
+            [think.observe   :refer [observe]]
             [dommy.core      :as dommy]))
 
 (def date (new js/Date))
@@ -22,22 +24,22 @@
 
 
 (def MAX-SAVE-DIFF  10000)
-(def MAX-PRESS-DIFF 20)
+(def MAX-CHANGE-DIFF 5)
 
 
 (defn save?
   [this]
   (let [time-diff  (- (get-in @this [:save-data :last-save]) (get-time))
         press-diff (get-in
-                      (object/update! this [:save-data :press-count] inc)
-                      [:save-data :press-count])
+                      (object/update! this [:save-data :change-count] inc)
+                      [:save-data :change-count])
         s?         (or
                      (> time-diff MAX-SAVE-DIFF)
-                     (> press-diff MAX-PRESS-DIFF))]
+                     (> press-diff MAX-CHANGE-DIFF))]
     (if s?
       (do
         (object/assoc! this :save-data {:last-save (get-time)
-                                        :press-count 0})
+                                        :change-count 0})
         true)
       false)))
 
@@ -64,23 +66,42 @@
 
 (defn handle-editor-change
   [this ed l]
-  (when (save? this)
-    (log "Attempt to save tiny-mce editor")
-    (log-obj (.getContent ed))
-    (object/assoc! this :text (.getContent ed))))
+  (object/assoc! this :text (.getContent ed)))
 
 
 (defn load-text
   [this ed]
-  (log "load editor text from record")
   (.setContent ed (:text @this)))
+
+
+(defn handle-editor-mutations
+  [this mutations]
+  (log "handle editor mutations")
+  (go
+    (>! (:observer-chan @this) mutations)))
+
+
+(defn observe-mutations
+  [this]
+  (go
+    (let [mutations (<! (:observer-chan @this))]
+      (log-obj mutations))))
+
+
+(defn handle-editor-init
+  [this ed]
+  ;; initialize mutation observer
+  (let [body (first (.select (.-dom ed) "body"))]
+    (observe body (partial handle-editor-mutations this) :child-list :subtree)
+    ;; finally load text from record
+    (load-text this ed)))
 
 
 (defn setup-tinymce
   [this ed]
-  (let [on-change (.-onKeyPress ed)
+  (let [on-change (.-onChange ed)
         on-init   (.-onInit ed)]
-    (.add on-init (partial load-text this ed))
+    (.add on-init   (partial handle-editor-init this))
     (.add on-change (partial handle-editor-change this))))
 
 
@@ -115,17 +136,24 @@
                 :icon icon
                 :text ""
                 :editor nil
+                :observer-chan nil
                 :save-data {:last-save    nil
-                            :press-count  nil}
+                            :change-count  nil}
                 :init (fn [this record]
+                        
                         (object/merge! this record
                           {:ready (partial init-tinymce this)
                            :save-data {:last-save (get-time)
-                                       :press-count 0}})
+                                       :change-count 0}
+                           :observer-chan (chan)})
+
+                        ; (observe-mutations this)
+
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (log "inside :text handler...")
                                     (object/raise this :save)))
+                        
                         [:div {:class (str "span12 module " (:type @this))
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]
@@ -139,11 +167,3 @@
     (let [doc (<! (tiny-mce-doc))
           obj (object/create :tiny-mce-module doc)]
       obj)))
-
-
-; (dommy/listen! [(dom/$ :body) :.tiny-mce-module-content :a] :click
-;   (fn [e]
-;     ; (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/"))))
-;     (think.objects.app/open-document
-;       (last (clojure.string/split (.-href (.-target e)) #"/")))
-;     (.preventDefault e)))
