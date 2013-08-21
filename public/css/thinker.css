@@ -1,14 +1,24 @@
+#container {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.index-module {
+  margin-right: 0px;
+  padding-right: 0px;
+}
+
 /**************************************************************************
     Document
 **************************************************************************/
 
 .document-container {
-  width: 96%;
+  width: 100%;
   margin-left: 0;
   margin-right: 0px;
   position: relative;
-  top: 34px;
-  left: 30px;
+  top: 0px;
+  left: 0px;
   padding-right: 0;
   padding-left: 0;
 }
@@ -41,9 +51,10 @@ ul#nav-list {
   background: rgb(120 ,120 ,120 );
   position: fixed;
   width: 100%;
-  top: 0px;
+  bottom: 0px;
   margin: 0;
   overflow: hidden;
+  z-index: 10;
 }
 
 
@@ -264,7 +275,6 @@ li.modules-item {
 }*/
 
 .modules-container {
-  padding-left: 5px;
 }
 
 .module-tray {
@@ -332,8 +342,6 @@ li.modules-item {
 ***************************************************************************/
 
 .template {
-  padding-left: 5px;
-  margin-bottom: 5px;
   background-color: rgb(255, 255, 255);
 }
 
@@ -375,8 +383,8 @@ li.modules-item {
   visibility: hidden;
   position: fixed;
   width: 100%;
-  bottom: 0;
-  z-index: 999999999999999;
+  bottom: 0px;
+  z-index: 9;
   background: white;
 }
 

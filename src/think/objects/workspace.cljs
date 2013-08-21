@@ -56,7 +56,7 @@
 
 (defn left-offset
   [offset]
-  (str (+ 30 (or offset 0)) "px"))
+  (str (or offset 0)) "px")
 
 
 (object/object* ::workspace
@@ -67,10 +67,10 @@
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
-                        [:div#workspace.row-fluid
-                          [:div
-                            (bound (subatom this :sidebar) render-sidebar)]
-                          [:div.container-fluid.document-container
+                        [:div#workspace
+                          ; [:div
+                          ;   (bound (subatom this :sidebar) render-sidebar)]
+                          [:div.document-container
                             {:style {:left (bound (subatom think.objects.sidebar/sidebar :width) left-offset)}}
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
 

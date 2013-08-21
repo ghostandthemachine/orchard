@@ -76,7 +76,6 @@
 
 (defn handle-editor-mutations
   [this mutations]
-  (log "handle editor mutations")
   (go
     (>! (:observer-chan @this) mutations)))
 
@@ -92,17 +91,48 @@
   [this ed]
   ;; initialize mutation observer
   (let [body (first (.select (.-dom ed) "body"))]
-    (observe body (partial handle-editor-mutations this) :child-list :subtree)
+    ; (observe body (partial handle-editor-mutations this) :child-list :subtree)
     ;; finally load text from record
     (load-text this ed)))
 
 
+
+
+(defn render-think-link
+  [tag link]
+  (str
+    "<a think-link='true' href='" link "'>" tag "</a>"))
+
+
+(defn replace-think-links
+  [s]
+  (let [match #"\[([^\]]+)\]\(([^)]+)\)"]
+    (clojure.string/replace s
+      match
+      (fn [match]
+        (let [[res tag link] (re-find match match)]
+          (log (render-think-link tag link))
+          (render-think-link tag link))))))
+
+
+(defn handle-set-content
+  [this ed o]
+  (let [content     (.getContent ed)
+        new-content (replace-think-links content)]
+    ; (.setContent ed content)
+    (log-obj content)
+    (log-obj new-content)
+    ))
+
+
 (defn setup-tinymce
   [this ed]
-  (let [on-change (.-onChange ed)
-        on-init   (.-onInit ed)]
+  (let [on-change       (.-onChange ed)
+        on-init         (.-onInit ed)
+        on-set-content  (.-onSetContent ed)]
     (.add on-init   (partial handle-editor-init this))
-    (.add on-change (partial handle-editor-change this))))
+    (.add on-change (partial handle-editor-change this))
+    (.add on-set-content (partial handle-set-content this))))
 
 
 (defn init-tinymce
@@ -167,3 +197,16 @@
     (let [doc (<! (tiny-mce-doc))
           obj (object/create :tiny-mce-module doc)]
       obj)))
+
+
+
+
+
+
+
+
+
+
+
+
+
