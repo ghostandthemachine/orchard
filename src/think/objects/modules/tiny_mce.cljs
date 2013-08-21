@@ -23,6 +23,32 @@
   (.getTime date))
 
 
+(defn hiccup->str
+  [form]
+  (.-outerHTML
+    (crate.core/html
+      form)))
+
+
+(defn render-think-link
+  [tag link]
+  (hiccup->str
+    [:span.think-link {:think-link "true"
+                       :href link
+                       :onclick "think.objects.modules.tiny_mce."
+                       :style {:background-color "#DDDDDD"}} tag]))
+
+
+(defn replace-think-links
+  [s]
+  (let [regex #"\[([^\]]+)\]\(([^)]+)\)"]
+    (clojure.string/replace s
+      regex
+      (fn [m]
+        (let [[res tag link] (re-find regex m)]
+          (render-think-link tag link))))))
+
+
 (def MAX-SAVE-DIFF  10000)
 (def MAX-CHANGE-DIFF 5)
 
@@ -71,7 +97,7 @@
 
 (defn load-text
   [this ed]
-  (.setContent ed (:text @this)))
+  (.setContent ed (replace-think-links (:text @this))))
 
 
 (defn handle-editor-mutations
@@ -89,40 +115,18 @@
 
 (defn handle-editor-init
   [this ed]
-  ;; initialize mutation observer
   (let [body (first (.select (.-dom ed) "body"))]
-    ; (observe body (partial handle-editor-mutations this) :child-list :subtree)
     ;; finally load text from record
     (load-text this ed)))
 
 
-
-
-(defn render-think-link
-  [tag link]
-  (str
-    "<a think-link='true' href='" link "'>" tag "</a>"))
-
-
-(defn replace-think-links
-  [s]
-  (let [match #"\[([^\]]+)\]\(([^)]+)\)"]
-    (clojure.string/replace s
-      match
-      (fn [match]
-        (let [[res tag link] (re-find match match)]
-          (log (render-think-link tag link))
-          (render-think-link tag link))))))
-
-
 (defn handle-set-content
-  [this ed o]
+  [ed o]
   (let [content     (.getContent ed)
         new-content (replace-think-links content)]
-    ; (.setContent ed content)
     (log-obj content)
     (log-obj new-content)
-    ))
+    (aset o "content" new-content)))
 
 
 (defn setup-tinymce
@@ -132,7 +136,7 @@
         on-set-content  (.-onSetContent ed)]
     (.add on-init   (partial handle-editor-init this))
     (.add on-change (partial handle-editor-change this))
-    (.add on-set-content (partial handle-set-content this))))
+    (.add on-set-content handle-set-content this)))
 
 
 (defn init-tinymce

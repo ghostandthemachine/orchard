@@ -245,8 +245,24 @@ To create a view you need to create a design document, which can have a view.  I
 """
 
 (def index-view
-  "function(doc) {
+ "function(doc) {
     if(doc.type == 'wiki-document' && doc._id != ':home') {
-        emit(doc._id, doc);
-      }
+      emit(doc._id, doc);
+    }
+  }")
+
+
+(def project-view
+ "function(doc) {
+    if(doc.type == 'wiki-document' && doc._id != ':home') {
+      emit(doc.project, doc);
+    }
+  }")
+
+
+(def title-view
+ "function(doc) {
+    if(doc.type == 'wiki-document' && doc._id != ':home') {
+      emit(doc.title, doc);
+    }
   }")
