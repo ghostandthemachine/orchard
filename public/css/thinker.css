@@ -446,3 +446,12 @@ li.modules-item {
   -khtml-user-drag: element;
   -webkit-user-drag: element;
 }
+
+
+/**************************************************************************
+    Think links
+***************************************************************************/
+
+.think-link {
+  background-color: #DDDDDD;
+}
