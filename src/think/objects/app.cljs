@@ -135,7 +135,7 @@
                      (this-as this (.close this true))))
               (log "Showing application window...")
               (object/raise think.objects.nav/workspace-nav :add!)
-              (sidebar/init)
+              ; (sidebar/init)
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
               (.tooltip (js/$ ".sidebar-tab-item"))
@@ -197,7 +197,17 @@
 
 (def ctrl-events
   { ;; logger show/hide
-    12 think.objects.logger/toggle})
+    12 think.objects.logger/toggle
+    ;; navbar show/hide
+    6 think.objects.nav/toggle
+    ;; go home
+    8 (partial think.objects.app/open-document :home)
+    ;; refesh
+    18 (partial object/raise think.objects.app/app :refresh)
+    ;; create new doc
+    14 think.objects.new/load-new-doc
+    ;; show dev-tools
+    4 (partial object/raise think.objects.app/app :show-dev-tools)})
 
 (defn handle-keypress
   [e]

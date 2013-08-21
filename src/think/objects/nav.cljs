@@ -170,3 +170,14 @@
     (object/assoc! workspace-nav :window-width
       (aget (aget e "target") "innerWidth"))))
 
+(def visible* (atom true))
+
+(defn toggle
+  ([]
+    (toggle (not @visible*)))
+  ([b]
+    (dom/css (dom/$ "#nav-wrapper") {:visibility (if (reset! visible* b) "visible" "hidden")})))
+
+
+(defn show-logger [] (toggle true))
+(defn hide-logger [] (toggle false))

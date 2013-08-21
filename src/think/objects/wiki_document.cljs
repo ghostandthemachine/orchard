@@ -114,9 +114,10 @@
               [:div
                 (bound (subatom this [:template])
                   (partial render-template this))]
-              [:div.pull-left
-                (id-btn this)
-                (delete-doc-btn this)]]]))
+              ; [:div.pull-left
+              ;   (id-btn this)
+              ;   (delete-doc-btn this)]
+                ]]))
 
 
 (dispatch/react-to #{:open-document}

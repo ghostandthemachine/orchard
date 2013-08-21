@@ -249,7 +249,4 @@ To create a view you need to create a design document, which can have a view.  I
     if(doc.type == 'wiki-document' && doc._id != ':home') {
         emit(doc._id, doc);
       }
-}")
-
-
-
+  }")
