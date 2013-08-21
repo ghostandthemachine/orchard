@@ -212,7 +212,6 @@
   (when (.-ctrlKey e)
     (let [key-code  (.-keyCode e)
           f         (get ctrl-events (.-keyCode e))]
-      (log key-code)
       (when (util/has? (keys ctrl-events) key-code)
         (f)))))
 
