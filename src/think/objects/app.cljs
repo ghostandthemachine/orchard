@@ -17,7 +17,6 @@
     [think.util.nw  :as nw]
     [think.dispatch :as dispatch]
     [think.objects.workspace :as workspace]
-    [think.project :as project]
     think.kv-store
     think.objects.wiki-document))
 

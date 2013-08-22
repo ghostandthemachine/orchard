@@ -8,7 +8,6 @@
     [think.util.log  :refer (log log-obj)]
     [think.util.core :as util]
     [think.util.dom  :as dom]
-    [think.project   :as proj]
     [crate.binding   :refer [map-bound bound subatom]]
     [think.model     :as model]
     [think.dispatch  :as dispatch]))
