@@ -158,7 +158,6 @@
        :theme_advanced_statusbar_location "bottom"
        :plugins               "autoresize,inlinepopups"
        :width                 "100%"
-       :height                500
        :setup                 (partial setup-tinymce this)})))
 
 
