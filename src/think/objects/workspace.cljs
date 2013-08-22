@@ -28,7 +28,9 @@
                                     active     (:wiki-document @this)]
                                 (when active
                                   (dom/remove (:content @active)))
-                                (object/assoc! this :wiki-document doc-obj)
+                                (object/assoc! this
+                                  :wiki-document doc-obj
+                                  :current-project (or (:project @doc-obj) "No Project"))
                                 (object/raise doc-obj :ready))))
 
 

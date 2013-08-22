@@ -127,11 +127,11 @@
 
 
 (defn wiki-doc
-  [title tpl]
-  (model/save-document
-    {:type :wiki-document
-     :id (util/uuid)
-     :title title
-     :template (:id tpl)}))
-
-
+  [& args]
+  (let [new-doc (merge
+                  {:type :wiki-document
+                   :id   (util/uuid)}
+                  (apply hash-map args))]
+  (log "Create new wiki-doc")
+  (log-obj new-doc)
+  (model/save-document new-doc)))

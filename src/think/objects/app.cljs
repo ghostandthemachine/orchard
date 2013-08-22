@@ -17,6 +17,7 @@
     [think.util.nw  :as nw]
     [think.dispatch :as dispatch]
     [think.objects.workspace :as workspace]
+    [think.project :as project]
     think.kv-store
     think.objects.wiki-document))
 
@@ -189,31 +190,42 @@
 
 
 ;; Global Key events
-
 (def last-key (atom nil))
-
 
 (def ctrl-events
   { ;; logger show/hide
-    12 think.objects.logger/toggle
+    12  think.objects.logger/toggle
     ;; navbar show/hide
-    6 think.objects.nav/toggle
+    6   think.objects.nav/toggle
     ;; go home
-    8 (partial think.objects.app/open-document :home)
+    8   (partial think.objects.app/open-document :home)
     ;; refesh
-    18 (partial object/raise think.objects.app/app :refresh)
+    18  (partial object/raise think.objects.app/app :refresh)
     ;; create new doc
-    14 think.objects.new/load-new-doc
+    14  (partial nav/start-create-document nav/workspace-nav)
     ;; show dev-tools
-    4 (partial object/raise think.objects.app/app :show-dev-tools)})
+    4   (partial object/raise think.objects.app/app :show-dev-tools)})
+
+
+
+(def ctrl-shift-events
+  { ;; logger show/hide
+    14 (partial nav/start-create-project nav/workspace-nav)})
+
 
 (defn handle-keypress
   [e]
-  (when (.-ctrlKey e)
-    (let [key-code  (.-keyCode e)
-          f         (get ctrl-events (.-keyCode e))]
-      (when (util/has? (keys ctrl-events) key-code)
-        (f)))))
+  (let [key-code (.-keyCode e)]
+    ; (log-obj e)
+    (when (.-ctrlKey e)
+        (if (.-shiftKey e)
+          (when (util/has? (keys ctrl-shift-events) key-code)
+            (let [f (get ctrl-shift-events key-code)]
+              (f)))
+          
+          (when (util/has? (keys ctrl-events) key-code)
+            (let [f (get ctrl-events key-code)]
+              (f)))))))
 
 
 (aset js/window "onkeypress" handle-keypress)

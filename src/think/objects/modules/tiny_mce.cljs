@@ -15,6 +15,15 @@
             [think.observe   :refer [observe]]
             [dommy.core      :as dommy]))
 
+
+(defn tiny-mce-doc
+  []
+  (model/save-document
+    {:type :tiny-mce-module
+     :text ""
+     :id   (uuid)}))
+
+
 (def date (new js/Date))
 
 
@@ -70,14 +79,6 @@
       false)))
 
 
-(defn tiny-mce-doc
-  []
-  (model/save-document
-    {:type :tiny-mce-module
-     :text ""
-     :id   (uuid)}))
-
-
 (defn render-editor
   [this]
   (let [el [:div.module-content.tiny-mce-module-content
@@ -124,8 +125,6 @@
   [ed o]
   (let [content     (.getContent ed)
         new-content (replace-think-links content)]
-    (log-obj content)
-    (log-obj new-content)
     (aset o "content" new-content)))
 
 
@@ -159,6 +158,7 @@
        :theme_advanced_statusbar_location "bottom"
        :plugins               "autoresize,inlinepopups"
        :width                 "100%"
+       :height                500
        :setup                 (partial setup-tinymce this)})))
 
 
@@ -174,15 +174,11 @@
                 :save-data {:last-save    nil
                             :change-count  nil}
                 :init (fn [this record]
-                        
                         (object/merge! this record
                           {:ready (partial init-tinymce this)
                            :save-data {:last-save (get-time)
                                        :change-count 0}
                            :observer-chan (chan)})
-
-                        ; (observe-mutations this)
-
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (log "inside :text handler...")
@@ -198,19 +194,5 @@
 (defn create-module
   []
   (go
-    (let [doc (<! (tiny-mce-doc))
-          obj (object/create :tiny-mce-module doc)]
-      obj)))
-
-
-
-
-
-
-
-
-
-
-
-
-
+    (object/create :tiny-mce-module
+      (<! (tiny-mce-doc)))))
