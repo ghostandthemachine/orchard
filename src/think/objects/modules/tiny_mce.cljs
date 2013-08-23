@@ -8,7 +8,7 @@
             [think.util.dom  :as dom]
             [cljs.core.async :refer [chan >! <!]]
             [think.module    :refer [module-view spacer default-opts
-                                  edit-module-btn-icon delete-btn edit-btn]]
+                                  edit-module-btn-icon delete-btn edit-btn handle-delete-module]]
             [think.util.log  :refer (log log-obj)]
             [crate.binding   :refer [bound subatom]]
             [think.model     :as model]
@@ -55,24 +55,6 @@
     " "))
 
 
-
-; (defn open-from-link
-;   [href]
-;   (go
-;     (let [[project-title title] (clojure.string/split href #"/")
-;           all-docs     (<! (model/all-wiki-documents))
-;           projects     (reduce
-;                         (fn [m wiki-doc]
-;                           (let [proj (or (:project wiki-doc) "No Project")]
-;                             (assoc-in m [(clojure.string/lower-case proj) (clojure.string/lower-case (:title wiki-doc))]
-;                               wiki-doc)))
-;                         {}
-;                         all-docs)]
-;       (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
-;         (think.objects.app/open-document (:_id d))
-;         (log "Tried to open document that doesn't exist")))))
-
-
 (defn handle-tiny-click
   [ed e]
   (let [el (.-target e)]
@@ -116,12 +98,54 @@
       false)))
 
 
+(def editor-ids* (atom []))
+
+
+(defn get-editors [] @editor-ids*)
+
+
+(defn add-editor-id!
+  [ed]
+  (swap! editor-ids* conj ed))
+
+
+(defn remove-editor-id!
+  [ed-id]
+  (swap! editor-ids*
+    (fn [eds]
+      (filter #(not= ed-id %) eds))))
+
+
+(defn format-class
+  [id]
+  (str "tiny-mce-editor-" id))
+
+
+(defn get-editor
+  [ed-id]
+  (.get js/tinyMCE (format-class ed-id)))
+
+
+(defn clear-editors!
+  []
+  (reset! editor-ids* []))
+
+
+(defn create-module
+  []
+  (go
+    (object/create :tiny-mce-module
+      (<! (tiny-mce-doc)))))
+
+
+
 (defn render-editor
   [this]
   (let [el [:div.module-content.tiny-mce-module-content
              [:form {:method "post"}
-              [:textarea {:class (str "tiny-mce-editor-" (:id @this))}]]]
+              [:textarea {:id (str "tiny-mce-editor-" (:id @this))}]]]
         html (crate.core/html el)]
+    (add-editor-id! (:id @this))
     html))
 
 
@@ -188,7 +212,14 @@
     (.add on-change (partial handle-editor-change this))
     (.add on-set-content handle-set-content this)
     (.add on-click handle-tiny-click)
-    (.add on-node-change handle-node-change)))
+    (.add on-node-change handle-node-change)
+
+    (.addButton ed
+      "deletemodule"
+      (clj->js
+        {:title "Delete Module"
+         :image "images/trash-can.png"
+         :onclick (partial handle-delete-module this)}))))
 
 
 (defn init-tinymce
@@ -196,14 +227,15 @@
   (.init js/tinyMCE
     (clj->js
       {:theme                 "advanced"
-       :mode                  "specific_textareas"
-       :editor_selector       (str "tiny-mce-editor-" (:id @this))
+       :mode                  "exact"
+       :elements              (format-class (:id @this))
        :theme_advanced_buttons1 "mybutton, bold, italic, underline, strikethrough, separator,
                                  link, unlink, image, code, hr, separator,
-                                 styleselect, formatselect, fontselect, fontsizeselect, seperator,
+                                 formatselect, fontselect, fontsizeselect, seperator,
                                  forecolorpicker, backcolorpicker, separator,
                                  justifyleft, justifycenter, justifyright, justifyfull, separator,
-                                 bullist, numlist, undo, redo"
+                                 bullist, numlist, separator,
+                                 deletemodule"
        :theme_advanced_buttons2 ""
        :theme_advanced_buttons3 ""
        :theme_advanced_toolbar_location "top"
@@ -241,10 +273,3 @@
                           [:div.module-tray]
                           [:div.module-element
                             (render-editor this)]]))
-
-
-(defn create-module
-  []
-  (go
-    (object/create :tiny-mce-module
-      (<! (tiny-mce-doc)))))

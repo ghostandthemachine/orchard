@@ -470,7 +470,6 @@ li.modules-item {
     TinyMCE
 ***************************************************************************/
 
-
 /* Hide the tinyMCE path toolbar */
 span.defaultSkin table.mceLayout tbody tr.mceLast td.mceStatusbar {
     display: none !important;
