@@ -41,11 +41,46 @@
 
 (defn render-think-link
   [tag link]
-  (hiccup->str
-    [:span.think-link {:think-link "true"
-                       :href link
-                       :onclick "think.objects.modules.tiny_mce."
-                       :style {:background-color "#DDDDDD"}} tag]))
+  (str " "
+    (hiccup->str
+      [:span.think-link {:data-href link
+                         :data-title tag
+                         :style {:background-color  "rgb(241, 241, 241)"
+                                 :padding-bottom    "3px"
+                                 :padding-top       "2px"
+                                 :padding-left      "5px"
+                                 :padding-right     "5px"
+                                 :color             "green"
+                                 :border-radius     "4px"}} tag])
+    " "))
+
+
+
+(defn open-from-link
+  [href]
+  (go
+    (let [[project-title title] (clojure.string/split href #"/")
+          all-docs     (<! (model/all-wiki-documents))
+          projects     (reduce
+                        (fn [m wiki-doc]
+                          (let [proj (or (:project wiki-doc) "No Project")]
+                            (assoc-in m [(clojure.string/lower-case proj) (clojure.string/lower-case (:title wiki-doc))]
+                              wiki-doc)))
+                        {}
+                        all-docs)]
+      (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
+        (think.objects.app/open-document (:_id d))
+        (log "Tried to open document that doesn't exist")))))
+
+
+(defn handle-tiny-click
+  [ed e]
+  (let [el (.-target e)]
+    (when (= "think-link" (.-className el))
+      (let [href  (.getAttribute el "data-href")
+            title (.getAttribute el "data-title")]
+        (log "open think-link: " href)
+        (open-from-link href)))))
 
 
 (defn replace-think-links
@@ -132,10 +167,12 @@
   [this ed]
   (let [on-change       (.-onChange ed)
         on-init         (.-onInit ed)
-        on-set-content  (.-onSetContent ed)]
+        on-set-content  (.-onSetContent ed)
+        on-click        (.-onClick ed)]
     (.add on-init   (partial handle-editor-init this))
     (.add on-change (partial handle-editor-change this))
-    (.add on-set-content handle-set-content this)))
+    (.add on-set-content handle-set-content this)
+    (.add on-click handle-tiny-click)))
 
 
 (defn init-tinymce
