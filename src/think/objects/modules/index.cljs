@@ -38,7 +38,7 @@
     [:ul
       (for [doc docs]
         [:li
-          [:a {:href (:id doc)} (:title doc)]])]])
+          [:a {:href (:id doc)} (str (when (:project doc) (str (:project doc) " - ")) (:title doc))]])]])
 
 
 (defui render-edit

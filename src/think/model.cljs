@@ -116,8 +116,12 @@
   (log "load-document: " id)
   (go
     (let [doc (<! (get-document id))]
+      (log "load-document get-document return")
+      (log-obj doc)
       (when doc
         (let [obj-type (keyword (:type doc))]
+          (log "Doc defined in load doc: " (object/defined? obj-type))
+          (log "obj-tyep" obj-type)
           (if (object/defined? obj-type)
             (object/create obj-type doc)
             :no-matching-document-type))))))

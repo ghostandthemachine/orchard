@@ -9,6 +9,7 @@
     [dommy.core :as dommy]
     [think.objects.templates.single-column :as single-column]
     [think.objects.modules.markdown :as markdown]
+    [think.objects.modules.tiny-mce :as tiny]
     [think.objects.wiki-document :as wiki-doc]
     [think.objects.workspace :as workspace]
     [think.module :as modules]
@@ -53,22 +54,25 @@
   (object/raise think.objects.workspace/workspace :show-document new-document))
 
 
-(defn create-document
-  [title tpl]
-  (go
-    (let [md-doc   (<! (markdown/markdown-doc))
-          tpl-doc  (<! (case tpl
-                        :single-column (single-column/single-column-template-doc md-doc)))
-          wiki-doc (<! (wiki-doc/wiki-doc title tpl-doc))
-          doc      (<! (model/load-document (:id wiki-doc)))]
-      (object/raise workspace/workspace :show-document doc))))
+; (defn create-document
+;   [proj title]
+;   (go
+;     (let [mod-doc  (<! (tiny/tiny-mce-doc))
+;           _ (log-obj mod-doc)
+;           tpl-doc  (<! (single-column/single-column-template-doc mod-doc))
+;           _ (log-obj tpl-doc)
+;           wiki-doc (<! (wiki-doc/wiki-doc title tpl-doc))
+;           _ (log-obj wiki-doc)
+;           doc      (<! (model/load-document (:id wiki-doc)))]
+;       (log-obj doc)
+;       (object/raise workspace/workspace :show-document doc))))
 
 
-(dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
-  (fn [e]
-    (.preventDefault e)
-    (let [$tpl-input   (dom/$ :#new-document-template)
-          tpl-type     (keyword (.-value (aget (.-options $tpl-input) (.-selectedIndex $tpl-input))))
-          $title-input (dom/$ :#new-document-title)
-          title        (.-value $title-input)]
-      (create-document title tpl-type))))
+; (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
+;   (fn [e]
+;     (.preventDefault e)
+;     (let [$tpl-input   (dom/$ :#new-document-template)
+;           tpl-type     (keyword (.-value (aget (.-options $tpl-input) (.-selectedIndex $tpl-input))))
+;           $title-input (dom/$ :#new-document-title)
+;           title        (.-value $title-input)]
+;       (create-document title tpl-type))))
