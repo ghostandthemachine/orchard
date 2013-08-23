@@ -89,7 +89,11 @@
 
 (dommy/listen! [(dom/$ :body) :.markdown-module-content :a] :click
   (fn [e]
-    ; (log "loading document: " (keyword (last (clojure.string/split (.-href (.-target e)) #"/"))))
-    (think.objects.app/open-document
-      (last (clojure.string/split (.-href (.-target e)) #"/")))
-    (.preventDefault e)))
+    (let [href  (.-href (.-target e))
+          tags  (clojure.string/split href #"/")
+          proj  (get tags (- (count tags) 2))
+          title (last tags)
+          href  (str proj "/" title)]
+      (log "open document from href " href)
+      (think.objects.app/open-from-link href)
+      (.preventDefault e))))

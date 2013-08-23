@@ -116,6 +116,24 @@
       (dispatch/fire :open-document @doc))))
 
 
+(defn open-from-link
+  [href]
+  (log "open-from-link " href)
+  (go
+    (let [[project-title title] (clojure.string/split href #"/")
+          all-docs     (<! (model/all-wiki-documents))
+          projects     (reduce
+                        (fn [m wiki-doc]
+                          (let [proj (or (:project wiki-doc) "No Project")]
+                            (assoc-in m [(clojure.string/lower-case proj) (clojure.string/lower-case (:title wiki-doc))]
+                              wiki-doc)))
+                        {}
+                        all-docs)]
+      (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
+        (open-document (:_id d))
+        (log "Tried to open document that doesn't exist")))))
+
+
 (object/behavior* ::refresh
   :triggers #{:refresh}
   :reaction (fn [this]

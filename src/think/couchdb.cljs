@@ -187,9 +187,7 @@
           (do
             (log "Successful update")
             (log (str "rev in: " (:rev doc) " rev out: " (.-rev (:value v))))
-            (assoc doc :rev (.-rev (:value v)))
-            )
-            )))))
+            (assoc doc :rev (.-rev (:value v)))))))))
 
 
 (defn bulk
