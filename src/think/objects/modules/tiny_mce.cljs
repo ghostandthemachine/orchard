@@ -83,14 +83,16 @@
         (open-from-link href)))))
 
 
+(def link-regex #"\[([^\]]+)\]\(([^)]+)\)")
+
+
 (defn replace-think-links
   [s]
-  (let [regex #"\[([^\]]+)\]\(([^)]+)\)"]
-    (clojure.string/replace s
-      regex
-      (fn [m]
-        (let [[res tag link] (re-find regex m)]
-          (render-think-link tag link))))))
+  (clojure.string/replace s
+    link-regex
+    (fn [m]
+      (let [[res tag link] (re-find link-regex m)]
+        (render-think-link tag link)))))
 
 
 (def MAX-SAVE-DIFF  10000)
@@ -128,7 +130,19 @@
 
 (defn handle-editor-change
   [this ed l]
+  (log "handle editor change")
+  (log-obj l)
   (object/assoc! this :text (.getContent ed)))
+
+
+(defn handle-node-change
+  [ed cm e]
+  (log "handle-node-change")
+  (log-obj e)
+  ; (when (re-find link-regex (aget e "outerHTML"))
+  ;   (log-obj e)
+  ;   (.setContent ed (replace-think-links (.getContent ed))))
+  )
 
 
 (defn load-text
@@ -168,11 +182,13 @@
   (let [on-change       (.-onChange ed)
         on-init         (.-onInit ed)
         on-set-content  (.-onSetContent ed)
-        on-click        (.-onClick ed)]
+        on-click        (.-onClick ed)
+        on-node-change  (.-onNodeChange ed)]
     (.add on-init   (partial handle-editor-init this))
     (.add on-change (partial handle-editor-change this))
     (.add on-set-content handle-set-content this)
-    (.add on-click handle-tiny-click)))
+    (.add on-click handle-tiny-click)
+    (.add on-node-change handle-node-change)))
 
 
 (defn init-tinymce

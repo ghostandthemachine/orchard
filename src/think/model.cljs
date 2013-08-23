@@ -78,13 +78,12 @@
   (m-log "save-document: ")
   (m-log-obj doc)
   (go
-    (if-let [res (db/update-doc @model-db*
-                                (if (and (contains? doc :rev) (nil? (:rev doc)))
-                                  (dissoc doc :rev)
-                                  doc))]
-      (do
-        (swap! cache* assoc (:id doc) doc)
-        doc))))
+    (when-let [res (<! (db/update-doc @model-db*
+                        (if (and (contains? doc :rev) (nil? (:rev doc)))
+                          (dissoc doc :rev)
+                          doc)))]
+      (swap! cache* assoc (:id doc) res)
+      res)))
 
 
 (comment defn docs-of-type

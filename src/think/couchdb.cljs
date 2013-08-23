@@ -184,7 +184,12 @@
           (do
             (log "Error in update-doc:")
             (log-obj (:error v)))
-          doc)))))
+          (do
+            (log "Successful update")
+            (log (str "rev in: " (:rev doc) " rev out: " (.-rev (:value v))))
+            (assoc doc :rev (.-rev (:value v)))
+            )
+            )))))
 
 
 (defn bulk
