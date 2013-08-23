@@ -1,7 +1,6 @@
 #container {
-  margin-left: 12px;
-  margin-right: 12px;
-  margin-top: 8px;
+  position: relative;
+  top: -5px;
 }
 
 .index-module {
@@ -454,4 +453,14 @@ li.modules-item {
 
 .think-link {
   background-color: #DDDDDD;
+}
+
+/**************************************************************************
+    TinyMCE
+***************************************************************************/
+
+
+/* Hide the tinyMCE path toolbar */
+span.defaultSkin table.mceLayout tbody tr.mceLast td.mceStatusbar {
+    display: none !important;
 }
