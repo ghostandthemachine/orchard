@@ -78,13 +78,12 @@
   (m-log "save-document: ")
   (m-log-obj doc)
   (go
-    (if-let [res (db/update-doc @model-db*
-                                (if (and (contains? doc :rev) (nil? (:rev doc)))
-                                  (dissoc doc :rev)
-                                  doc))]
-      (do
-        (swap! cache* assoc (:id doc) doc)
-        doc))))
+    (when-let [res (<! (db/update-doc @model-db*
+                        (if (and (contains? doc :rev) (nil? (:rev doc)))
+                          (dissoc doc :rev)
+                          doc)))]
+      (swap! cache* assoc (:id doc) res)
+      res)))
 
 
 (comment defn docs-of-type
@@ -105,9 +104,12 @@
     (if-let [cached-doc (get @cache* id)]
       (do
         (log "cached...")
+        ; (log-obj cached-doc)
         cached-doc)
       (let [doc (<! (db/get-doc @model-db* id))]
         (swap! cache* assoc id doc)
+        (log "not cached")
+        ; (log-obj doc)
         doc))))
 
 
@@ -121,7 +123,6 @@
       (when doc
         (let [obj-type (keyword (:type doc))]
           (log "Doc defined in load doc: " (object/defined? obj-type))
-          (log "obj-tyep" obj-type)
           (if (object/defined? obj-type)
             (object/create obj-type doc)
             :no-matching-document-type))))))

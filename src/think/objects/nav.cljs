@@ -141,13 +141,15 @@
       (util/parse-int (aget style "paddingLeft"))
       (util/parse-int (aget style "paddingRight")))))
 
+
 (defn format-width
   [width]
   (let [bounds (or (accum-btn-widths) 0)]
+    (log "format width bounds: " bounds)
     (- width 4
       (if (> 0 bounds)
         bounds
-        180))))
+        178))))
 
 
 (defui text-input
@@ -322,6 +324,7 @@
   :window-width (dom/window-width)
   :init (fn [this]
           (let [key-chan (chan)]
+            (object/assoc! this :ready init-navbar)
             (handle-keypress this key-chan)
             [:div#nav-wrapper.nav
               [:ul#nav-list

@@ -1,7 +1,6 @@
 #container {
-  margin-left: 12px;
-  margin-right: 12px;
-  margin-top: 8px;
+  position: relative;
+  top: -5px;
 }
 
 .index-module {
@@ -70,7 +69,7 @@ ul#nav-list li.nav-element:hover {
 
 .nav-element {
   margin: 0;
-  padding: 7px;
+  padding: 8px;
   height: 30px;
   -webkit-user-select: none;
   user-select: none;
@@ -133,6 +132,14 @@ ul#sidebar-tabs {
   color:#555;
 }
 
+h2.sidebar-content-title {
+  font-size: 16.5px;
+  height: 36px;  /*This should only be 30...*/
+  margin: 0;
+  text-align: center;
+  padding: 0;
+}
+
 .block-btn {
   margin: 0;
   padding: 8px;
@@ -144,45 +151,6 @@ ul#sidebar-tabs {
 
 }
 
-.modules-content {
- margin: 0px;
- padding: 0px;
-}
-
-.modules-content .item {
-  /*background-color: rgb(100,200,180);*/
-}
-
-.animated #sidebar .content-wrapper {
-  -webkit-transition: width 0.1s ease-in-out; 
-}
-
-.modules-content-list {
-  list-style: none;
-  margin: 0px;
-}
-
-.modules-content-item {
-  background: rgb(220, 220, 220);
-  border-color: rgb(200, 200, 200);
-  border-width: 1px;
-  border-style: solid;
-}
-
-.modules-content-item:hover {
-  background: rgb(200, 200, 200);
-  border-color: rgb(180, 180, 180);
-  border-width: 1px;
-  border-style: solid;
-}
-
-h2.sidebar-content-title {
-  font-size: 16.5px;
-  height: 36px;  /*This should only be 30...*/
-  margin: 0;
-  text-align: center;
-  padding: 0;
-}
 
 /**************************************************************************
     Drag and drop
@@ -275,6 +243,39 @@ li.modules-item {
   border-radius: 5px;
 }*/
 
+
+.modules-content {
+ margin: 0px;
+ padding: 0px;
+}
+
+.modules-content .item {
+  /*background-color: rgb(100,200,180);*/
+}
+
+.animated #sidebar .content-wrapper {
+  -webkit-transition: width 0.1s ease-in-out; 
+}
+
+.modules-content-list {
+  list-style: none;
+  margin: 0px;
+}
+
+.modules-content-item {
+  background: rgb(220, 220, 220);
+  border-color: rgb(200, 200, 200);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.modules-content-item:hover {
+  background: rgb(200, 200, 200);
+  border-color: rgb(180, 180, 180);
+  border-width: 1px;
+  border-style: solid;
+}
+
 .modules-container {
 }
 
@@ -288,7 +289,7 @@ li.modules-item {
   width: 20px;
   height: 19px;
   border-radius: 10px;
-  right: -12px;
+  right: 0px;
   float: right;
   /*top: -6px;*/
   -webkit-transition: .4s;
@@ -337,6 +338,15 @@ li.modules-item {
   margin-right: 5px;
   top: -2px;
 }
+
+/**************************************************************************
+    Markdown Module
+***************************************************************************/
+
+.markdown-module-content {
+  margin: 10px;
+}
+
 
 /**************************************************************************
     Template
@@ -418,9 +428,6 @@ li.modules-item {
   margin-bottom: 0px;
 }
 
-.logger-content-panes {
-}
-
 .tabs-container {
   width: 100%;
   border-top-color: gray;
@@ -454,4 +461,23 @@ li.modules-item {
 
 .think-link {
   background-color: #DDDDDD;
+}
+
+/**************************************************************************
+    TinyMCE
+***************************************************************************/
+
+/* Hide the tinyMCE path toolbar */
+span.defaultSkin table.mceLayout tbody tr.mceLast td.mceStatusbar {
+    display: none !important;
+}
+
+.defaultSkin table.mceLayout {
+  border: 0;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+}
+
+td.mceIframeContainer.mceFirst.mceLast {
+  border-bottom: 0px solid #FFFFFF;
 }

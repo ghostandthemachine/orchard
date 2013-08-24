@@ -77,9 +77,10 @@
                         (log-obj (clj->js @this))
                         (bound-do (subatom this [:mode]) (partial render-module this))
                         (load-index this)
-                        [:div.span12.module.index-module {:id (str "module-" (:id @this))}
-                          [:div.module-tray (module-btn this)]
-                          [:div.module-content.index-module-content]]))
+                        [:div.container-fluid
+                          [:div.span11.module.index-module {:id (str "module-" (:id @this))}
+                            [:div.module-tray (module-btn this)]
+                            [:div.module-content.index-module-content]]]))
 
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click

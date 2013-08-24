@@ -60,9 +60,11 @@
                                :rev     (or (:rev @this) (:rev original-doc))
                                :id      (:id original-doc))]
       (log "saving template document...")
-      (let [doc (model/save-document new-doc)]
-        (go 
-          (object/assoc! this :rev (:rev (<! doc))))))))
+      (go 
+        (let [doc (<! (model/save-document new-doc))]
+          (log "template saved")
+          (log-obj doc)
+          (object/assoc! this :rev (:rev doc)))))))
 
 
 (object/behavior* ::remove-module
@@ -80,9 +82,10 @@
               (object/parent! template new-mod)
               (object/update! template [:modules] #(util/insert-at % index new-mod))
               (object/raise this :save)
-              (.css (js/$ ".module")
-  							"background-color"
-  							"rgb(247, 247, 247)")))
+         ;      (.css (js/$ ".module")
+  							; "background-color"
+  							; "rgb(247, 247, 247)")
+              ))
 
 
 (object/object* :single-column-template

@@ -1,6 +1,7 @@
 (ns think.objects.workspace
   (:require [think.object :as object]
             [think.objects.sidebar :as sidebar]
+            [think.util.core :refer (has?)]
             [think.util.dom :as dom]
             [think.util.log :refer (log log-obj)]
             [think.util.cljs :refer [->dottedkw]]
@@ -26,6 +27,7 @@
                   :reaction (fn [this doc-obj]
                               (let [workspace$ (dom/$ "#workspace")
                                     active     (:wiki-document @this)]
+                                (think.objects.modules.tiny-mce/clear-editors!)
                                 (when active
                                   (dom/remove (:content @active)))
                                 (object/assoc! this
@@ -65,13 +67,12 @@
                 :triggers  #{:show-document :add-sidebar}
                 :behaviors [::show-document ::add-sidebar]
                 :width 0
+                ; :channels {:event []}
                 :sidebar sidebar/sidebar
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
                         [:div#workspace
-                          ; [:div
-                          ;   (bound (subatom this :sidebar) render-sidebar)]
                           [:div.document-container
                             {:style {:left (bound (subatom think.objects.sidebar/sidebar :width) left-offset)}}
                             (bound (subatom this :wiki-document) render-wiki-doc)]]))
@@ -79,4 +80,20 @@
 (def workspace (object/create ::workspace))
 (dom/append (dom/$ :#container) (:content @workspace))
 
+
+; (defn channel-type-supported?
+;   [type]
+;   (has?
+;     (keys (:channels @workspace))
+;     type))
+
+
+; (defn create-chan
+;   "Creates a new event channel and adds it to the workspace event chan seq."
+;   [chan-type]
+;   (if (channel-type-supported? chan-type)
+;     (let [c (chan)]
+;       (object/update! workspace [:channels chan-type] conj c)
+;       c)
+;     (log "Channel type: " chan-type " not suuported for workspace object")))
 

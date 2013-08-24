@@ -41,4 +41,6 @@
       (go
         (let [created (<! ready-chan)]
           (.disconnect observer)
+          (log "call ready handler for object")
+          (log-obj obj)
           ((:ready @obj) obj))))))

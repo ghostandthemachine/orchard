@@ -46,14 +46,19 @@
   (dom/$ (str "#module-" (:id @this) " .module-content")))
 
 
+(defn handle-delete-module
+  ([this] (handle-delete-module this nil))
+  ([this _]
+  (let [msg "Are you sure you want to delete this module?"
+        delete? (js/confirm msg)]
+    (when delete?
+      (object/raise (object/parent this) :remove-module this)))))
+
+
 (defui delete-btn
   [this]
   [:i.icon-trash.module-btn]
-  :click (fn [e]
-            (let [msg "Are you sure you want to delete this module?"
-                   delete? (js/confirm msg)]
-                (when delete?
-                  (object/raise (object/parent this) :remove-module this)))))
+  :click (partial handle-delete-module this))
 
 (defui edit-btn
   [this]
@@ -110,15 +115,6 @@
                   (:modules @parent))]
     (object/assoc! parent :modules mods)
     (object/parent! parent new-mod)))
-
-
-(defn init-tinymce
-  []
-  (log "Init tinyMCE")
-  (.init js/tinyMCE
-    (clj->js
-      {:mode "specific_textareas"
-       :editor_selector "tiny-mce-editor"})))
 
 
 (defui create-module-icon
