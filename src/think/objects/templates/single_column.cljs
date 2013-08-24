@@ -82,9 +82,10 @@
               (object/parent! template new-mod)
               (object/update! template [:modules] #(util/insert-at % index new-mod))
               (object/raise this :save)
-              (.css (js/$ ".module")
-  							"background-color"
-  							"rgb(247, 247, 247)")))
+         ;      (.css (js/$ ".module")
+  							; "background-color"
+  							; "rgb(247, 247, 247)")
+              ))
 
 
 (object/object* :single-column-template

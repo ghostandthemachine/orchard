@@ -48,10 +48,7 @@
               (log "Edit Mode")
               (object/update! this [:locked?]
               	(fn [_]
-              		false))
-              (.css (js/$ ".module")
-  							"background-color"
-  							"rgb(247, 247, 247)")))
+              		false))))
 
 
 (object/behavior* ::ready

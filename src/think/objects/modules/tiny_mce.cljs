@@ -155,24 +155,16 @@
 (defn handle-editor-change
   [this ed l]
   (log "handle editor change")
-  (log-obj l)
-  (object/assoc! this :text (.getContent ed)))
+  (object/assoc! this :text
+    (replace-think-links (.getContent ed))))
 
 
 (defn handle-node-change
   [ed cm e]
-  (log "handle-node-change")
-  (log-obj e)
   ; (when (re-find link-regex (aget e "outerHTML"))
   ;   (log-obj e)
   ;   (.setContent ed (replace-think-links (.getContent ed))))
   )
-
-
-(defn load-text
-  [this ed]
-  (.setContent ed (replace-think-links (:text @this))))
-
 
 (defn handle-editor-mutations
   [this mutations]
@@ -180,11 +172,9 @@
     (>! (:observer-chan @this) mutations)))
 
 
-(defn observe-mutations
-  [this]
-  (go
-    (let [mutations (<! (:observer-chan @this))]
-      (log-obj mutations))))
+(defn load-text
+  [this ed]
+  (.setContent ed (replace-think-links (:text @this))))
 
 
 (defn handle-editor-init

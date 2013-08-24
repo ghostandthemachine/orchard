@@ -69,7 +69,7 @@ ul#nav-list li.nav-element:hover {
 
 .nav-element {
   margin: 0;
-  padding: 7px;
+  padding: 8px;
   height: 30px;
   -webkit-user-select: none;
   user-select: none;
@@ -428,9 +428,6 @@ li.modules-item {
   margin-bottom: 0px;
 }
 
-.logger-content-panes {
-}
-
 .tabs-container {
   width: 100%;
   border-top-color: gray;
@@ -478,5 +475,9 @@ span.defaultSkin table.mceLayout tbody tr.mceLast td.mceStatusbar {
 .defaultSkin table.mceLayout {
   border: 0;
   border-left: 1px solid #FFFFFF;
-  border-right: 1px solid #FFFFFF
+  border-right: 1px solid #FFFFFF;
+}
+
+td.mceIframeContainer.mceFirst.mceLast {
+  border-bottom: 0px solid #FFFFFF;
 }
