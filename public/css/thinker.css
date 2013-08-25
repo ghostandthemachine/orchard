@@ -306,9 +306,8 @@ li.modules-item {
 
 .spacer-tray {
   position: relative;
-  top: -13px;
+  top: 5px;
   height: 15px;
-  margin-bottom: -10px;
 }
 
 .spacer-nav {
@@ -480,4 +479,6 @@ span.defaultSkin table.mceLayout tbody tr.mceLast td.mceStatusbar {
 
 td.mceIframeContainer.mceFirst.mceLast {
   border-bottom: 0px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF; 
 }

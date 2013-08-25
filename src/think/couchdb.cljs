@@ -3,10 +3,11 @@
     [think.macros :refer [defonce node-chan]]
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [chan >! <! put! timeout close!]]
+    [cljs.core.async :refer [chan >! <! put! timeout close! get!]]
     [think.object :as object]
     [think.objects.logger :as logger]
     [think.util.core :as util]
+    [think.util.fetch :refer (xhr)]
     [think.util.os :as os]
     [think.util.log :refer (log log-obj log-err)]))
 
@@ -242,6 +243,35 @@
       (update-doc db (clj->js doc)))))
 
 
+(defn search
+  [db design view-name query]
+  (log "search for document")
+  (node-chan
+    (.search db
+      (name design) (name view-name)
+      (util/js-clj)
+      #(map cljs-ids (util/js->clj % :keywordize-keys true)))))
+
+
+
+
+
+; Simply use the db.insert function.
+
+; db.insert(design_doc, '_design/design_doc_name', callback);
+; Here's a more complete example (from tests/view/query):
+
+;   db.insert(
+;   { "views": 
+;     { "by_name_and_city": 
+;       { "map": function(doc) { emit([doc.name, doc.city], doc._id); } } 
+;     }
+;   }, '_design/people', function (error, response) {
+;     console.log("yay");
+;   });
+; If you are interested in learning some more check this sample or go on and read the CouchDB Guide
+
+
 """
 To create a view you need to create a design document, which can have a view.  In the futon utility for couch here http://localhost:5984/_utils/ you can create a temporary view and then save it permanently.  The view for the wiki-document index looks like this:
 """
@@ -257,14 +287,110 @@ To create a view you need to create a design document, which can have a view.  I
 (def project-view
  "function(doc) {
     if(doc.type == 'wiki-document' && doc._id != ':home') {
-      emit(doc.project, doc);
+      emit(doc.project, {id: doc._id, title: doc.title});
     }
   }")
+
+
 
 
 (def title-view
  "function(doc) {
     if(doc.type == 'wiki-document' && doc._id != ':home') {
-      emit(doc.title, doc);
+      emit(doc.title, {id: doc._id, title: doc.project})
     }
   }")
+
+
+
+
+
+
+
+
+
+
+
+(comment
+
+
+(defn base-url
+  [r]
+  (str "http://127.0.0.1:5984/" r))
+
+
+(defn log-error
+  [err msg]
+  (log "CouchDB Error: " e " " msg))
+
+
+(defn encode-json
+  [content]
+  (let [f #(if (= (type %2) js/Function)
+             (.toString %2)
+             %2)]
+    (try
+      (.stringify js/JSON content f)
+      (catch js/Error e
+        (log-error e "Bad JSON content passed")))))
+
+
+(defn hammock
+  [& args]
+  (let [args-map (apply hash-map args)
+        data (merge
+              {:method   :get
+               :db-arg  "_all_dbs"}
+              args-map)
+        {:keys [method db-arg]} data
+        method (clojure.string/upper-case (name method))
+        res-chan  (chan)]
+    (if (:content args-map)
+      (let [content     (:content args-map)
+            document-id (or (:id content) (:_id content) ("id" content) ("_id" content))
+            data        (if (.isBuffer js/Buffer content)
+                          content
+                          (encode-json (clj->js content)))
+            url         (str (base-url db-arg) "/" document-id)]
+        (think.util.fetch/xhr [method url] data #(put! res-chan %)))
+      (think.util.fetch/xhr [method (base-url db-arg)] {} #(put! res-chan %)))
+    res-chan))
+
+
+
+(defn all-dbs
+  []
+  (hammock
+    :db-arg "_all_dbs"))
+
+; (go (log (<! (all-dbs))))
+
+
+(defn create-db
+  [db-name]
+  (hammock
+    :method :put
+    :db-arg    db-name))
+
+; (go (log (<! (create-db "testing-db-create"))))
+
+
+(defn delete-db
+  [db-name]
+  (hammock
+    :method :delete
+    :db-arg    db-name))
+
+; (go (log (<! (delete-db "testing-db-create"))))
+
+
+(defn insert-document
+  [db-name document]
+  (hammock
+    :method   :put
+    :content  document
+    :db-arg   db-name))
+
+; (go (log (<! (insert-document "test-db" {:foo "bar" :wiz "woz"}))))
+
+  )
