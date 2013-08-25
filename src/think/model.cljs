@@ -128,6 +128,13 @@
             :no-matching-document-type))))))
 
 
+(defn search-by-title
+  [title]
+  (log "search for document")
+  (db/search @model-db* :index :docs-by-title {:q title}))
+
+
+
 ; TODO: test me!  Not sure if mapping like this will work correctly.
 (defn all-documents
   []
@@ -163,6 +170,30 @@
         (if (= (:total_rows (:value docs)) 0)
           []
           (map #(assoc % :id (:_id %)) (map :value (:rows (:value docs)))))))))
+
+
+(defn all-projects
+  []
+  (log "all-projects")
+  (go
+    (let [docs (<! (db/view @model-db* :index :docs-by-project))]
+      (if (:error docs)
+        (log "Error: " (:error docs))
+        (if (= (:total_rows (:value docs)) 0)
+          []
+          (map #(assoc % :id (or (:_id %) (:id %))) (map :value (:rows (:value docs)))))))))
+
+
+(defn all-documents-by-title
+  []
+  (log "all-documents-by-title")
+  (go
+    (let [docs (<! (db/view @model-db* :index :docs-by-title))]
+      (if (:error docs)
+        (log "Error: " (:error docs))
+        (if (= (:total_rows (:value docs)) 0)
+          []
+          (map #(assoc % :id (or (:_id %) (:id %))) (map :value (:rows (:value docs)))))))))
 
 
 (defn delete-all-documents
