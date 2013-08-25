@@ -138,7 +138,9 @@
         (if (= (:total_rows docs) 0)
           []
           (doseq [doc-row (:rows docs)]
-                 (>! c (<! (db/get-doc @model-db* (:id doc-row))))))))))
+            (if-let [doc (<! (db/get-doc @model-db* (:id doc-row)))]
+              (>! c doc)
+              (log (str "Could not load document: " doc-row)))))))))
 
 
 (defn load-cache
@@ -173,14 +175,8 @@
 
 (defn format-request
   [account]
-  (str
-    "http://"
-    (:login account)
-    ":"
-    (:password account)
-    "@"
-    (:url account)
-    (:root account)))
+  (str "http://" (:login account) ":" (:password account)
+       "@" (:url account) (:root account)))
 
 
 (defn synch-documents

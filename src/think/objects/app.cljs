@@ -54,37 +54,17 @@
   (js/window.location.reload true))
 
 
-(defn menu-item
-  [m]
-  (.MenuItem gui (clj->js m)))
-
-
-(defn menu-seperator
+(defn main-menu
   []
-  (menu-item {:type "serperator"}))
-
-
-(defn menu [items]
-  (let [menu (.Menu gui)]
-    (doseq [i items]
-      (.append menu (menu-item i)))
-    menu))
-
-
-(def file-menu
- [{:type "normal"
-   :label "New File"}
-  {:type "normal"
-   :label "Open..."}
-  {:type "normal"
-   :label "Save"}])
-
-
-(defn set-main-menu
-  []
-  (let [main-menu (.Menu gui)
-        file (menu file-menu)]
-    (.append main-menu file)))
+  (nw/menu-bar
+    [;"Thinker" [{:label "Preferences"}]
+     "File" [{:label "New Page"}
+             {:label "New Project"}
+             ]
+     "Edit" [{:label "Find"}]
+     "View" [{:label "Toggle Text Styles"}
+             {:label "Status Bar"}
+             ]]))
 
 
 (defn open-window []
@@ -143,8 +123,8 @@
 (object/behavior* ::start
   :triggers #{:start}
   :reaction (fn [this]
-              (setup-tray)
-              ; (set-main-menu)
+              ;(setup-tray)
+              (nw/set-menu-bar! (main-menu))
               ; (restore-session)
               (.on win "close"
                    (fn []
@@ -196,8 +176,6 @@
   (log "think.objects.app.init")
   (log "starting repl server...")
   (util/start-repl-server)
-  (.showDevTools win)
-  ;(set-window-menu)
   (go
     (<! (model/load-db))
     (model/load-cache)
@@ -241,7 +219,7 @@
           (when (util/has? (keys ctrl-shift-events) key-code)
             (let [f (get ctrl-shift-events key-code)]
               (f)))
-          
+
           (when (util/has? (keys ctrl-events) key-code)
             (let [f (get ctrl-events key-code)]
               (f)))))))
