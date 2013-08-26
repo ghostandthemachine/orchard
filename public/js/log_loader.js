@@ -7,7 +7,7 @@ var css_files = [
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
     "css/jquery-ui.css",
-    "css/thinker.css"];
+    "css/style.css"];
 
 var js_files = [
     "js/codemirror.js",

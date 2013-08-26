@@ -7,7 +7,7 @@ var css_files = [
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
     "css/jquery-ui.css",
-    "css/thinker.css"
+    "css/style.css"
     ];
 
 var js_files = [
@@ -34,7 +34,7 @@ var js_files = [
     // "js/d3.v3.min.js",
 
     "bootstrap/js/bootstrap.min.js",
-    "js/thinker.js"
+    "js/orchard.js"
     ];
 
 
@@ -91,7 +91,7 @@ function initialize() {
 
         console.log("Loading Javascript files...");
         js_files.forEach(function(path) {
-            if (test_mode && path == "js/thinker.js") {
+            if (test_mode && path == "js/orchard.js") {
                 console.log("Running unit tests");
             }
             load_script(path, false);
@@ -103,7 +103,7 @@ function initialize() {
                     gui.App.quit();
                 } else {
                     console.log("Starting application...");
-                    think.objects.app.init();
+                    orchard.objects.app.init();
                 }
             } catch (e) {
                 log_error(e);
