@@ -139,11 +139,25 @@
 (defn all-documents
   []
   (log "all-documents")
+  (let [c (chan 10)]
+    (go
+      (let [docs (<! (db/all-docs @model-db*))]
+        (if (= (:total_rows docs) 0)
+          []
+          (doseq [doc-row (:rows docs)]
+            (if-let [doc (<! (db/get-doc @model-db* (:id doc-row)))]
+              (>! c doc)
+              (log (str "Could not load document: " doc-row)))))))))
+
+
+(defn load-cache
+  "Load the cache with all documents in the DB."
+  []
   (go
-    (let [docs (<! (db/all-docs @model-db*))]
-      (if (= (:total_rows docs) 0)
-        []
-        (map #(db/get-doc @model-db* (:id %)) (:rows docs))))))
+    (reset! cache* (reduce (fn [docs doc]
+                             (assoc docs (:id doc) doc))
+                           {}
+                           (<! (all-documents))))))
 
 
 (defn all-wiki-documents
@@ -192,14 +206,8 @@
 
 (defn format-request
   [account]
-  (str
-    "http://"
-    (:login account)
-    ":"
-    (:password account)
-    "@"
-    (:url account)
-    (:root account)))
+  (str "http://" (:login account) ":" (:password account)
+       "@" (:url account) (:root account)))
 
 
 (defn synch-documents

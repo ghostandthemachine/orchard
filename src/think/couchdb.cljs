@@ -173,6 +173,26 @@
                 (cljs-ids (util/js->clj doc :keywordize-keys true :forc-obj true)))))))))
 
 
+(defn bulk-get
+  "Bulk fetch multiple documents."
+  [db ids & opts]
+  (log "handle fetch docs")
+  (go
+    (let [res (<! (node-chan (.fetch db (clj->js {:keys ids}) (clj->js (merge {} opts)))
+                (fn [response]
+                  (let [rows (.-rows response)
+                        docs (do (map js->clj rows))]
+                    docs))))]
+      (log "Fetch obj")
+      (log-obj res)
+
+      (if (:error res)
+        (do
+          (log "Error in fetch docs:")
+          (log-obj (:error res)))
+        (:value res)))))
+
+
 (defn update-doc
   "Insert or modify a document. If the doc has an :id field it will be used as the document key."
   [db doc]
@@ -191,7 +211,7 @@
             (assoc doc :rev (.-rev (:value v)))))))))
 
 
-(defn bulk
+(defn bulk-update
   "Bulk update/insert multiple docs."
   [db docs & opts]
   (go
@@ -204,25 +224,6 @@
           (log-obj (:error res)))
         (:value res)))))
 
-
-(defn fetch
-  "Bulk fetch multiple documents."
-  [db ids & opts]
-  (log "handle fetch docs")
-  (go
-    (let [res (<! (node-chan (.fetch db (clj->js {:keys ids}) (clj->js (merge {} opts)))
-                (fn [response]
-                  (let [rows (.-rows response)
-                        docs (do (map js->clj rows))]
-                    docs))))]
-      (log "Fetch obj")
-      (log-obj res)
-
-      (if (:error res)
-        (do
-          (log "Error in fetch docs:")
-          (log-obj (:error res)))
-        (:value res)))))
 
 
 

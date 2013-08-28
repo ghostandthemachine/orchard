@@ -1,5 +1,10 @@
 (ns think.util.dom
-  (:refer-clojure :exclude [parents remove next val empty find]))
+  (:require-macros
+    [cljs.core.async.macros :refer [go]])
+  (:refer-clojure :exclude [parents remove next val empty find])
+  (:require
+    [cljs.core.async :refer [chan >! <! timeout]]))
+
 
 (defn has?
   [coll k]
@@ -264,7 +269,8 @@
   (.removeEventListener elem (->event ev) cb))
 
 
-(defn on-event* [elem evs]
+(defn on-event*
+  [elem evs]
   (doseq [[ev cb] evs]
     (.addEventListener elem (->event ev) cb)))
 
@@ -280,16 +286,18 @@
 (defn on-doc-ready [func]
   (on-event js/document :DOMContentLoaded func))
 
+
 (defn window-width
   []
   (aget js/window "innerWidth"))
+
 
 (defn set-frame-title
   [title]
   (aset js/document "title" title))
 
 
-(defn gdata
+(defn data-attr
   "Get data attribute values and convert them to JSON."
   [elem k]
   (let [ks      (if (seq? k)
@@ -309,8 +317,9 @@
       js/JSON.parse
       js->clj)))
 
-(defn sdata
-  "Set data attribute values. Currently does not suuport keyword values (they are converted strings)."
+(defn set-data-attr!
+  "Set data attribute values.
+  Currently does not suuport keyword values (they are converted strings)."
   [elem & opts]
   (let [dataset (.-dataset elem)]
     (doseq [[k v] (partition 2 (flatten opts))]
@@ -318,10 +327,83 @@
     (js->clj dataset)))
 
 
-(defn create
+(defn element
   "Creates an HTML element. Optionally takes a list of attributes"
   [s]
   (.createElement js/document (name s)))
+
+
+(defn observer-chan
+
+  "Returns a [dom-observer channel] tuple.  The channel will receive a stream
+  of dom mutation events, and the dom-observer can be used to stop observing.
+  The supported options to request event types are :attrs, :children, and :text.
+
+  (let [[obs obs-chan] (observer-chan $(:#content) :children)]
+    (go
+      (log-obj (<! obs-chan))
+      (stop! obs)))
+  "
+  [target & options]
+  (let [c (chan 10)
+        opts (reduce #(assoc %1 %2 true) {} options)
+        opts (assoc opts "attributes"    (:attrs opts))
+        opts (assoc opts "childList"     (:children opts))
+        opts (assoc opts "characterData" (:text opts))]
+      (let [handler (fn [mutations]
+                      (go
+                        (doseq [mutation mutations]
+                          (>! mutation c))))
+            observer (js/MutationObserver.   handler)
+            config   (clj->js opts)]
+        (.observe observer target config)
+        [observer c])))
+
+
+(defn stop-observer!
+  "Stop a dom observer."
+  [observer]
+  (.disconnect observer))
+
+
+;(defn handle-file-select [evt]
+;(.stopPropagation evt)
+;(.preventDefault evt)
+;(let [files (.-files (.-dataTransfer evt))]
+;(dotimes [i (.-length files)]
+;(let [rdr (js/FileReader.)
+;the-file (aget files i)]
+;(set! (.-onload rdr)
+;(fn [e]
+;(let [file-content (.-result (.-target e))
+;file-name (if (= ";;; " (.substr file-content 0 4))
+;(let [idx (.indexOf file-content "\n\n")]
+;(.log js/console idx)
+;(.slice file-content 4 idx))
+;(.-name the-file))]
+;(.log js/console (str "file-name " file-name))
+;(.set storage file-name file-content)
+;(swap! list-of-code conj file-name))))
+;(.readAsText rdr the-file)))))
+;
+;(defn handle-drag-over [evt]
+;(.stopPropagation evt)
+;(.preventDefault evt)
+;(set! (.-dropEffect (.-dataTransfer evt)) "copy"))
+;
+;(defn set-up-drop-zone [id]
+;(let [body (aget (.getElementsByTagName js/document "body") 0)
+;zone (.createElement js/document "div")]
+;(when-let [x (.getElementById js/document id)]
+;(.removeChild body x))
+;(set! (.-innerHTML zone) "Drop Here")
+;(.setAttribute zone "id" id)
+;(set! (.-position (.-style zone)) "absolute")
+;(set! (.-top (.-style zone)) "0px")
+;(set! (.-right (.-style zone)) "0px")
+;(.appendChild body zone)
+;(.addEventListener zone "dragover" handle-drag-over false)
+;(.addEventListener zone "drop" handle-file-select false)))
 
 
 (defn child-of
@@ -341,3 +423,4 @@
       (first
         (filter #(= c %) elems)))
     nil))
+

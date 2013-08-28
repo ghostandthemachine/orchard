@@ -1,7 +1,8 @@
-(ns think.util.nw)
+(ns think.util.nw
+  (:require
+    [think.util.log :refer (log log-obj)]))
 
 (def ^:private gui (js/require "nw.gui"))
-
 
 (defn window
   "If `window-object` is not specifed, then return current window's Window object,
@@ -18,31 +19,51 @@
     (.focus w)))
 
 
-(defn- append-menuitems [menu items]
+(defn- append-menu-items [menu items]
   (let [ctor (.-MenuItem gui)]
     (doseq [item-options items]
       (.append menu (new ctor (clj->js item-options))))))
 
 
+(defn menu-item
+  "Create a menu item from a map. 
+  e.g. {:label \"foo\", :icon \"foo.png\", :tooltip \"tip...\", :click my-fn}
+  Other properties are :checked, :enabled, and :type, where the type can 
+  be either normal or separator."
+  [fields]
+  (let [ctor (.-MenuItem gui)]
+    (new ctor (clj->js fields))))
+
+
 (defn menu
-  "Create a new Menu. Items is a vector of MenuItem options.
-  Options can have following fields: `label`, `icon`, `tooltip`, `type`, `click`, `checked`, `enabled` and `submenu`.
-  See [MenuItem documentation](https://github.com/rogerwang/node-webkit/wiki/MenuItem)."
+  "Create a menu containing a set of menu itmes, each of which should be
+  a map that will be converted into a menu-item: {:label \"foo\"}."
   [items]
-  (let [ctor (.-Menu gui)]
-    (doto (new ctor)
-      (append-menuitems items))))
+  (let [ctor  (.-Menu gui)
+        m     (new ctor)
+        items (map menu-item items)]
+    (doseq [item items]
+      (.append m item))
+    m))
 
 
-(defn menubar!
-  "Create and set main Window's main Menu. Items is a vector of MenuItem options.
-  Options can have following fields: `label`, `icon`, `tooltip`, `type`, `click`, `checked`, `enabled` and `submenu`.
-  See [MenuItem documentation](https://github.com/rogerwang/node-webkit/wiki/MenuItem)."
-  [items]
-  (let [ctor (.-Menu gui)
-        menu (new ctor (js-obj "type" "menubar"))]
-    (append-menuitems menu items)
-    (set! (.-menu (window)) menu)))
+(defn menu-bar
+  "Create a menu bar.  The menus should be a vector of [menu-label [items...]] pairs."
+  [menus]
+  (let [ctor  (.-Menu gui)
+        bar   (new ctor (clj->js {:type "menubar"}))]
+    (doseq [[label items] (partition 2 menus)]
+      (let [sub-menu (menu items)
+            item     (menu-item {:label label})]
+        (set! (.-submenu item) sub-menu)
+        (.append bar item)))
+    bar))
+
+
+(defn set-menu-bar!
+  "Set the application menu bar."
+  [bar]
+  (set! (.-menu (window)) bar))
 
 
 (defn argv
