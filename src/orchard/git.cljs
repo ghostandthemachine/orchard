@@ -61,4 +61,13 @@
           (create-repo app-dir)))))))
 
 
+(defn with-branch*
+  [repo branch-name]
+  (let [branch-chan (chan)]
+    (.branch repo branch-name
+             (fn [error, branch]
+               (go
+                 (>! branch-chan
+                     (if error nil branch)))))
+    branch-chan))
 
