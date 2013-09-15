@@ -9,20 +9,21 @@
                     "--enable-experimental-web-platform-features"],
 
   "window": {
-      "title": "Orchard",
-      "width": 600,
-      "height": 400,
-      "show":   false,
-      "frame":  true,
-      "toolbar": false,
+      "title":    "Orchard",
+      "width":     600,
+      "height":    400,
+      "show":      false,
+      "frame":     true,
+      "toolbar":   false,
       "resizable": true,
-      "icon": "tree.png"
+      "icon":     "tree.png"
   },
 
   "node-remote":  "<local>",
 
   "dependencies": {
-      "nodegit":  "*",
+      "nodegit":      "*",
+      "js-git":       "*",
       "search-index": "*"
   },
 

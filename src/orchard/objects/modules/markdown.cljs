@@ -16,8 +16,8 @@
 
 
 (defn markdown-doc
-  []
-  (model/save-document
+  [db]
+  (model/save-object db
     {:type :markdown-module
      :text "## Markdown module..."
      :id   (uuid)}))
@@ -79,9 +79,9 @@
 
 
 (defn create-module
-  []
+  [app]
   (go
-    (let [doc (<! (markdown-doc))
+    (let [doc (<! (markdown-doc (:db app)))
           _ (log "markdown-doc: " doc)
             obj (object/create :markdown-module doc)]
       obj)))

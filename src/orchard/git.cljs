@@ -3,7 +3,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go alt! alts!]])
   (:require
-    [cljs.core.async    :refer (chan >! <! timeout)]
+    [cljs.core.async    :refer (chan >! <! timeout put! take!)]
     [orchard.util.log     :refer (log log-obj)]
     [orchard.util.core    :as util]
     [orchard.util.time    :as time]
@@ -13,8 +13,14 @@
 
 (def ^:private git (js/require "nodegit"))
 
-(def PROJECT-REPO "projects")
+(def PROJECT-DIR (fs/join (nw/data-path) "projects"))
 
+(if (not (fs/exists? PROJECT-DIR))
+  (fs/mkdir PROJECT-DIR))
+
+(defn oid
+  [sha-str]
+  (.Oid.fromString git sha-str))
 
 (defn create-repo
   [path]
@@ -48,17 +54,19 @@
     res-chan))
 
 
-(defn app-repo
-  []
-  (let [app-dir (fs/join (nw/data-path) PROJECT-REPO)
-        config  (fs/join app-dir "config")]
+(defn project-repo
+  [proj-id]
+  (let [proj-dir (fs/join PROJECT-DIR proj-id)]
     (go
       (<!
-        (if (<! (fs/exists? config))
-        (repo app-dir)
+        (if (<! (fs/exists? proj-dir))
+          (do
+            (log "found repo: " proj-dir)
+            (repo proj-dir))
         (do
-          (fs/mkdir app-dir)
-          (create-repo app-dir)))))))
+          (log "making new project repo: " proj-dir)
+          (fs/mkdir proj-dir)
+          (create-repo proj-dir)))))))
 
 
 (defn with-branch*
@@ -66,8 +74,36 @@
   (let [branch-chan (chan)]
     (.branch repo branch-name
              (fn [error, branch]
-               (go
-                 (>! branch-chan
-                     (if error nil branch)))))
+               (put! branch-chan (if error nil branch))))
     branch-chan))
+
+
+(defn revision-history-chan
+  [branch]
+  (let [rev-chan (chan)]
+    (.tree branch
+           (fn [error tree]
+             (.on (.walk tree) "entry"
+                  (fn [error entry] (put! rev-chan entry)))))
+    rev-chan))
+
+
+(defn fetch
+  "Fetch from a remote repo, downloading new objects into the local repo."
+  [repo remote-name]
+  (let [remote (.getRemote repo remote-name)]
+    (.connect remote 0
+              (fn [err]
+                (if err
+                  (log "Error connecting to remote: " remote-name)
+                  (.download remote (fn [dl-err]
+                                      (if dl-err
+                                        (log "Error downloading from remote: " dl-err)))))))))
+
+
+(defn get-commit
+  [repo sha]
+  (let [com-chan (chan)]
+    (.getCommit repo sha
+                (fn [err, commit] (put! com-chan commit)))))
 

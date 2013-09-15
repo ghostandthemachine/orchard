@@ -1,6 +1,6 @@
 (ns orchard.setup
   (:require [orchard.util.core :as util]
-            [orchard.model :refer [save-document]]))
+            [orchard.model :refer [save-object]]))
 
 
 (defrecord FormModule     [fields])
@@ -57,34 +57,34 @@
 
 
 (defn create-home
-  []
+  [db]
   (let [index      (index-module)
         ht-doc     (html-module)
         tpl-doc    (single-column-template (:id index) (:id ht-doc))
         home-doc   (home-doc (:id tpl-doc))]
     (doseq [doc [index ht-doc tpl-doc home-doc]]
-      (save-document doc))
+      (save-object db doc))
     home-doc))
 
 
 (defn create-test-doc
-  []
+  [db]
   (let [md-doc     (markdown-module)
         ht-doc     (html-module)
         tpl-doc    (single-column-template (:id md-doc) (:id ht-doc))
         test-doc   (test-doc :test-doc1 (:id tpl-doc))]
     (doseq [doc [md-doc ht-doc tpl-doc test-doc]]
-      (save-document doc))))
+      (save-object db doc))))
 
 
 (defn create-media-doc
-  []
+  [db]
   (let [md-doc     (markdown-module)
         media-doc  (media-module)
         tpl-doc    (single-column-template (:id md-doc) (:id media-doc))
         test-doc   (test-doc :test-doc1 (:id tpl-doc))]
     (doseq [doc [md-doc media-doc tpl-doc test-doc]]
-      (save-document doc))))
+      (save-object db doc))))
 
 
 ; (defn reset-home

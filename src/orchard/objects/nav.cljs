@@ -63,12 +63,12 @@
   [this e]
   (let [lock (not (:locked? @this))]
     (object/assoc! this :locked? lock)
-    (object/raise (wiki-doc)
+    ;(object/raise (wiki-doc )
       (if lock
         :lock-document
         :unlock-document))
     (.preventDefault e)
-    false))
+    false)
 
 
 (defui lock-view

@@ -5,7 +5,7 @@
     [cljs.core.async    :refer (chan >! <! timeout)]))
 
 
-(def ^:private fs (js/require "fs"))
+(def ^:private fs   (js/require "fs"))
 (def ^:private path (js/require "path"))
 
 
@@ -30,3 +30,4 @@
   "Make a directory."
   [path]
   (.mkdirSync fs path))
+

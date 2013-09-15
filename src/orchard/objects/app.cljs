@@ -11,6 +11,7 @@
     [orchard.util.log :refer (log log-obj)]
     [orchard.util.dom :as dom]
     [orchard.util.core :as util]
+    [orchard.util.time :as time]
     [orchard.objects.nav :as nav]
     [orchard.objects.logger :as logger]
     [orchard.objects.sidebar :as sidebar]
@@ -24,6 +25,8 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 
+(defonce db  (model/couch-store))
+;(defonce db  (model/local-store))
 
 (def closing true)
 
@@ -92,7 +95,7 @@
 (defn open-document
   [doc-id]
   (go
-    (let [doc (<! (model/load-document doc-id))]
+    (let [doc (<! (model/load-object db doc-id))]
       (object/raise workspace/workspace :show-document doc)
       (dispatch/fire :open-document @doc))))
 
@@ -171,18 +174,16 @@
 
 (def windows js/global.windows)
 
-(def app (object/create ::app))
+(defonce app (object/create ::app))
 
 (defn init []
   (log "orchard.objects.app.init")
   (log "starting repl server...")
   (util/start-repl-server)
   (go
-    (<! (model/load-db))
-    (model/load-cache)
     (log "db ready, starting app")
     (logger/ready)
-    (object/raise app :start)))
+    (time/run-in 1500 #(object/raise app :start))))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
@@ -203,7 +204,6 @@
     14  (partial nav/start-create-document nav/workspace-nav)
     ;; show dev-tools
     4   (partial object/raise orchard.objects.app/app :show-dev-tools)})
-
 
 
 (def ctrl-shift-events

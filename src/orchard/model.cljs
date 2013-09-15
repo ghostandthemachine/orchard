@@ -13,7 +13,6 @@
 
 (def ^:private cache* (atom {}))
 
-
 (def do-log true)
 
 (defn m-log
@@ -52,6 +51,7 @@
             (recur (db/open db-name)))
           (do
             (reset! model-db* db)
+            (log "db connected")
              db))))))
 
 
@@ -72,7 +72,7 @@
 
 
 (defn save-document
-  [doc]
+  [id doc]
   (m-log "save-document: ")
   (m-log-obj doc)
   (go
@@ -80,7 +80,7 @@
                         (if (and (contains? doc :rev) (nil? (:rev doc)))
                           (dissoc doc :rev)
                           doc)))]
-      (swap! cache* assoc (:id doc) res)
+      (swap! cache* assoc id res)
       res)))
 
 
@@ -104,26 +104,11 @@
         (log "cached...")
         ; (log-obj cached-doc)
         cached-doc)
-      (let [doc (<! (db/get-doc @model-db* id))]
+      (let [_ (log "not cached")
+            doc (<! (db/get-doc @model-db* id))]
         (swap! cache* assoc id doc)
-        (log "not cached")
         ; (log-obj doc)
         doc))))
-
-
-(defn load-document
-  [id]
-  (log "load-document: " id)
-  (go
-    (let [doc (<! (get-document id))]
-      (log "load-document get-document return")
-      (log-obj doc)
-      (when doc
-        (let [obj-type (keyword (:type doc))]
-          (log "Doc defined in load doc: " (object/defined? obj-type))
-          (if (object/defined? obj-type)
-            (object/create obj-type doc)
-            :no-matching-document-type))))))
 
 
 (defn search-by-title
@@ -221,6 +206,67 @@
       [a b])))
 
 
+(defprotocol ObjectStore
+  (save-object! [this id value]
+    "Saves {:id value}.")
+
+  (get-object   [this id]
+    "Returns (:id store)."))
+
+(defprotocol ObjectIndex
+  (index-object [this id value]
+    "Add this object to the index.")
+
+  (lookup [this index obj-key]
+    "Returns a channel of modules which ")
+
+  (module-by [this index k]
+    "Returns a channel of modules for which (pred module) => true"))
+
+
+(defn load-object
+  [db id]
+  (log "load-object " id)
+  (go
+    (let [doc (<! (get-object db id))]
+      (log "load-document get-document return")
+      (log-obj doc)
+      (when doc
+        (let [obj-type (keyword (:type doc))]
+          (log "Doc defined in load doc: " (object/defined? obj-type))
+          (if (object/defined? obj-type)
+            (object/create obj-type doc)
+            :no-matching-document-type))))))
+
+
+(defn couch-store
+  []
+  (load-db)
+  (load-cache)
+  (reify ObjectStore
+    (save-object! [this id value]
+      (save-document id value))
+
+    (get-object  [this id]
+      (get-document id))))
+
+
+(defn local-store
+  []
+  (reify ObjectStore
+    ;(modules-by-type [this m-type]
+    ;  (js/Object.keys (kv/local-get (str "orchard/type-index/" m-type))))
+
+    (save-object! [this id value]
+      (kv/local-set (str "orchard/" id) value)
+      (when-let [t (:type value)]
+        (kv/local-set (str "orchard/type-index/" t)
+                      (conj (kv/local-get (str "orchard/type-index/" t)) value))))
+
+    (load-object [this id]
+      (kv/local-get id))))
+
+
 (defn media-document
   [{:keys [title authors path filename notes annotations cites tags] :as doc}]
   (assoc doc
@@ -238,3 +284,4 @@
          :id         (util/uuid)
          :created-at (util/date-json)
          :updated-at (util/date-json)))
+

@@ -218,17 +218,18 @@
                           [:div.module-element (render-media this)]]))
 
 (defn media-doc
-  []
-  (model/save-document
-    {:type :media-module
-     :path ""
-     :id   (uuid)}))
+  [db]
+  (let [oid (uuid)]
+    (model/save-object db oid
+      {:type :media-module
+       :path ""
+       :id oid})))
 
 
 (defn create-module
-  []
+  [app]
   (go
-    (let [doc (<! (media-doc))
+    (let [doc (<! (media-doc (:db app)))
           obj (object/create :media-module doc)]
       obj)))
 

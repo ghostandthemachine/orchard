@@ -17,7 +17,7 @@
   :cljsbuild {:builds [{:id "whitespace"
                         :source-paths ["src"]
                         :notify-command ["growlnotify" "-m"]
-                        :compiler {:output-to "public/js/orchard.js"
+                        :compiler {:output-to "public/js/app.js"
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}
@@ -25,7 +25,7 @@
                        {:id "advanced"
                         :source-paths ["src"]
                         :notify-command ["growlnotify" "-m"]
-                        :compiler {:output-to "public/js/orchard.js"
+                        :compiler {:output-to "public/js/app.js"
                                    :optimizations :advanced
                                    :warnings      true
                                    :pretty-print  false
@@ -37,4 +37,4 @@
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}]
-              :test-commands {"unit-tests" ["./think" "-test"]}})
+              :test-commands {"unit-tests" ["./orchard" "-test"]}})

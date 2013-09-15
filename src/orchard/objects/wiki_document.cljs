@@ -25,9 +25,9 @@
   :triggers #{:save}
   :reaction (fn [this]
               (log "Save document")
-              (model/save-document (assoc
-                                    (select-keys @this [:id :rev :type :title])
-                                    :template (:id @(:template @this))))))
+              (model/save-object (get-in this [:app :db]) (assoc
+                                   (select-keys @this [:id :rev :type :title])
+                                   :template (:id @(:template @this))))))
 
 
 (object/behavior* ::lock-document
@@ -124,11 +124,12 @@
 
 
 (defn wiki-doc
-  [& args]
+  [app & args]
   (let [new-doc (merge
                   {:type :wiki-document
                    :id   (util/uuid)}
                   (apply hash-map args))]
   (log "Create new wiki-doc")
   (log-obj new-doc)
-  (model/save-document new-doc)))
+  (model/save-object (:db app) new-doc)))
+

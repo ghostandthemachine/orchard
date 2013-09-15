@@ -23,10 +23,10 @@ repl
 *.db
 build
 
-public/js/orchard.js
 public/js/logger.js
 public/js/tests.js
 public/js/bootstrap.js
+public/js/app.js
 
 public/math.pdf
 public/flute.wav

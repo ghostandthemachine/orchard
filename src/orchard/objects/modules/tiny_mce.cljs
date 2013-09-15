@@ -17,8 +17,8 @@
 
 
 (defn tiny-mce-doc
-  []
-  (model/save-document
+  [db]
+  (model/save-object db
     {:type :tiny-mce-module
      :text ""
      :id   (uuid)}))
@@ -132,10 +132,10 @@
 
 
 (defn create-module
-  []
+  [app]
   (go
     (object/create :tiny-mce-module
-      (<! (tiny-mce-doc)))))
+      (<! (tiny-mce-doc (:db app))))))
 
 
 

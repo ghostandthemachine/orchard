@@ -3,7 +3,7 @@ var initialized = false;
 (function(window) {
 
 var css_files = [
-    "css/codemirror.css",
+    // "css/codemirror.css",
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
     "css/jquery-ui.css",
@@ -12,29 +12,30 @@ var css_files = [
 
 var js_files = [
     "js/jquery-1.9.0.js",
+    "bootstrap/js/bootstrap.min.js",
+    "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
+    "js/markdown_parser.js",
+
     // "js/jquery.sortable.min.js",
     // "js/throttle.js",
 
-    "js/codemirror.js",
-    "js/cm/clojure.js",
-    "js/cm/markdown.js",
-    "js/cm/gfm.js",
+    /* Syntax highlighting for source viewing and editing */
+    // "js/codemirror.js",
+    // "js/cm/clojure.js",
+    // "js/cm/markdown.js",
+    // "js/cm/gfm.js",
 
-    "js/markdown_parser.js",
-
-    "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
-
-
+    /* PDF viewer */
     // "js/pdf/compatibility.js",
     // "js/pdf/l10n.js",
-    "js/pdf.js",
+    // "js/pdf.js",
     // "js/pdf/debugger.js",
     // "js/pdf/viewer.js",
 
+    /* Interactive visualizations, charts, graphs... */
     // "js/d3.v3.min.js",
 
-    "bootstrap/js/bootstrap.min.js",
-    "js/orchard.js"
+    "js/app.js"
     ];
 
 

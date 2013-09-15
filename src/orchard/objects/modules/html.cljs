@@ -62,17 +62,18 @@
 
 
 (defn html-doc
-  []
-  (model/save-document
+  [db]
+  (let [oid (uuid)]
+    (model/save-object! db oid
     {:type :html-module
      :text "<h3>HTML here... </h3>"
-     :id   (uuid)}))
+     :id   oid})))
 
 
 (defn create-module
-  []
+  [app]
   (go
-    (let [doc (<! (html-doc))
+    (let [doc (<! (html-doc (:db app)))
           obj (object/create :html-module doc)]
       obj)))
 

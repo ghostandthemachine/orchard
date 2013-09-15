@@ -1,12 +1,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>Thinker - audio test</title>
+        <title>Orchard - audio test</title>
 
         <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css"/>
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="css/codemirror.css" rel="stylesheet" type="text/css" />
-        <link href="css/thinker.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
 
         <!--<script src="js/bootstrap.min.js"></script> -->
         <script src="js/codemirror.js"></script>
@@ -16,8 +16,6 @@
         <script src="js/markdown_parser.js"></script>
         <script src="js/spectrum.js"></script>
         <script src="js/buffer-loader.js"></script>
-        <script src="js/thinker.js"></script>
-
     </head>
     <body>
         <div id='play-flute'>Play flute</div>
@@ -32,11 +30,10 @@
         <div>
             <canvas id='wavebox' width=600 height=400>
         </div>
-
-        <script src="js/thinker.js"></script>
+        <script src="js/app.js"></script>
         <script>
-            think.audio.setup_play_button('#play-flute');
-            think.audio.setup_audio_drop('#audio-drop');
+            orchard.audio.setup_play_button('#play-flute');
+            orchard.audio.setup_audio_drop('#audio-drop');
         </script>
     </body>
 </html>

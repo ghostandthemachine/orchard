@@ -37,7 +37,7 @@
 
 (object/behavior* ::save-template
   :triggers #{:save}
-  :reaction 
+  :reaction
   (fn [this]
     (let [mod-ids      (map #(:id @%)
                             (filter
@@ -60,8 +60,8 @@
                                :rev     (or (:rev @this) (:rev original-doc))
                                :id      (:id original-doc))]
       (log "saving template document...")
-      (go 
-        (let [doc (<! (model/save-document new-doc))]
+      (go
+        (let [doc (<! (model/save-object (get-in this [:app :db]) new-doc))]
           (log "template saved")
           (log-obj doc)
           (object/assoc! this :rev (:rev doc)))))))
@@ -106,8 +106,8 @@
 
 
 (defn single-column-template-doc
-  [& mod-ids]
-  (model/save-document
+  [db & mod-ids]
+  (model/save-object db
     {:type :single-column-template
      :modules mod-ids
      :id (util/uuid)}))
