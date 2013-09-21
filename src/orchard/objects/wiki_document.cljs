@@ -25,7 +25,7 @@
   :triggers #{:save}
   :reaction (fn [this]
               (log "Save document")
-              (model/save-object (get-in this [:app :db]) (assoc
+              (model/save-object! (get-in this [:app :db]) (:id @this) (assoc
                                    (select-keys @this [:id :rev :type :title])
                                    :template (:id @(:template @this))))))
 
@@ -73,7 +73,7 @@
                   delete? (js/confirm msg)]
               (when delete?
                 (model/delete-document @this)
-                (orchard.objects.app/open-document :home)))))
+                (orchard.objects.app/open-document orchard.objects.app.db :home)))))
 
 
 
@@ -100,7 +100,7 @@
   :title ""
   :init (fn [this document]
           (go
-            (let [template (<! (model/get-document (:template document)))
+            (let [template (<! (model/get-object orchard.objects.app.db (:template document)))
                   tpl-obj  (object/create (keyword (:type template)) template)]
               (object/assoc! this :template tpl-obj)
               (object/parent! this tpl-obj)
@@ -131,5 +131,5 @@
                   (apply hash-map args))]
   (log "Create new wiki-doc")
   (log-obj new-doc)
-  (model/save-object (:db app) new-doc)))
+  (model/save-object! (:db app) (:id new-doc) new-doc)))
 

@@ -163,16 +163,6 @@
       (log "Running performance tests...")
       (<! (perf-test db))
       (log "Finished running performance tests")
-      (log "")
-
       ; (<! (db/delete-db "test-db"))
       (log "Deleted test db")
-      (log "")
-      
       (log "Finished testing"))))
-
-
-
-
-
-  

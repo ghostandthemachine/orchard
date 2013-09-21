@@ -1,6 +1,9 @@
 (ns orchard.setup
   (:require [orchard.util.core :as util]
-            [orchard.model :refer [save-object]]))
+            [orchard.model     :refer [get-object save-object!]]
+            [cljs.core.async   :refer (chan >! <! timeout)])
+  (:require-macros
+    [cljs.core.async.macros :refer [go alt! alts!]]))
 
 
 (defrecord FormModule     [fields])
@@ -63,7 +66,7 @@
         tpl-doc    (single-column-template (:id index) (:id ht-doc))
         home-doc   (home-doc (:id tpl-doc))]
     (doseq [doc [index ht-doc tpl-doc home-doc]]
-      (save-object db doc))
+      (save-object! db (:id doc) doc))
     home-doc))
 
 
@@ -74,7 +77,7 @@
         tpl-doc    (single-column-template (:id md-doc) (:id ht-doc))
         test-doc   (test-doc :test-doc1 (:id tpl-doc))]
     (doseq [doc [md-doc ht-doc tpl-doc test-doc]]
-      (save-object db doc))))
+      (save-object! db (:id doc) doc))))
 
 
 (defn create-media-doc
@@ -84,8 +87,16 @@
         tpl-doc    (single-column-template (:id md-doc) (:id media-doc))
         test-doc   (test-doc :test-doc1 (:id tpl-doc))]
     (doseq [doc [md-doc media-doc tpl-doc test-doc]]
-      (save-object db doc))))
+      (save-object! db (:id doc) doc))))
 
+
+(defn check-home
+  "Checks to see if the :home document exists, creating it if not."
+  [db]
+  (go
+    (let [doc (<! (get-object db :home))]
+      (if (nil? doc)
+        (create-home db)))))
 
 ; (defn reset-home
 ;   []

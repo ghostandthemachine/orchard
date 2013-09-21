@@ -61,7 +61,7 @@
                                :id      (:id original-doc))]
       (log "saving template document...")
       (go
-        (let [doc (<! (model/save-object (get-in this [:app :db]) new-doc))]
+        (let [doc (<! (model/save-object! (:id @this) (get-in @this [:app :db]) new-doc))]
           (log "template saved")
           (log-obj doc)
           (object/assoc! this :rev (:rev doc)))))))
@@ -93,7 +93,7 @@
   :tags #{:template}
   :behaviors [::save-template ::ready ::remove-module ::add-module]
   :init (fn [this tpl]
-          (doseq [ch (map model/get-document (:modules tpl))]
+          (doseq [ch (map #(model/get-object orchard.objects.app.db %1) (:modules tpl))]
             (go
               (let [mod-record (<! ch)
                     module (object/create (keyword (:type mod-record)) mod-record)]
@@ -107,8 +107,9 @@
 
 (defn single-column-template-doc
   [db & mod-ids]
-  (model/save-object db
-    {:type :single-column-template
-     :modules mod-ids
-     :id (util/uuid)}))
+  (let [id (util/uuid)]
+    (model/save-object! db id
+      {:type :single-column-template
+       :modules mod-ids
+       :id id})))
 

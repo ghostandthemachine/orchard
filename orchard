@@ -2,13 +2,13 @@
 
 nw="/Applications/Orchard.app/Contents/MacOS/node-webkit"
 
-if pgrep app.js
-then
-    donothing=0
-else
-    node app.js &
+if [ -z "$(pgrep app.js)" ]
+  then
+      #echo "app.js is running..."
+      :
+  else
+      #echo "starting app.js..."
+      node app.js &
 fi
-
-#couchdb -b &
 
 ${nw} $(pwd) $@

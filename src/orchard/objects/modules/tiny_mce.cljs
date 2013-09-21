@@ -18,10 +18,11 @@
 
 (defn tiny-mce-doc
   [db]
-  (model/save-object db
-    {:type :tiny-mce-module
-     :text ""
-     :id   (uuid)}))
+  (let [id (uuid)]
+    (model/save-object! db id
+      {:type :tiny-mce-module
+      :text ""
+      :id   id})))
 
 
 (def date (new js/Date))

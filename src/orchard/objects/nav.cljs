@@ -145,7 +145,6 @@
 (defn format-width
   [width]
   (let [bounds (or (accum-btn-widths) 0)]
-    (log "format width bounds: " bounds)
     (- width 4
       (if (> 0 bounds)
         bounds

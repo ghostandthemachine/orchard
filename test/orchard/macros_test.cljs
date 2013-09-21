@@ -1,6 +1,5 @@
 (ns test.orchard.macros
-  (:require-macros [orchard.macros :refer [defonce]]
-                   [cemerick.cljs.test :refer [is deftest]])
+  (:require-macros [orchard.macros :refer [defonce]])
   (:require [orchard.util.log :refer (log log-obj)]
             [test. :refer [test-ns]]))
 
@@ -30,11 +29,3 @@
 ; 	(is
 ; 		(not= foo "bar")))
 
-
-
-
-(comment
-
-	;; run tests by loading code into repl then running
-	(test-ns 'test..defonce)
-	)

@@ -1,8 +1,8 @@
 (ns orchard.module
-  (:require-macros 
+  (:require-macros
     [orchard.macros :refer [defui defgui]]
     [cljs.core.async.macros :refer [go]])
-  (:require 
+  (:require
     [orchard.object :as object]
     [orchard.util.dom :as dom]
     [crate.core :as crate]
@@ -79,9 +79,11 @@
               (log "Save module")
               (let [original-doc (first (:args @this))
                     doc-keys     (conj (keys original-doc) :id :rev)
-                    new-doc      (select-keys @this doc-keys)]
+                    new-doc      (select-keys @this doc-keys)
+                    doc-id       (:id new-doc)]
                 (go
-                  (object/assoc! this :rev (:rev (<! (model/save-document new-doc))))))))
+                  (object/assoc! this :rev
+                                 (:rev (<! (model/save-object! orchard.app.db doc-id new-doc))))))))
 
 
 (defn swap-modules

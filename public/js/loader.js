@@ -34,16 +34,14 @@ var js_files = [
 
     /* Interactive visualizations, charts, graphs... */
     // "js/d3.v3.min.js",
-
-    "js/app.js"
     ];
 
 
-function log_error(e) {
+function log_error(err) {
   if (console) {
-    console.log("ERROR:" + e);
-    console.log(e.stack);
+    console.log(err.stack);
   }
+  throw err;
 }
 
 var body = window.document.querySelector("body");
@@ -51,7 +49,7 @@ var head = window.document.querySelector("head");
 
 
 function load_script(path, isFile) {
-    console.log("loading script: " + path)
+    //console.log("loading script: " + path)
     script= document.createElement('script');
     script.type= 'text/javascript';
     script.async = false;
@@ -64,7 +62,7 @@ function load_script(path, isFile) {
 }
 
 function load_css(path, isFile) {
-    console.log("loading css: " + path)
+    //console.log("loading css: " + path)
     css = document.createElement('link');
     css.type= 'text/css';
     if(isFile) {
@@ -84,26 +82,30 @@ function initialize() {
         process.on("uncaughtException", log_error);
         window.onerror = log_error;
 
-        console.log("Loading CSS files...");
+        //console.log("Loading CSS files...");
         css_files.forEach(function(path) {
             load_css(path, false);
         });
 
-
-        console.log("Loading Javascript files...");
+        //console.log("Loading Javascript files...");
         js_files.forEach(function(path) {
-            if (test_mode && path == "js/orchard.js") {
-                console.log("Running unit tests");
-            }
             load_script(path, false);
         });
+
+        if (test_mode) {
+            console.log("Running tests...")
+            load_script("js/tests.js", false);
+        } else {
+            console.log("Loading app...")
+            load_script("js/app.js", false);
+        }
 
         script.onload = function() {
             try {
                 if (test_mode) {
-                    gui.App.quit();
+                    setTimeout(gui.App.quit, 5000);
                 } else {
-                    console.log("Starting application...");
+                    console.log("Starting app...");
                     orchard.objects.app.init();
                 }
             } catch (e) {

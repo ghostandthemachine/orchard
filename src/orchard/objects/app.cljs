@@ -6,6 +6,7 @@
     [cljs.core.async :refer [chan >! <! timeout]]
     [orchard.object :as object]
     [orchard.model :as model]
+    [orchard.setup :as setup]
     [orchard.util.time :refer [now]]
     [orchard.util.os :as os]
     [orchard.util.log :refer (log log-obj)]
@@ -25,8 +26,8 @@
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
 
-(defonce db  (model/couch-store))
-;(defonce db  (model/local-store))
+;(defonce db (model/couch-store))
+(defonce db  (model/local-store))
 
 (def closing true)
 
@@ -93,11 +94,11 @@
   (= 0 (:delays @this)))
 
 (defn open-document
-  [doc-id]
+  [db doc-id]
   (go
     (let [doc (<! (model/load-object db doc-id))]
       (object/raise workspace/workspace :show-document doc)
-      (dispatch/fire :open-document @doc))))
+      (dispatch/fire :open-document doc))))
 
 
 (defn open-from-link
@@ -114,7 +115,7 @@
                         {}
                         all-docs)]
       (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
-        (open-document (:_id d))
+        (open-document db (:_id d))
         (log "Tried to open document that doesn't exist")))))
 
 
@@ -126,7 +127,7 @@
 
 (object/behavior* ::start
   :triggers #{:start}
-  :reaction (fn [this]
+  :reaction (fn [this db]
               ;(setup-tray)
               (nw/set-menu-bar! (main-menu))
               ; (restore-session)
@@ -141,7 +142,7 @@
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
               (.tooltip (js/$ ".sidebar-tab-item"))
-              (open-document :home)
+              (open-document db :home)
               (nw/show)))
 
 
@@ -175,15 +176,6 @@
 (def windows js/global.windows)
 
 (defonce app (object/create ::app))
-
-(defn init []
-  (log "orchard.objects.app.init")
-  (log "starting repl server...")
-  (util/start-repl-server)
-  (go
-    (log "db ready, starting app")
-    (logger/ready)
-    (time/run-in 1500 #(object/raise app :start))))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 
@@ -227,4 +219,13 @@
 
 
 (aset js/window "onkeypress" handle-keypress)
+
+(defn init []
+  (log "orchard.objects.app.init")
+  (log "starting repl server...")
+  (util/start-repl-server)
+  (setup/check-home db)
+  (go
+    (logger/ready)
+    (object/raise app :start db)))
 

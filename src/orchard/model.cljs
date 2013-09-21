@@ -1,13 +1,13 @@
 (ns orchard.model
-  (:refer-clojure :exclude [create-node])
   (:require-macros
     [cljs.core.async.macros :refer [go alt! alts!]])
   (:require
     [orchard.util.core    :as util]
     [orchard.util.time    :as time]
-    [cljs.core.async    :refer (chan >! <! timeout)]
+    [cljs.core.async      :refer (chan >! <! timeout)]
     [orchard.util.log     :refer (log log-obj)]
     [orchard.couchdb      :as db]
+    [orchard.kv-store     :as kv]
     [orchard.object       :as object]))
 
 
@@ -97,7 +97,7 @@
 
 (defn get-document
   [id]
-  (m-log "get-document: " id)
+  (log "get-document: " id)
   (go
     (if-let [cached-doc (get @cache* id)]
       (do
@@ -229,42 +229,58 @@
   (log "load-object " id)
   (go
     (let [doc (<! (get-object db id))]
-      (log "load-document get-document return")
       (log-obj doc)
       (when doc
         (let [obj-type (keyword (:type doc))]
-          (log "Doc defined in load doc: " (object/defined? obj-type))
+          (log "loading object type: " obj-type " defined? " (object/defined? obj-type))
           (if (object/defined? obj-type)
             (object/create obj-type doc)
             :no-matching-document-type))))))
+
+
+(deftype CouchStore
+  []
+  ObjectStore
+    (save-object! [this id value]
+      (save-document id value))
+
+    (get-object [this id]
+      (log "couch-store get-object")
+      (get-document id)))
 
 
 (defn couch-store
   []
   (load-db)
   (load-cache)
-  (reify ObjectStore
-    (save-object! [this id value]
-      (save-document id value))
+  (CouchStore.))
 
-    (get-object  [this id]
-      (get-document id))))
 
+(defn app-id
+  [id]
+  (let [id (if (keyword id) (name id) (str id))]
+    (str "orchard/" id)))
+
+
+(deftype LocalStore
+  []
+  ObjectStore
+  (save-object! [this id value]
+      (kv/local-set (app-id id) value))
+
+  (get-object [this id]
+    (go (kv/local-get (app-id id)))))
+
+  ;ObjectIndex
+  ;  (modules-by-type [this m-type]
+  ;    (js/Object.keys (kv/local-get (str "orchard/type-index/" m-type)))))
+;(when-let [t (:type value)]
+;      (kv/local-set (str "orchard/type-index/" t)
+;                    (conj (kv/local-get (str "orchard/type-index/" t)) value)))
 
 (defn local-store
   []
-  (reify ObjectStore
-    ;(modules-by-type [this m-type]
-    ;  (js/Object.keys (kv/local-get (str "orchard/type-index/" m-type))))
-
-    (save-object! [this id value]
-      (kv/local-set (str "orchard/" id) value)
-      (when-let [t (:type value)]
-        (kv/local-set (str "orchard/type-index/" t)
-                      (conj (kv/local-get (str "orchard/type-index/" t)) value))))
-
-    (load-object [this id]
-      (kv/local-get id))))
+  (LocalStore.))
 
 
 (defn media-document

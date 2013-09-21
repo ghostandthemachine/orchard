@@ -17,10 +17,11 @@
 
 (defn markdown-doc
   [db]
-  (model/save-object db
-    {:type :markdown-module
-     :text "## Markdown module..."
-     :id   (uuid)}))
+  (let [id (uuid)]
+    (model/save-object! db id
+      {:type :markdown-module
+       :text "## Markdown module..."
+       :id   id})))
 
 
 (defui render-present

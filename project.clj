@@ -4,11 +4,13 @@
   :dependencies [[org.clojure/clojure             "1.5.1"]
                  [org.clojure/clojurescript       "0.0-1820"]
                  [org.clojure/core.async          "0.1.0-SNAPSHOT"]
-                 [com.cemerick/clojurescript.test "0.0.5-SNAPSHOT"]
                  [prismatic/dommy                 "0.1.1"]
                  [org.clojure/data.json           "0.2.1"]
                  [crate                           "0.2.4"]
-                 [node-webkit-cljs                "0.1.4"]]
+                 [com.cemerick/clojurescript.test "0.0.4"]]
+                 ;[node-webkit-cljs          "0.1.4"]]
+
+  :test-paths ["src/test/clojure"]
 
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
 
@@ -33,8 +35,10 @@
 
                        {:id "test"
                         :source-paths ["test" "src"]
+                        :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/tests.js"
                                    :optimizations :whitespace
                                    :warnings      true
                                    :pretty-print  true}}]
+
               :test-commands {"unit-tests" ["./orchard" "-test"]}})

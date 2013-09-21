@@ -220,7 +220,7 @@
 (defn media-doc
   [db]
   (let [oid (uuid)]
-    (model/save-object db oid
+    (model/save-object! db oid
       {:type :media-module
        :path ""
        :id oid})))
