@@ -12,7 +12,6 @@
     [orchard.util.log :refer (log log-obj log-err)]))
 
 
-(defonce db-proc (os/process "couchdb"))
 (defonce db*     (atom nil))
 
 
@@ -28,6 +27,7 @@
 
 (defn- start-db
   []
+  (defonce db-proc (os/process "couchdb"))
   (doseq [pipe [(.-stdout db-proc) (.-stderr db-proc)]]
     (.on pipe "data"
       (partial log-handler :couchdb)))

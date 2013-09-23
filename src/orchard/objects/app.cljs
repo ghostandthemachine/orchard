@@ -19,7 +19,7 @@
     [orchard.util.nw  :as nw]
     [orchard.dispatch :as dispatch]
     [orchard.objects.workspace :as workspace]
-    orchard.kv-store
+    [orchard.kv-store :as kv]
     orchard.objects.wiki-document))
 
 
@@ -81,11 +81,11 @@
 
 
 (defn save-session []
-  (orchard.kv-store/local-set :session {:x (.-x win) :y (.-y win)
+  (kv/local-set :session {:x (.-x win) :y (.-y win)
                                       :width (.-width win) :height (.-height win)}))
 
 (defn restore-session []
-  (if-let [sesh (js->clj (orchard.kv-store/local-get :session))]
+  (if-let [sesh (js->clj (kv/local-get :session))]
     (let [sesh (into {} (for [[k v] sesh] [k (js/parseInt v)]))]
       (.moveTo win (:x sesh) (:y sesh))
       (.resizeTo win (:width sesh) (:height sesh)))))
@@ -106,7 +106,7 @@
   (log "open-from-link " href)
   (go
     (let [[project-title title] (clojure.string/split href #"/")
-          all-docs     (<! (model/all-wiki-documents))
+          all-docs     (<! (model/all-wiki-documents db))
           projects     (reduce
                         (fn [m wiki-doc]
                           (let [proj (or (:project wiki-doc) "No Project")]
@@ -136,7 +136,6 @@
                      (save-session)
                      (object/raise this :quit)
                      (this-as this (.close this true))))
-              (log "Showing application window...")
               (object/raise orchard.objects.nav/workspace-nav :add!)
               ; (sidebar/init)
               ;; create resize handler
@@ -149,7 +148,6 @@
 (object/behavior* ::quit
   :triggers #{:quit}
   :reaction (fn [this]
-              (log "Quitting...")
               (os/kill-children)
               (nw/quit)))
 
@@ -178,7 +176,6 @@
 (defonce app (object/create ::app))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
-
 
 ;; Global Key events
 (def last-key (atom nil))
@@ -221,9 +218,8 @@
 (aset js/window "onkeypress" handle-keypress)
 
 (defn init []
-  (log "orchard.objects.app.init")
-  (log "starting repl server...")
   (util/start-repl-server)
+  ;(kv/local-clear)
   (setup/check-home db)
   (go
     (logger/ready)

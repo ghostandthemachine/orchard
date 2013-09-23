@@ -143,42 +143,6 @@
                            (<! (all-documents))))))
 
 
-(defn all-wiki-documents
-  []
-  (log "all-wiki-documents")
-  (go
-    (let [docs (<! (db/view @model-db* :index :wiki-documents))]
-      (if (:error docs)
-        (log "Error: " (:error docs))
-        (if (= (:total_rows (:value docs)) 0)
-          []
-          (map #(assoc % :id (:_id %)) (map :value (:rows (:value docs)))))))))
-
-
-(defn all-projects
-  []
-  (log "all-projects")
-  (go
-    (let [docs (<! (db/view @model-db* :index :docs-by-project))]
-      (if (:error docs)
-        (log "Error: " (:error docs))
-        (if (= (:total_rows (:value docs)) 0)
-          []
-          (map #(assoc % :id (or (:_id %) (:id %))) (map :value (:rows (:value docs)))))))))
-
-
-(defn all-documents-by-title
-  []
-  (log "all-documents-by-title")
-  (go
-    (let [docs (<! (db/view @model-db* :index :docs-by-title))]
-      (if (:error docs)
-        (log "Error: " (:error docs))
-        (if (= (:total_rows (:value docs)) 0)
-          []
-          (map #(assoc % :id (or (:_id %) (:id %))) (map :value (:rows (:value docs)))))))))
-
-
 (defn delete-all-documents
   "Delete all documents."
   []
@@ -210,29 +174,32 @@
   (save-object! [this id value]
     "Saves {:id value}.")
 
-  (get-object   [this id]
-    "Returns (:id store)."))
+  (get-object [this id]
+    "Returns the object on a channel.")
+
+  (all-objects [this]
+    "Returns a seq of all objects on a channel."))
 
 (defprotocol ObjectIndex
-  (index-object [this id value]
-    "Add this object to the index.")
+  (objects-of-type [this obj-type]
+    "Returns a seq of objects of the given type."))
 
-  (lookup [this index obj-key]
-    "Returns a channel of modules which ")
-
-  (module-by [this index k]
-    "Returns a channel of modules for which (pred module) => true"))
+;  (index-object [this id value]
+;    "Add this object to the index.")
+;
+;  (lookup [this index obj-key]
+;    "Returns a channel of modules which ")
+;
+;  (module-by [this index k]
+;    "Returns a channel of modules for which (pred module) => true"))
 
 
 (defn load-object
   [db id]
-  (log "load-object " id)
   (go
     (let [doc (<! (get-object db id))]
-      (log-obj doc)
       (when doc
         (let [obj-type (keyword (:type doc))]
-          (log "loading object type: " obj-type " defined? " (object/defined? obj-type))
           (if (object/defined? obj-type)
             (object/create obj-type doc)
             :no-matching-document-type))))))
@@ -241,12 +208,23 @@
 (deftype CouchStore
   []
   ObjectStore
-    (save-object! [this id value]
-      (save-document id value))
+  (save-object! [this id value]
+    (go (save-document id value)))
 
-    (get-object [this id]
-      (log "couch-store get-object")
-      (get-document id)))
+  (get-object [this id]
+    (get-document id))
+
+  (all-objects [this]
+    (all-documents))
+
+  ObjectIndex
+  (objects-of-type [this obj-type]
+    (go
+      (let [docs (<! (db/view @model-db* :index obj-type))]
+        (if (:error docs)
+          (if (= (:total_rows (:value docs)) 0)
+            []
+            (map #(assoc % :id (:_id %)) (map :value (:rows (:value docs))))))))))
 
 
 (defn couch-store
@@ -266,10 +244,17 @@
   []
   ObjectStore
   (save-object! [this id value]
-      (kv/local-set (app-id id) value))
+      (go (kv/local-set (app-id id) value)))
 
   (get-object [this id]
-    (go (kv/local-get (app-id id)))))
+    (go (kv/local-get (app-id id))))
+
+  (all-objects [this]
+    (go (map second (kv/local-item-seq))))
+
+  ObjectIndex
+  (objects-of-type [this obj-type]
+    (go (map second (filter (fn [[k v]] (= (name obj-type) (:type v))) (kv/local-item-seq))))))
 
   ;ObjectIndex
   ;  (modules-by-type [this m-type]
@@ -281,6 +266,23 @@
 (defn local-store
   []
   (LocalStore.))
+
+
+(defn all-wiki-documents
+  [db]
+  (go (<! (objects-of-type db :wiki-document))))
+
+
+(defn all-projects
+  [db]
+  (go (<! (objects-of-type db :project))))
+
+
+(defn all-documents-by-title
+  [db]
+  (go
+    (let [docs (<! (all-wiki-documents db))]
+      (sort-by :title docs))))
 
 
 (defn media-document

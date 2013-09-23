@@ -22,14 +22,8 @@
 (defui new-document-form
   [this]
   [:div.offset3.span6.new-document-form
-    [:label "Document Title"]
-    [:input#new-document-title.span6 {:type "text" :placeholder "New document title..."}]
-    [:label "Document Template"]
-    [:select#new-document-template.span6 {:name "template"}
-      [:option.span6 {:value "na" :selected ""} "Choose a template..."]
-      [:option.span6 {:value "single-column"} "Single Column"]
-      [:option.span6 {:value "two-column"} "Two Column"]]
-    [:label "Create and load new document"]
+    [:label "Title"]
+    [:input#new-document-title.span6 {:type "text" :placeholder "New page"}]
     [:a#create-doc-btn.btn.btn-primary "Create"]])
 
 
@@ -54,25 +48,19 @@
   (object/raise orchard.objects.workspace/workspace :show-document new-document))
 
 
-; (defn create-document
-;   [proj title]
-;   (go
-;     (let [mod-doc  (<! (tiny/tiny-mce-doc))
-;           _ (log-obj mod-doc)
-;           tpl-doc  (<! (single-column/single-column-template-doc mod-doc))
-;           _ (log-obj tpl-doc)
-;           wiki-doc (<! (wiki-doc/wiki-doc title tpl-doc))
-;           _ (log-obj wiki-doc)
-;           doc      (<! (model/load-document (:id wiki-doc)))]
-;       (log-obj doc)
-;       (object/raise workspace/workspace :show-document doc))))
+(defn create-document
+  [db title]
+  (go
+    (let [mod-doc  (<! (tiny/tiny-mce-doc db))
+          tpl-doc  (<! (single-column/single-column-template-doc db mod-doc))
+          wiki-doc (<! (wiki-doc/wiki-doc db :title title :template tpl-doc))
+          doc      (<! (model/load-object db (:id wiki-doc)))]
+      (object/raise workspace/workspace :show-document doc))))
 
 
-; (dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
-;   (fn [e]
-;     (.preventDefault e)
-;     (let [$tpl-input   (dom/$ :#new-document-template)
-;           tpl-type     (keyword (.-value (aget (.-options $tpl-input) (.-selectedIndex $tpl-input))))
-;           $title-input (dom/$ :#new-document-title)
-;           title        (.-value $title-input)]
-;       (create-document title tpl-type))))
+(dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
+  (fn [e]
+    (.preventDefault e)
+    (let [$title-input (dom/$ :#new-document-title)
+          title        (.-value $title-input)]
+      (create-document orchard.objects.app.db title))))

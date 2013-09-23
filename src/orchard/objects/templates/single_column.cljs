@@ -17,9 +17,7 @@
 (object/behavior* ::ready
   :triggers #{:ready}
               (fn [this]
-                (log-obj (:modules @this))
                 (doseq [mod (:modules @this)]
-                  (log (str "mod of type " (:type @mod) " ready"))
                   (object/raise mod :ready))))
 
 
@@ -59,11 +57,8 @@
                                ;; get the most current rev,
                                :rev     (or (:rev @this) (:rev original-doc))
                                :id      (:id original-doc))]
-      (log "saving template document...")
       (go
-        (let [doc (<! (model/save-object! (:id @this) (get-in @this [:app :db]) new-doc))]
-          (log "template saved")
-          (log-obj doc)
+        (let [doc (<! (model/save-object! orchard.objects.app.db (:id @this) new-doc))]
           (object/assoc! this :rev (:rev doc)))))))
 
 
@@ -106,8 +101,9 @@
 
 
 (defn single-column-template-doc
-  [db & mod-ids]
-  (let [id (util/uuid)]
+  [db & modules]
+  (let [id (util/uuid)
+        mod-ids (map :id modules)]
     (model/save-object! db id
       {:type :single-column-template
        :modules mod-ids

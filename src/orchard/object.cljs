@@ -175,7 +175,6 @@
   inst)
 
 (defn create [obj-name & args]
-  (log "new object: " obj-name)
   (let [obj (if (keyword? obj-name)
               (@object-defs obj-name)
               obj-name)

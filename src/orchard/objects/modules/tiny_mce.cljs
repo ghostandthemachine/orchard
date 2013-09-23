@@ -62,7 +62,6 @@
     (when (= "orchard-link" (.-className el))
       (let [href  (.getAttribute el "data-href")
             title (.getAttribute el "data-title")]
-        (log "open orchard-link: " href)
         (orchard.objects.app/open-from-link href)))))
 
 
@@ -155,7 +154,6 @@
 
 (defn handle-editor-change
   [this ed l]
-  (log "handle editor change")
   (object/assoc! this :text
     (replace-orchard-links (.getContent ed))))
 
@@ -256,9 +254,8 @@
                            :observer-chan (chan)})
                         (bound-do (subatom this :text)
                                   (fn [& args]
-                                    (log "inside :text handler...")
                                     (object/raise this :save)))
-                        
+
                         [:div {:class (str "span12 module " (:type @this))
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]

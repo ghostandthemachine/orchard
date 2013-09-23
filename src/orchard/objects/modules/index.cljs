@@ -58,7 +58,7 @@
 (defn load-index
   [this]
   (go
-    (let [docs (<! (model/all-wiki-documents))]
+    (let [docs (<! (model/all-wiki-documents orchard.objects.app.db))]
       (dom/replace-with ($module this) (render-present docs))
       (tree/draw-tree "tree-canvas"))))
 
@@ -77,8 +77,6 @@
                 :mode :present
                 :init (fn [this record]
                         (object/merge! this record)
-                        (log "creating index module")
-                        (log-obj (clj->js @this))
                         (bound-do (subatom this [:mode]) (partial render-module this))
                         (load-index this)
                         [:div.container-fluid
@@ -89,5 +87,5 @@
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click
   (fn [e]
-    (orchard.objects.app/open-document (last (clojure.string/split (.-href (.-target e)) #"/")))
+    (orchard.objects.app/open-document orchard.objects.app.db (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))

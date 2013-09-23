@@ -16,7 +16,6 @@
   "Get a value in the persistent local storage by key."
   [k]
   (try
-    (log "local-get: " k)
     (let [k (if (keyword? k) (name k) (str k))
           obj-str (aget js/localStorage k)
           obj (.parse js/JSON obj-str)

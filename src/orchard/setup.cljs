@@ -20,7 +20,7 @@
 (defn html-module
   []
   {:type :html-module
-   :text "<button class=\"btn\" onclick=\"orchard.objects.new$.load_new_doc();\">New</button>"
+   :text ""
    :id   (util/uuid)})
 
 (defn media-module

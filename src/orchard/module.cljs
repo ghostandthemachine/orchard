@@ -83,7 +83,7 @@
                     doc-id       (:id new-doc)]
                 (go
                   (object/assoc! this :rev
-                                 (:rev (<! (model/save-object! orchard.app.db doc-id new-doc))))))))
+                                 (:rev (<! (model/save-object! orchard.objects.app.db doc-id new-doc))))))))
 
 
 (defn swap-modules

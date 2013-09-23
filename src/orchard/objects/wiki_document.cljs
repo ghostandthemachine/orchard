@@ -1,8 +1,8 @@
 (ns orchard.objects.wiki-document
-  (:require-macros 
+  (:require-macros
     [orchard.macros :refer [defui defgui]]
     [cljs.core.async.macros :refer [go alt! alts!]])
-  (:require 
+  (:require
     [cljs.core.async :refer [chan >!! <!! thread timeout]]
     [orchard.object :as object]
     [orchard.model :as model]
@@ -24,8 +24,7 @@
 (object/behavior* ::save-document
   :triggers #{:save}
   :reaction (fn [this]
-              (log "Save document")
-              (model/save-object! (get-in this [:app :db]) (:id @this) (assoc
+              (model/save-object! orchard.objects.app.db (:id @this) (assoc
                                    (select-keys @this [:id :rev :type :title])
                                    :template (:id @(:template @this))))))
 
@@ -33,7 +32,6 @@
 (object/behavior* ::lock-document
   :triggers #{:lock-document}
   :reaction (fn [this]
-              (log "Present Mode")
               (object/update! this [:locked?]
               	(fn [_]
               		true))
@@ -45,7 +43,6 @@
 (object/behavior* ::unlock-document
   :triggers #{:unlock-document}
   :reaction (fn [this]
-              (log "Edit Mode")
               (object/update! this [:locked?]
               	(fn [_]
               		false))))
@@ -118,18 +115,15 @@
 
 
 (dispatch/react-to #{:open-document}
-  (fn [_ & [document]]
-    (log (:title document))
-    (set-frame-title (:title document))))
+  (fn [event-id document]
+    (set-frame-title (:title @document))))
 
 
 (defn wiki-doc
-  [app & args]
+  [db & args]
   (let [new-doc (merge
                   {:type :wiki-document
                    :id   (util/uuid)}
                   (apply hash-map args))]
-  (log "Create new wiki-doc")
-  (log-obj new-doc)
-  (model/save-object! (:db app) (:id new-doc) new-doc)))
+  (model/save-object! db (:id new-doc) (assoc new-doc :template (:id (:template new-doc))))))
 

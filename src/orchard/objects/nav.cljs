@@ -56,7 +56,7 @@
   [:li.nav-element
     [:i.icon-home.icon-white]]
   :click (fn [e]
-            (orchard.objects.app/open-document :home)))
+            (orchard.objects.app/open-document orchard.objects.app.db :home)))
 
 
 (defn lock-handler
@@ -207,15 +207,15 @@
 
 
 (defn build-document
-  [project-title document-title]
+  [db project-title document-title]
   (go
-    (let [mod-doc    (<! (orchard.objects.modules.tiny-mce/tiny-mce-doc))
-          tpl-doc    (<! (orchard.objects.templates.single-column/single-column-template-doc (:id mod-doc)))
-          wiki-doc   (<! (orchard.objects.wiki-document/wiki-doc
+    (let [mod-doc    (<! (orchard.objects.modules.tiny-mce/tiny-mce-doc db))
+          tpl-doc    (<! (orchard.objects.templates.single-column/single-column-template-doc db (:id mod-doc)))
+          wiki-doc   (<! (orchard.objects.wiki-document/wiki-doc db
                              :title     document-title
                              :template  (:id tpl-doc)
                              :project   project-title))
-          doc        (<! (orchard.model/load-document (:id wiki-doc)))]
+          doc        (<! (orchard.model/load-object db (:id wiki-doc)))]
       doc)))
 
 
@@ -224,9 +224,9 @@
   ;; TODO check for project with same name already existing
   (go
     (let [project-title  (clojure.string/replace project-title #"Project Name: " "")
-          new-doc     (<! (build-document project-title "home"))]
+          new-doc     (<! (build-document orchard.objects.app.db project-title "home"))]
       (clean-up)
-      (orchard.objects.app/open-document (:id @new-doc)))))
+      (orchard.objects.app/open-document orchard.objects.app.db (:id @new-doc)))))
 
 
 (defn create-document
@@ -234,9 +234,9 @@
   (go
     (let [project-title   (:current-project @orchard.objects.workspace/workspace)
           document-title  (clojure.string/replace document-title #"Document Name: " "")
-          new-doc         (<! (build-document project-title document-title))]
+          new-doc         (<! (build-document orchard.objects.app.db project-title document-title))]
       (clean-up)
-      (orchard.objects.app/open-document (:id @new-doc)))))
+      (orchard.objects.app/open-document orchard.objects.app.db (:id @new-doc)))))
 
 
 (defn handle-enter
@@ -300,7 +300,6 @@
 
 (defn init-navbar
   [this]
-  (log "initialize navbar handlers")
   (aset ($nav-input) "onkeypress" orchard.objects.app/handle-keypress))
 
 
