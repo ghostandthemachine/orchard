@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+APP_NAME = "Orchard"
+ICON     = "icon.png"
+
+APP_DIR  = Dir.pwd
+PKG_DIR  = "pkg"
+RSC_DIR  = "#{APP_NAME}.app/Contents/Resources"
+ICON_DIR = "#{APP_NAME}.iconset"
+
+
+def usage()
+    puts "This script will create a new orchard app out of a freshly downloaded
+node-webkit release."
+    puts "Usage:\n\tupgrade-nw ./ext/node-webkit-v0.7.5.zip"
+end
+
+
+if ARGV.length < 1
+    usage()
+    exit()
+end
+
+def make_iconset(img)
+    `mkdir #{ICON_DIR}`
+
+    path = "../#{ICON}"
+    [512, 256, 128, 64, 32, 16].each do |size|
+        `cp #{path} #{ICON_DIR}/icon_#{size}x#{size}@2x.png`
+
+        path = "#{ICON_DIR}/icon_#{size}x#{size}.png"
+        `cp ../#{ICON} #{path}`
+        `sips -z #{size} #{size} #{path}`
+    end
+
+    # Can't include size 64's or iconutil complains... mental.
+    `rm #{ICON_DIR}/icon_64*.png`
+
+    `iconutil -c icns #{ICON_DIR}`
+end
+
+# Replace node-webkit with Orchard in property file
+def modify_plist(path)
+    plist = File.read(path)
+    #plist = plist.gsub(/>node-webkit</, ">#{APP_NAME}<")
+    plist = plist.gsub(/nw\.icns/, "#{APP_NAME}.icns")
+    File.open(path, "w") { |file| file << plist }
+end
+
+
+def dev_or_package()
+    puts "Symlink for development or package up for deployment?"
+    puts "d = dev, p = package"
+    while true do
+        #choice = gets.chomp
+        choice = "d"
+        if choice == "d" or choice == "p"
+            break
+        else
+            puts "Invalid choice..."
+            puts "d = dev, p = package"
+        end
+    end
+    return choice
+end
+
+def symlink_project()
+    Dir.chdir(APP_DIR)
+    `ln -s #{APP_DIR} #{PKG_DIR}/#{RSC_DIR}/app.nw `
+end
+
+
+def setup_app_nw()
+    `zip -r app.nw package.json ../public ../node_modules ../plugins`
+    `mv app.nw #{RSC_DIR}/app.nw`
+end
+
+def package_app()
+    `mkdir #{PKG_DIR}`
+    Dir.chdir(PKG_DIR)
+    `unzip ../#{ARGV[0]}`
+    `mv node-webkit.app #{APP_NAME}.app`
+
+    make_iconset ICON
+    `rm #{RSC_DIR}/nw.icns`
+    `mv #{APP_NAME}.icns #{RSC_DIR}`
+
+    modify_plist "orchard.app/Contents/Info.plist"
+
+    choice = dev_or_package
+
+    if choice == "d"
+        puts "Packaging for development..."
+        symlink_project
+
+    elsif choice == "p"
+        puts "Packaging for distribution..."
+        setup_app_nw
+    end
+end
+
+package_app
