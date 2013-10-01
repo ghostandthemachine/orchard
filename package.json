@@ -1,7 +1,7 @@
 {
-  "main": "file://public/index.html",
-  "main": "http://localhost:3000/index.html",
-  "name": "Orchard",
+  "main":    "file://public/index.html",
+  "main":    "http://localhost:3000/index.html",
+  "name":    "Orchard",
   "version": "0.1.0",
 
   "chromium-args": ["--allow-file-access-from-files",
@@ -16,7 +16,7 @@
       "frame":     true,
       "toolbar":   false,
       "resizable": true,
-      "icon":     "tree.png"
+      "icon":     "icon.png"
   },
 
   "node-remote":  "<local>",

@@ -1,14 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-nw="/Applications/Orchard.app/Contents/MacOS/node-webkit"
+nw = "/Applications/Orchard.app/Contents/MacOS/node-webkit"
 
-if [ -z "$(pgrep app.js)" ]
-  then
-      #echo "app.js is running..."
-      :
-  else
-      #echo "starting app.js..."
-      node app.js &
-fi
+res = `ps -ef | grep node | grep app.js | grep -v grep`
+print "RES: #{res}"
 
-${nw} $(pwd) $@
+if res == ''
+    puts "starting app.js to serve Orchard with repl support..."
+    server = fork do
+        `node app.js`
+    end
+else
+    puts "app.js is running..."
+end
+
+puts "#{nw} #{Dir.pwd} #{ARGV.join(' ')}"
+`#{nw} #{Dir.pwd} #{ARGV.join(' ')}`
