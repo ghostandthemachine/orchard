@@ -58,7 +58,7 @@
 (defn load-index
   [this]
   (go
-    (let [docs (<! (model/all-wiki-documents orchard.objects.app.db))]
+    (let [docs (<! (model/all-wiki-pages orchard.objects.app.db))]
       (dom/replace-with ($module this) (render-present docs))
       (tree/draw-tree "tree-canvas"))))
 

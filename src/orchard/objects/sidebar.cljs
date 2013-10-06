@@ -106,14 +106,14 @@
                   :triggers #{:open!}
                   :reaction (fn [this]
                               (object/merge! this {:width (:max-width @this)}) ;; set sidebar width
-                              (object/merge! (:wiki-document @orchard.objects.workspace/workspace) {:left (+ 30 (:max-width @this))}) ;; set doc container width
+                              (object/merge! (:wiki-page @orchard.objects.workspace/workspace) {:left (+ 30 (:max-width @this))}) ;; set doc container width
                               ))
 
 
 (object/behavior* ::close!
                   :triggers #{:close!}
                   :reaction (fn [this]
-                              (object/merge! (:wiki-document @orchard.objects.workspace/workspace) {:left 30}) ;; reset doc container width
+                              (object/merge! (:wiki-page @orchard.objects.workspace/workspace) {:left 30}) ;; reset doc container width
                               (object/merge! this {:active nil
                                                    :width 0})))
 

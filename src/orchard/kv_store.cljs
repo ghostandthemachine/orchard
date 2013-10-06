@@ -1,6 +1,15 @@
 (ns orchard.kv-store
-  (:require 
-    [orchard.util.log :refer (log log-obj log-err)]))
+  (:require-macros
+    [cljs.core.async.macros :refer [go alt! alts!]])
+  (:require
+    [orchard.util.log :refer (log log-obj log-err)]
+    [orchard.model :refer (ObjectStore ObjectIndex)]))
+
+(defn app-id
+  [id]
+  (let [id (if (keyword id) (name id) (str id))]
+    (str "orchard/" id)))
+
 
 ;; Local Key-Value Store API
 
@@ -18,11 +27,13 @@
   (try
     (let [k (if (keyword? k) (name k) (str k))
           obj-str (aget js/localStorage k)
-          obj (.parse js/JSON obj-str)
-          clj-obj (js->clj obj :keywordize-keys true)]
-      clj-obj)
+          obj (if obj-str
+                (js->clj (.parse js/JSON obj-str)
+                         :keywordize-keys true)
+                nil)]
+      obj)
     (catch js/Error e
-      (log "Exception in local-get")
+      (log "Exception in local-get: " e)
       (log "couldn't parse object - key = " k))))
 
 
@@ -55,3 +66,32 @@
   "Returns a seq of (key value) pairs for all items in local storage."
   []
   (map (fn [k] [k (local-get k)]) (local-key-seq)))
+
+
+(deftype LocalStore
+  []
+  ObjectStore
+  (save-object! [this id value]
+      (go (local-set (app-id id) value)))
+
+  (get-object [this id]
+    (go (local-get (app-id id))))
+
+  (all-objects [this]
+    (go (map second (local-item-seq))))
+
+  ObjectIndex
+  (objects-of-type [this obj-type]
+    (go (map second (filter (fn [[k v]] (= (name obj-type) (:type v))) (local-item-seq))))))
+
+;ObjectIndex
+;  (modules-by-type [this m-type]
+;    (js/Object.keys (local-get (str "orchard/type-index/" m-type)))))
+;(when-let [t (:type value)]
+;      (local-set (str "orchard/type-index/" t)
+;                    (conj (local-get (str "orchard/type-index/" t)) value)))
+
+(defn local-store
+  []
+  (LocalStore.))
+

@@ -10,7 +10,7 @@
     [orchard.objects.templates.single-column :as single-column]
     [orchard.objects.modules.markdown :as markdown]
     [orchard.objects.modules.tiny-mce :as tiny]
-    [orchard.objects.wiki-document :as wiki-doc]
+    [orchard.objects.wiki-page :as wiki-page]
     [orchard.objects.workspace :as workspace]
     [orchard.module :as modules]
     [crate.binding :refer [subatom bound]]
@@ -18,13 +18,34 @@
     [orchard.util.dom :as dom]))
 
 
+(defn create-document
+  [db title]
+  (go
+    (let [mod-doc   (<! (tiny/tiny-mce-doc db))
+          tpl-doc   (<! (single-column/single-column-template-doc db mod-doc))
+          wiki-page (<! (wiki-page/wiki-page db :title title :template tpl-doc))
+          obj (object/create (:type wiki-page) wiki-page)]
+      (object/raise workspace/workspace :show-page obj))))
+
+
+(defui create-button
+  []
+  [:a#create-doc-btn.btn.btn-primary "Create"]
+
+  :click (fn [e]
+           (.preventDefault e)
+           (let [$title-input (dom/$ :#new-document-title)
+                 title        (.-value $title-input)]
+             (create-document orchard.objects.app.db title))))
+
+
 ;TODO: once finer grain pouch queries are working the templates should be loaded not hard coded
 (defui new-document-form
   [this]
   [:div.offset3.span6.new-document-form
-    [:label "Title"]
-    [:input#new-document-title.span6 {:type "text" :placeholder "New page"}]
-    [:a#create-doc-btn.btn.btn-primary "Create"]])
+   [:label "Title"]
+   [:input#new-document-title.span6 {:type "text" :placeholder "New page"}]
+   (create-button)])
 
 
 (object/object* :new-document
@@ -45,22 +66,6 @@
 
 (defn load-new-doc
   []
-  (object/raise orchard.objects.workspace/workspace :show-document new-document))
+  (object/raise orchard.objects.workspace/workspace :show-page new-document))
 
 
-(defn create-document
-  [db title]
-  (go
-    (let [mod-doc  (<! (tiny/tiny-mce-doc db))
-          tpl-doc  (<! (single-column/single-column-template-doc db mod-doc))
-          wiki-doc (<! (wiki-doc/wiki-doc db :title title :template tpl-doc))
-          doc      (<! (model/load-object db (:id wiki-doc)))]
-      (object/raise workspace/workspace :show-document doc))))
-
-
-(dommy/listen! [(dom/$ :body) :.new-document-form :a] :click
-  (fn [e]
-    (.preventDefault e)
-    (let [$title-input (dom/$ :#new-document-title)
-          title        (.-value $title-input)]
-      (create-document orchard.objects.app.db title))))

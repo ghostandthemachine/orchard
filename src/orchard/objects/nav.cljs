@@ -23,19 +23,19 @@
   (dom/$ "#nav-input"))
 
 
-(defn wiki-doc
+(defn wiki-page
   []
-  (:wiki-document @orchard.objects.workspace/workspace))
+  (:wiki-page @orchard.objects.workspace/workspace))
 
 
 (defn locked?
-  [wiki-doc]
-  (:locked? @wiki-doc))
+  [wiki-page]
+  (:locked? @wiki-page))
 
 
 (defn toggle-lock!
-  [wiki-doc]
-  (object/update! wiki-doc [:locked?]
+  [wiki-page]
+  (object/update! wiki-page [:locked?]
     (fn [b] (not b))))
 
 
@@ -48,22 +48,24 @@
   []
   [:li.nav-element
     [:i.icon-plus.icon-white]]
-  :click #(orchard.objects.new/load-new-doc))
+
+  :click orchard.objects.new/load-new-doc)
 
 
 (defui home-btn
   []
   [:li.nav-element
     [:i.icon-home.icon-white]]
+
   :click (fn [e]
-            (orchard.objects.app/open-document orchard.objects.app.db :home)))
+            (orchard.objects.app/show-project orchard.objects.app.db :home)))
 
 
 (defn lock-handler
   [this e]
   (let [lock (not (:locked? @this))]
     (object/assoc! this :locked? lock)
-    ;(object/raise (wiki-doc )
+    ;(object/raise (wiki-page )
       (if lock
         :lock-document
         :unlock-document))
@@ -134,6 +136,7 @@
   []
   (apply + (map #(aget % "offsetWidth") (dom/$$ ".nav-element"))))
 
+
 (defn accum-padding
   [elem]
   (let [style (util/computed-style elem)]
@@ -177,7 +180,7 @@
 
 
 (declare show-navbar)
-(declare hide-navbar) 
+(declare hide-navbar)
 
 (declare workspace-nav)
 
@@ -211,11 +214,11 @@
   (go
     (let [mod-doc    (<! (orchard.objects.modules.tiny-mce/tiny-mce-doc db))
           tpl-doc    (<! (orchard.objects.templates.single-column/single-column-template-doc db (:id mod-doc)))
-          wiki-doc   (<! (orchard.objects.wiki-document/wiki-doc db
+          wiki-page   (<! (orchard.objects.wiki-pageument/wiki-page db
                              :title     document-title
                              :template  (:id tpl-doc)
                              :project   project-title))
-          doc        (<! (orchard.model/load-object db (:id wiki-doc)))]
+          doc        (<! (orchard.model/load-object db (:id wiki-page)))]
       doc)))
 
 
@@ -245,7 +248,7 @@
     (hide-navbar)
     (set-input-text ""))
   (condp = (:mode @this)
-    :document-create 
+    :document-create
       (do
         (create-document text)
         (set-mode this :free))

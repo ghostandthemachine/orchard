@@ -1,15 +1,17 @@
 (ns orchard.objects.workspace
-  (:require [orchard.object :as object]
+  (:require [orchard.object          :as object]
             [orchard.objects.sidebar :as sidebar]
-            [orchard.util.core :refer (has?)]
-            [orchard.util.dom :as dom]
-            [orchard.util.log :refer (log log-obj)]
-            [orchard.util.cljs :refer [->dottedkw]]
-            [crate.binding :refer [map-bound bound subatom]])
+            [orchard.dispatch        :as dispatch]
+            [orchard.util.core       :refer (has?)]
+            [orchard.util.dom        :as dom]
+            [orchard.util.log        :refer (log log-obj)]
+            [orchard.util.cljs       :refer [->dottedkw]]
+            [crate.binding           :refer [map-bound bound subatom]])
   (:require-macros [orchard.macros :refer [defui]]))
 
 
 (def default-width 950)
+
 
 (defui render-document
   [this doc]
@@ -22,18 +24,29 @@
                                 (object/assoc! this :sidebar sidebar)))
 
 
-(object/behavior* ::show-document
-                  :triggers #{:show-document}
-                  :reaction (fn [this doc-obj]
+; TODO:
+; Change this to a more generic show-content, which just takes a UI element
+; and loads it onto the main page.  (The ready handler(s) for the enclosed
+; content should handle any initialization necessary.)
+
+(object/behavior* ::show-page
+                  :triggers #{:show-page}
+                  :reaction (fn [this obj]
+                              (dispatch/fire :page-loading obj)
                               (let [workspace$ (dom/$ "#workspace")
-                                    active     (:wiki-document @this)]
+                                    active     (:wiki-page @this)]
+                                ; TODO: Nothing to specific modules should be happening here...
                                 (orchard.objects.modules.tiny-mce/clear-editors!)
+
                                 (when active
                                   (dom/remove (:content @active)))
+
                                 (object/assoc! this
-                                  :wiki-document doc-obj
-                                  :current-project (or (:project @doc-obj) "No Project"))
-                                (object/raise doc-obj :ready))))
+                                  :wiki-page obj
+                                  :current-project (or (:project @obj) "No Project"))
+
+                                (object/raise obj :ready)
+                                (dispatch/fire :page-loaded obj))))
 
 
 (defn active-content [active]
@@ -45,11 +58,11 @@
   (str (or width 0) "px"))
 
 
-(defn render-wiki-doc
-  [wiki-document]
-  (when wiki-document
-  ; (log-obj (clj->js @wiki-document))
-    (:content @wiki-document)))
+(defn render-wiki-page
+  [wiki-page]
+  (when wiki-page
+  ; (log-obj (clj->js @wiki-page))
+    (:content @wiki-page)))
 
 
 (defn render-sidebar
@@ -64,8 +77,8 @@
 
 
 (object/object* ::workspace
-                :triggers  #{:show-document :add-sidebar}
-                :behaviors [::show-document ::add-sidebar]
+                :triggers  #{:show-page :add-sidebar}
+                :behaviors [::show-page ::add-sidebar]
                 :width 0
                 ; :channels {:event []}
                 :sidebar sidebar/sidebar
@@ -75,7 +88,7 @@
                         [:div#workspace
                           [:div.document-container
                             {:style {:left (bound (subatom orchard.objects.sidebar/sidebar :width) left-offset)}}
-                            (bound (subatom this :wiki-document) render-wiki-doc)]]))
+                            (bound (subatom this :wiki-page) render-wiki-page)]]))
 
 (def workspace (object/create ::workspace))
 (dom/append (dom/$ :#container) (:content @workspace))

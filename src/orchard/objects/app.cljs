@@ -3,31 +3,32 @@
     [orchard.macros :refer [defonce]]
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [chan >! <! timeout]]
-    [orchard.object :as object]
-    [orchard.model :as model]
-    [orchard.setup :as setup]
-    [orchard.util.time :refer [now]]
-    [orchard.util.os :as os]
-    [orchard.util.log :refer (log log-obj)]
-    [orchard.util.dom :as dom]
-    [orchard.util.core :as util]
-    [orchard.util.time :as time]
-    [orchard.objects.nav :as nav]
-    [orchard.objects.logger :as logger]
-    [orchard.objects.sidebar :as sidebar]
-    [orchard.util.nw  :as nw]
-    [orchard.dispatch :as dispatch]
+    [cljs.core.async           :refer [chan >! <! timeout]]
+    [orchard.object            :as object]
+    [orchard.model             :as model]
+    [orchard.kv-store          :as kv]
+    ;[orchard.couchdb           :as couch]
+    [orchard.setup             :as setup]
+    [orchard.util.time         :refer [now]]
+    [orchard.util.os           :as os]
+    [orchard.util.log          :refer (log log-obj)]
+    [orchard.util.dom          :as dom]
+    [orchard.util.core         :as util]
+    [orchard.util.time         :as time]
+    [orchard.objects.nav       :as nav]
+    [orchard.objects.logger    :as logger]
+    [orchard.objects.sidebar   :as sidebar]
+    [orchard.util.nw           :as nw]
+    [orchard.dispatch          :as dispatch]
     [orchard.objects.workspace :as workspace]
-    [orchard.kv-store :as kv]
-    orchard.objects.wiki-document))
+    orchard.objects.project
+    orchard.objects.wiki-page))
 
+
+(defonce db  nil)
 
 (def gui (js/require "nw.gui"))
 (def win (.Window.get gui))
-
-;(defonce db (model/couch-store))
-(defonce db  (model/local-store))
 
 (def closing true)
 
@@ -93,12 +94,20 @@
 (defn ready? [this]
   (= 0 (:delays @this)))
 
+
+
 (defn open-document
   [db doc-id]
   (go
     (let [doc (<! (model/load-object db doc-id))]
-      (object/raise workspace/workspace :show-document doc)
-      (dispatch/fire :open-document doc))))
+      (object/raise workspace/workspace :show-page doc))))
+
+
+(defn show-project
+  [db id]
+  (go
+    (let [project (<! (model/get-object db id))]
+      (open-document db (:root project)))))
 
 
 (defn open-from-link
@@ -106,12 +115,12 @@
   (log "open-from-link " href)
   (go
     (let [[project-title title] (clojure.string/split href #"/")
-          all-docs     (<! (model/all-wiki-documents db))
+          all-docs     (<! (model/all-wiki-pages db))
           projects     (reduce
-                        (fn [m wiki-doc]
-                          (let [proj (or (:project wiki-doc) "No Project")]
-                            (assoc-in m [(clojure.string/lower-case proj) (clojure.string/lower-case (:title wiki-doc))]
-                              wiki-doc)))
+                        (fn [m wiki-page]
+                          (let [proj (or (:project wiki-page) "No Project")]
+                            (assoc-in m [(clojure.string/lower-case proj) (clojure.string/lower-case (:title wiki-page))]
+                              wiki-page)))
                         {}
                         all-docs)]
       (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
@@ -138,11 +147,12 @@
                      (this-as this (.close this true))))
               (object/raise orchard.objects.nav/workspace-nav :add!)
               ; (sidebar/init)
+
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
               (.tooltip (js/$ ".sidebar-tab-item"))
-              (open-document db :home)
-              (nw/show)))
+              (nw/show)
+              (show-project db :home)))
 
 
 (object/behavior* ::quit
@@ -217,11 +227,19 @@
 
 (aset js/window "onkeypress" handle-keypress)
 
+(def APP-INFO {:id      :app-info
+               :version 0.1})
+
 (defn init []
   (util/start-repl-server)
-  ;(kv/local-clear)
-  (setup/check-home db)
+  (set! db (kv/local-store))
   (go
+    (let [app-info (kv/local-get :app-info)]
+      (when (or (nil? app-info)
+                (not= (:version app-info) (:version APP-INFO)))
+        (kv/local-clear)
+        (<! (setup/check-home db))
+        (kv/local-set :app-info APP-INFO)))
     (logger/ready)
     (object/raise app :start db)))
 

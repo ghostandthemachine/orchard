@@ -1,4 +1,4 @@
-(ns orchard.objects.wiki-document
+(ns orchard.objects.wiki-page
   (:require-macros
     [orchard.macros :refer [defui defgui]]
     [cljs.core.async.macros :refer [go alt! alts!]])
@@ -90,13 +90,14 @@
              (str "[" (:title @this) "](" (:id @this) ")"))))
 
 
-(object/object* :wiki-document
+(object/object* :wiki-page
   :triggers #{:save :lock-document :unlock-document :ready}
   :behaviors [::save-document ::lock-document ::unlock-document ::ready]
   :locked? true
   :title ""
   :init (fn [this document]
           (go
+            ; TODO: change this to use model/load-object...
             (let [template (<! (model/get-object orchard.objects.app.db (:template document)))
                   tpl-obj  (object/create (keyword (:type template)) template)]
               (object/assoc! this :template tpl-obj)
@@ -119,10 +120,10 @@
     (set-frame-title (:title @document))))
 
 
-(defn wiki-doc
+(defn wiki-page
   [db & args]
   (let [new-doc (merge
-                  {:type :wiki-document
+                  {:type :wiki-page
                    :id   (util/uuid)}
                   (apply hash-map args))]
   (model/save-object! db (:id new-doc) (assoc new-doc :template (:id (:template new-doc))))))
