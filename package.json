@@ -22,8 +22,6 @@
   "node-remote":  "<local>",
 
   "dependencies": {
-      "nodegit":      "*",
-      "js-git":       "*",
       "search-index": "*"
   },
 
