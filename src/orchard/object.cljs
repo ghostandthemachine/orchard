@@ -2,8 +2,9 @@
   (:refer-clojure :exclude [set! assoc! dissoc! children])
   (:require [crate.core :as crate]
             [clojure.set :as set]
-            [orchard.observe :refer [add-ready-observer]]
+            [orchard.observe :refer [dom-ready-chan]]
             [orchard.util.log :refer (log log-obj)]
+            [cljs.core.async :refer [chan >! <! put! timeout close!]]
             [orchard.util.dom :refer [replace-with]]
             [crate.binding :refer [sub-swap! subatom sub-reset! deref?]]))
 
@@ -191,13 +192,11 @@
         content (if (vector? content)
                   (crate/html content)
                   content)
-        final (merge! inst {:content content})]
+        final (merge! inst {:content content
+                            :ready-chan (dom-ready-chan content)})]
     (add-watch inst ::change (fn [_ _ _ _]
                                (raise inst :object.change)))
     (raise inst :init)
-    (when
-      (:ready @inst))
-    (add-ready-observer inst)
     inst))
 
 (defn refresh! [obj]

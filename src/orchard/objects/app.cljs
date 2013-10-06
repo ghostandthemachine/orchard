@@ -26,7 +26,7 @@
 
 (defonce db  nil)
 
-(def gui (js/require "nw.gui"))
+(def gui (js/node_require "nw.gui"))
 (def win (.Window.get gui))
 
 (def closing true)

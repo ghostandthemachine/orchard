@@ -1,3 +1,5 @@
+var node_require = require;
+
 var initialized = false;
 
 (function(window) {
@@ -84,7 +86,7 @@ function load_css(path, isFile) {
 
 
 function initialize() {
-    var gui = require("nw.gui");
+    var gui = node_require("nw.gui");
     var test_mode = (gui.App.argv.indexOf('-test') > -1) ? true : false;
     var app_script;
 

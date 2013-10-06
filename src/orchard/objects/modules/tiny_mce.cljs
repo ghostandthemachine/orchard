@@ -243,15 +243,17 @@
                 :icon icon
                 :text ""
                 :editor nil
-                :observer-chan nil
                 :save-data {:last-save    nil
                             :change-count  nil}
                 :init (fn [this record]
+
+                        (go
+                          (<! (:ready-chan @this))
+                          (init-tinymce this))
+
                         (object/merge! this record
-                          {:ready (partial init-tinymce this)
-                           :save-data {:last-save (get-time)
-                                       :change-count 0}
-                           :observer-chan (chan)})
+                          {:save-data {:last-save (get-time)
+                                       :change-count 0}})
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (object/raise this :save)))

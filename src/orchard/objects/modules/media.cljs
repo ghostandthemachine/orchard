@@ -16,9 +16,9 @@
     [clojure.string  :as string]))
 
 
-(def ^:private gui     (js/require "nw.gui"))
-(def ^:private os      (js/require "os"))
-(def ^:private fs      (js/require "fs"))
+(def ^:private gui     (js/node_require "nw.gui"))
+(def ^:private os      (js/node_require "os"))
+(def ^:private fs      (js/node_require "fs"))
 
 (defn handle-file-select [handler evt]
   (.stopPropagation evt)

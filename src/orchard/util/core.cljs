@@ -9,7 +9,7 @@
     [goog.i18n.DateTimeFormat :as date-format]))
 
 
-(def ^:private url     (js/require "url"))
+(def ^:private url     (js/node_require "url"))
 
 
 (defn js->clj

@@ -5,8 +5,8 @@
     [cljs.core.async    :refer (chan >! <! timeout)]))
 
 
-(def ^:private fs   (js/require "fs"))
-(def ^:private path (js/require "path"))
+(def ^:private fs   (js/node_require "fs"))
+(def ^:private path (js/node_require "path"))
 
 
 (defn exists?

@@ -11,7 +11,7 @@
     [orchard.util.nw      :as nw]))
 
 
-(def ^:private git (js/require "nodegit"))
+(def ^:private git (js/node_require "nodegit"))
 
 (def PROJECT-DIR (fs/join (nw/data-path) "projects"))
 

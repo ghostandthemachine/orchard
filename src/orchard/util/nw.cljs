@@ -2,7 +2,7 @@
   (:require
     [orchard.util.log :refer (log log-obj)]))
 
-(def ^:private gui (js/require "nw.gui"))
+(def ^:private gui (js/node_require "nw.gui"))
 
 (defn window
   "If `window-object` is not specifed, then return current window's Window object,

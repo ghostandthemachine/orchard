@@ -18,11 +18,12 @@
 
 
 (defn aloha-doc
-  []
-  (model/save-document
-    {:type :aloha-module
-     :text ""
-     :id   (uuid)}))
+  [db]
+  (let [id (uuid)]
+    (model/save-object! db id
+      {:type :aloha-module
+       :text ""
+       :id   (uuid)})))
 
 
 (def date (new js/Date))
@@ -90,10 +91,10 @@
 
 
 (defn create-module
-  []
+  [app]
   (go
     (object/create :aloha-module
-      (<! (aloha-doc)))))
+      (<! (aloha-doc (:db app))))))
 
 (defn single-col
   [this]
@@ -129,9 +130,8 @@
 
 (defn init-aloha
   [this]
-  ; (let [sel (str "aloha-" (:id @this))]
-  ;   (aloha/$aloha sel))
-  )
+  (let [sel (str "aloha-" (:id @this))]
+    (aloha/$aloha sel)))
 
 
 (object/object* :aloha-module

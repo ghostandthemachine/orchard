@@ -3,8 +3,8 @@
   (:require [clojure.browser.repl :as repl]
             [orchard.util.log :refer (log log-obj)]))
 
-(def ^:private fs            (js/require "fs"))
-(def ^:private child-process (js/require "child_process"))
+(def ^:private fs            (js/node_require "fs"))
+(def ^:private child-process (js/node_require "child_process"))
 
 (def shell (.-exec child-process))
 (def spawn (.-spawn child-process))
