@@ -230,7 +230,29 @@
 (def APP-INFO {:id      :app-info
                :version 0.1})
 
+(defn body
+  []
+  (.querySelector js/window.document "body"))
+
+(defn load-js-file
+  [path]
+  (let [js-file (.createElement js/document "script")]
+    (aset js-file "src" path)
+    (aset js-file "type" "text/javascript")
+    (aset js-file "async" false)
+    (.appendChild (body) js-file)
+    js-file))
+
+(defn init-aloha
+  []
+  (aset js/window "requireNode" js/window.require)
+  (aset js/window "require" nil)
+  (load-js-file "js/alohaeditor/aloha/lib/require.js")
+  (load-js-file "js/alohaeditor/aloha/lib/aloha.js")
+  )
+
 (defn init []
+  (.showDevTools win)
   (util/start-repl-server)
   (set! db (kv/local-store))
   (go
@@ -241,5 +263,5 @@
         (<! (setup/check-home db))
         (kv/local-set :app-info APP-INFO)))
     (logger/ready)
+    (init-aloha)
     (object/raise app :start db)))
-

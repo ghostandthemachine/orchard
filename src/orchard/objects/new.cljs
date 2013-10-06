@@ -10,6 +10,7 @@
     [orchard.objects.templates.single-column :as single-column]
     [orchard.objects.modules.markdown :as markdown]
     [orchard.objects.modules.tiny-mce :as tiny]
+    [orchard.objects.modules.aloha :as aloha]
     [orchard.objects.wiki-page :as wiki-page]
     [orchard.objects.workspace :as workspace]
     [orchard.module :as modules]
@@ -28,6 +29,16 @@
       (object/raise workspace/workspace :show-page obj))))
 
 
+(defn create-new-document
+  [db title aloha?]
+  (go
+    (let [mod-doc   (<! (if aloha? (aloha/aloha-doc db) (tiny/tiny-mce-doc db)))
+          tpl-doc   (<! (single-column/single-column-template-doc db mod-doc))
+          wiki-page (<! (wiki-page/wiki-page db :title title :template tpl-doc))
+          obj (object/create (:type wiki-page) wiki-page)]
+      (object/raise workspace/workspace :show-page obj))))
+
+
 (defui create-button
   []
   [:a#create-doc-btn.btn.btn-primary "Create"]
@@ -35,8 +46,10 @@
   :click (fn [e]
            (.preventDefault e)
            (let [$title-input (dom/$ :#new-document-title)
-                 title        (.-value $title-input)]
-             (create-document orchard.objects.app.db title))))
+                 title        (.-value $title-input)
+                 $aloha-input (.getElementById js/document "aloha-check")
+                 aloha?       (.-checked $aloha-input)]
+             (create-new-document orchard.objects.app.db title aloha?))))
 
 
 ;TODO: once finer grain pouch queries are working the templates should be loaded not hard coded
@@ -45,6 +58,9 @@
   [:div.offset3.span6.new-document-form
    [:label "Title"]
    [:input#new-document-title.span6 {:type "text" :placeholder "New page"}]
+   [:div
+    [:input#aloha-check {:type "checkbox" :name "use_aloha" :value "aloha"}]
+    "Check to use Aloha editor"]
    (create-button)])
 
 

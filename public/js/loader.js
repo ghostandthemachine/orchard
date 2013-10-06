@@ -7,6 +7,7 @@ var css_files = [
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
     "css/jquery-ui.css",
+    "js/alohaeditor/aloha/css/aloha.css",
     "css/style.css"
     ];
 
@@ -16,8 +17,14 @@ var js_files = [
     "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
     "js/markdown_parser.js",
 
+    //"js/require.js",
+    "js/app.js"
+
     // "js/jquery.sortable.min.js",
     // "js/throttle.js",
+
+    // "js/alohaeditor/aloha/lib/require.js",
+    // "js/alohaeditor/aloha/lib/aloha.js",
 
     /* Syntax highlighting for source viewing and editing */
     // "js/codemirror.js",
@@ -41,6 +48,7 @@ function log_error(err) {
   if (console) {
     console.log(err.stack);
   }
+
   throw err;
 }
 
@@ -74,20 +82,25 @@ function load_css(path, isFile) {
     return css;
 }
 
+
 function initialize() {
     var gui = require("nw.gui");
     var test_mode = (gui.App.argv.indexOf('-test') > -1) ? true : false;
+    var app_script;
 
     try {
+
+
+
         process.on("uncaughtException", log_error);
         window.onerror = log_error;
 
-        //console.log("Loading CSS files...");
+        console.log("Loading CSS files...");
         css_files.forEach(function(path) {
             load_css(path, false);
         });
 
-        //console.log("Loading Javascript files...");
+        console.log("Loading Javascript files...");
         js_files.forEach(function(path) {
             load_script(path, false);
         });
@@ -96,11 +109,21 @@ function initialize() {
             console.log("Running tests...")
             load_script("js/tests.js", false);
         } else {
-            console.log("Loading app...")
-            load_script("js/app.js", false);
+            console.log("Loading app...");
+
+            /*
+            window.require = require;
+            init_aloha(function(aloha) {
+                console.log("Resetting require for node-webkit...");
+                require = window.require_nw;
+                app_script = load_script("js/app.js", false);
+            });
+            */
+            
+            app_script = load_script("js/app.js", false);
         }
 
-        script.onload = function() {
+        app_script.onload = function() {
             try {
                 if (test_mode) {
                     setTimeout(gui.App.quit, 5000);
@@ -122,6 +145,11 @@ function initialize() {
     }
 }
 
-initialize()
+function aloha(sel) {
+    $(sel).aloha()
+}
+
+console.log("Initializing application...");
+initialize();
 
 })(window);

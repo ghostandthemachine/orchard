@@ -178,9 +178,9 @@
   (fn [e]
     (if (and @is-visible* @clicked-away*)
       (do
-        (.data (js/$ ".popover-trigger") "visible" "true")
-        (.popover (js/$ ".popover-trigger") "hide")
-        (.hide (js/$ ".spacer-nav"))
+        (.data (dom/$ ".popover-trigger") "visible" "true")
+        (.popover (dom/$ ".popover-trigger") "hide")
+        (.hide (dom/$ ".spacer-nav"))
         (reset! clicked-away*
           (reset! is-visible* false)))
       (do

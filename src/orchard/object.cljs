@@ -195,6 +195,8 @@
     (add-watch inst ::change (fn [_ _ _ _]
                                (raise inst :object.change)))
     (raise inst :init)
+    (when
+      (:ready @inst))
     (add-ready-observer inst)
     inst))
 
