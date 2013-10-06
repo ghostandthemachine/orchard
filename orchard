@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-nw = "/Applications/Orchard.app/Contents/MacOS/node-webkit"
+nw = "./pkg/Orchard.app/Contents/MacOS/node-webkit"
 
 res = `ps -ef | grep node | grep app.js | grep -v grep`
 print "RES: #{res}"

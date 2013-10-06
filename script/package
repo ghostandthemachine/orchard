@@ -3,11 +3,12 @@
 APP_NAME = "Orchard"
 ICON     = "icon.png"
 
-APP_DIR  = Dir.pwd
+APP_DIR  = File.absolute_path(File.dirname(__FILE__) + "/..")
 PKG_DIR  = "pkg"
 RSC_DIR  = "#{APP_NAME}.app/Contents/Resources"
 ICON_DIR = "#{APP_NAME}.iconset"
 
+NW_ZIP_PATH = File.absolute_path(ARGV[0])
 
 def usage()
     puts "This script will create a new orchard app out of a freshly downloaded
@@ -49,19 +50,11 @@ end
 
 
 def dev_or_package()
+    puts ""
     puts "Symlink for development or package up for deployment?"
     puts "d = dev, p = package"
-    while true do
-        #choice = gets.chomp
-        choice = "d"
-        if choice == "d" or choice == "p"
-            break
-        else
-            puts "Invalid choice..."
-            puts "d = dev, p = package"
-        end
-    end
-    return choice
+
+    return $stdin.gets.chomp
 end
 
 def symlink_project()
@@ -76,27 +69,40 @@ def setup_app_nw()
 end
 
 def package_app()
+    puts "Clearing pkg directory..."
+    `rm -fr #{PKG_DIR}/*`
+
+    puts "Creating #{APP_NAME}.app..."
     `mkdir #{PKG_DIR}`
     Dir.chdir(PKG_DIR)
-    `unzip ../#{ARGV[0]}`
+    `unzip #{NW_ZIP_PATH}`
     `mv node-webkit.app #{APP_NAME}.app`
 
+    puts "Creating icon set..."
     make_iconset ICON
     `rm #{RSC_DIR}/nw.icns`
     `mv #{APP_NAME}.icns #{RSC_DIR}`
 
-    modify_plist "orchard.app/Contents/Info.plist"
+    puts "Modifying the Info.plist"
+    modify_plist "#{APP_NAME}.app/Contents/Info.plist"
 
-    choice = dev_or_package
+    while true
+        choice = dev_or_package
 
-    if choice == "d"
-        puts "Packaging for development..."
-        symlink_project
-
-    elsif choice == "p"
-        puts "Packaging for distribution..."
-        setup_app_nw
+        if choice == "d"
+            puts "Symlinking source for development..."
+            symlink_project
+            return
+        elsif choice == "p"
+            puts "Zipping compiled source for distribution..."
+            setup_app_nw
+            return
+        else
+            puts "Unrecognized choice..."
+        end
     end
+
+    puts "Packaged app ready: pkg/#{APP_NAME}.app"
 end
 
 package_app

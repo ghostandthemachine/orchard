@@ -7,7 +7,6 @@
     [orchard.object            :as object]
     [orchard.model             :as model]
     [orchard.kv-store          :as kv]
-    ;[orchard.couchdb           :as couch]
     [orchard.setup             :as setup]
     [orchard.util.time         :refer [now]]
     [orchard.util.os           :as os]
@@ -65,12 +64,10 @@
     [;"Thinker" [{:label "Preferences"}]
      "File" [{:label "New Page"
               :click (fn [& args] (log "New Page clicked!") (log-obj args))}
-             {:label "New Project"}
-             ]
+             {:label "New Project"}]
      "Edit" [{:label "Find"}]
      "View" [{:label "Toggle Text Styles"}
-             {:label "Status Bar"}
-             ]]))
+             {:label "Status Bar"}]]))
 
 
 (defn open-window []
@@ -93,7 +90,6 @@
 
 (defn ready? [this]
   (= 0 (:delays @this)))
-
 
 
 (defn open-document
