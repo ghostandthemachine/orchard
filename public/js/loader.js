@@ -9,7 +9,7 @@ var css_files = [
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
     "css/jquery-ui.css",
-    "js/alohaeditor/aloha/css/aloha.css",
+    "js/aloha/css/aloha.css",
     "css/style.css"
     ];
 

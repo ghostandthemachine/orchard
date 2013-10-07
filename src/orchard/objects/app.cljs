@@ -243,8 +243,8 @@
   []
   (aset js/window "requireNode" js/window.require)
   (aset js/window "require" nil)
-  (load-js-file "js/alohaeditor/aloha/lib/require.js")
-  (load-js-file "js/alohaeditor/aloha/lib/aloha.js")
+  (load-js-file "js/aloha/require.js")
+  (load-js-file "js/aloha/aloha.js")
   )
 
 (defn init []

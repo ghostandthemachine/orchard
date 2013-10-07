@@ -14,9 +14,14 @@
 (defn observe
   [elem handler & config]
   (log "observing node")
-  (let [obs (observer handler)
-        opts (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))]
-    (.observe obs elem opts)
+  (log-obj elem)
+  (let [
+        ; obs (observer handler)
+        obs (observer log)
+        opts (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))
+        ; opts (clj->js {:subtree true})
+        ]
+    ; (.observe obs elem opts)
     obs))
 
 
@@ -27,8 +32,7 @@
   [node chan records]
   (log-obj records)
   (let [nodes (apply concat (map (fn [mr] (aget mr "addedNodes")) records))
-        n (filter #(= node %)
-            nodes)]
+        n     (filter #(= node %) nodes)]
     (log "matched added node")
     (log-obj nodes)
     (log-obj n)
