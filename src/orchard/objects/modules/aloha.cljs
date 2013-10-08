@@ -96,28 +96,25 @@
     (object/create :aloha-module
       (<! (aloha-doc (:db app))))))
 
-(defn single-col
-  [this]
+(def single-col
   [:div.row.module-content.aloha-module-content
-      [:div.span12 {:class (str "aloha-" (:id @this))}]])
+      [:div.span12 {:class "aloha-editable"}]])
 
-(defn two-col
-  [this]
+(def two-col
   [:div.row.module-content.aloha-module-content
-    [:div.span6 {:class (str "aloha-" (:id @this))}]
-    [:div.span6 {:class (str "aloha-" (:id @this))}]])
+    [:div.span6 {:class "aloha-editable"}]
+    [:div.span6 {:class "aloha-editable"}]])
 
-(defn three-col
-  [this]
+(def three-col
   [:div.row.module-content.aloha-module-content
-    [:div.span4 {:class (str "aloha-" (:id @this))}]
-    [:div.span4 {:class (str "aloha-" (:id @this))}]
-    [:div.span4 {:class (str "aloha-" (:id @this))}]])
+    [:div.span4 {:class "aloha-editable"}]
+    [:div.span4 {:class "aloha-editable"}]
+    [:div.span4 {:class "aloha-editable"}]])
 
 
 (defn render-aloha
   [this]
-  (crate/html (single-col this)))
+  (crate/html single-col))
 
 
 (def icon [:span.btn.btn-primary.aloha-icon "aloha"])
@@ -127,10 +124,7 @@
   [this]
   (go
     (let [elem (<! (:ready-chan @this))
-          sel (str "aloha-" (:id @this))
-          elems (.getElementsByClassName elem sel)]
-      (log "init-aloha")
-      (log-obj elems)
+          elems (.getElementsByClassName elem "aloha-editable")]
       (apply aloha/aloha elems))))
 
 
@@ -159,4 +153,4 @@
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]
                           [:div.module-element
-                            (render-aloha this)]]))
+                            (render-aloha)]]))
