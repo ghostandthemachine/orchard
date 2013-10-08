@@ -97,8 +97,8 @@
       (<! (aloha-doc (:db app))))))
 
 (def single-col
-  [:div.row.module-content.aloha-module-content
-      [:div.span12 {:class "aloha-editable"}]])
+  [:div.span12.module-content.aloha-module-content
+      [:div {:class "aloha-editable"}]])
 
 (def two-col
   [:div.row.module-content.aloha-module-content

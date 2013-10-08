@@ -482,3 +482,12 @@ td.mceIframeContainer.mceFirst.mceLast {
   border-left: 1px solid #FFFFFF;
   border-right: 1px solid #FFFFFF; 
 }
+
+
+/**************************************************************************
+    Aloha
+***************************************************************************/
+
+.aloha-module-content {
+  padding: 10px;
+}
