@@ -13,38 +13,43 @@
 
 (defn observe
   [elem handler & config]
-  (log "observing node")
-  (log-obj elem)
-  (let [
-        obs (observer handler)
+  (let [obs (observer handler)
         opts (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))]
-    ; (.observe obs elem opts)
+    (.observe obs elem opts)
     obs))
-
 
 
 (defn handle-node-ready
   "Given a node to query for, a channel, and an Array of MutationRecords,
   the querried node will be pushed onto the channel once found."
   [node chan records]
-  (log-obj records)
   (let [nodes (apply concat (map (fn [mr] (aget mr "addedNodes")) records))
         n     (filter #(= node %) nodes)]
-    (log "matched added node")
-    (log-obj nodes)
-    (log-obj n)
     (go
       (when n
-        (>! chan node))))
-  )
+        (>! chan n)))))
 
+
+(defn add-ready-observer
+  "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
+  [obj]
+  (when (:ready @obj)
+    (let [node (:content @obj)
+          ready-chan (chan)
+          observer (observe js/document.body (partial handle-node-ready node ready-chan) :child-list :subtree)]
+      (go
+        (let [created (<! ready-chan)]
+          (.disconnect observer)
+          ((:ready @obj) obj))))))
 
 
 (defn dom-ready-chan
   "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
   [elem]
   (let [ready-chan (chan)
-        observer (observe js/document.body (partial handle-node-ready elem ready-chan) :subtree)]
+        ;; NOTE: this is a problem line. When :child-list is not present the app crashes
+        ;; probably an issue in the fn observe
+        observer (observe js/document.body (partial handle-node-ready elem ready-chan) :child-list :subtree)]
     (go
       (let [created (<! ready-chan)]
         (.disconnect observer)

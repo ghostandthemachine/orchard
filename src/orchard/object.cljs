@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [set! assoc! dissoc! children])
   (:require [crate.core :as crate]
             [clojure.set :as set]
-            [orchard.observe :refer [dom-ready-chan]]
+            [orchard.observe :refer [dom-ready-chan add-ready-observer]]
             [orchard.util.log :refer (log log-obj)]
             [cljs.core.async :refer [chan >! <! put! timeout close!]]
             [orchard.util.dom :refer [replace-with]]

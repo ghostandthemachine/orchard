@@ -3,6 +3,7 @@
     [cljs.core.async.macros :refer [go]])
   (:refer-clojure :exclude [parents remove next val empty find])
   (:require
+    [orchard.util.log  :refer (log log-obj)]
     [cljs.core.async :refer [chan >! <! timeout]]))
 
 
