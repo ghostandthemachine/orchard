@@ -22,8 +22,8 @@
   (let [id (uuid)]
     (model/save-object! db id
       {:type :aloha-module
-       :text ""
-       :id   (uuid)})))
+      :text ""
+      :id   id})))
 
 
 (def date (new js/Date))
@@ -117,21 +117,21 @@
 
 (defn render-aloha
   [this]
-  (crate.core/html (single-col this)))
+  (crate/html (single-col this)))
 
 
 (def icon [:span.btn.btn-primary.aloha-icon "aloha"])
 
 
-(defn setup-aloha
-  [this ed]
-  )
-
-
 (defn init-aloha
   [this]
-  (let [sel (str "aloha-" (:id @this))]
-    (aloha/$aloha sel)))
+  (go
+    (let [elem (<! (:ready-chan @this))
+          sel (str "aloha-" (:id @this))
+          elems (.getElementsByClassName elem sel)]
+      (log "init-aloha")
+      (log-obj elems)
+      (apply aloha/aloha elems))))
 
 
 (object/object* :aloha-module
@@ -142,13 +142,18 @@
                 :icon icon
                 :text ""
                 :init (fn [this record]
+                        
                         (object/merge! this record
                           {:save-data {:last-save (get-time)
                                        :change-count 0}})
+                        
                         (bound-do (subatom this :text)
                                   (fn [& args]
-                                    ; (log "inside :text handler...")
                                     (object/raise this :save)))
+
+                        ;; Watch for Aloha object DOM insertion
+                        ;; init aloha if inserted
+                        (init-aloha this)
                         
                         [:div {:class (str "span12 module " (:type @this))
                                :id (str "module-" (:id @this))}
