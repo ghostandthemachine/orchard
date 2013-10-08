@@ -1,6 +1,6 @@
 (ns orchard.objects.nav
   (:require-macros
-    [orchard.macros :refer (defui defonce node-chan)]
+    [orchard.macros :refer (defui node-chan)]
     [cljs.core.async.macros :refer (go)])
   (:require
     [orchard.object    :as object]

@@ -1,6 +1,6 @@
 (ns orchard.objects.logger
   (:require-macros 
-    [orchard.macros :refer [defui defgui defonce]])
+    [orchard.macros :refer [defui defgui]])
   (:require [orchard.object :as object]
             [orchard.util.log :refer (log log-obj)]
             [orchard.util.dom :as dom]

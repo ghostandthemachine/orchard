@@ -212,8 +212,7 @@
 (defn open-window
   [url & {:as options}]
   (let [o (merge {:x 0 :y 0 :width 400 :height 600} options)
-        opt-str (format "screenX=%d,screenY=%d,width=%d,height=%d"
-                        (:x o) (:y o) (:width o) (:height o))]
+        opt-str (str "screenX=" (:x o) ",screenY=" (:y o) ",width=" (:width o) ",height=" (:height o))]
     (.open js/window url nil opt-str)))
 
 
@@ -329,8 +328,7 @@
 (defn open-window
   [url & {:as options}]
   (let [o (merge {:x 0 :y 0 :width 400 :height 600} options)
-        opt-str (format "screenX=%d,screenY=%d,width=%d,height=%d"
-                        (:x o) (:y o) (:width o) (:height o))]
+        opt-str (str "screenX=" (:x o) ",screenY=" (:y o) ",width=" (:width o) ",height=" (:height o))]
     (.open js/window url nil opt-str)))
 
 

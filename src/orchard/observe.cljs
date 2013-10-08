@@ -16,11 +16,8 @@
   (log "observing node")
   (log-obj elem)
   (let [
-        ; obs (observer handler)
-        obs (observer log)
-        opts (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))
-        ; opts (clj->js {:subtree true})
-        ]
+        obs (observer handler)
+        opts (clj->js (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))]
     ; (.observe obs elem opts)
     obs))
 

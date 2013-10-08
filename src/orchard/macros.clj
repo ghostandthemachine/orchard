@@ -2,7 +2,8 @@
   [:refer-clojure :exclude [defonce]]
   (:require [clojure.string :as str]
             ;[cljs.core.async :refer [go chan >! <! put! timeout alts!]]
-            [cljs.analyzer :refer (*cljs-ns* get-expander)]))
+            [cljs.analyzer :refer (*cljs-ns* get-expander)]
+            ))
 
 
 (defmacro with-instance

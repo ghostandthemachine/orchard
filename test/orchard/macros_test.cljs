@@ -1,29 +1,29 @@
 (ns test.orchard.macros
-  (:require-macros [orchard.macros :refer [defonce]])
+  (:require-macros [orchard.macros :refer [def]])
   (:require [orchard.util.log :refer (log log-obj)]
             [test. :refer [test-ns]]))
 
 
-; (defonce ::foo "bar")
+; (def ::foo "bar")
 
-; (defonce ::foo "woz")
+; (def ::foo "woz")
 
-; (deftest test-defonce
+; (deftest test-def
 ; 	(is
 ; 		(= foo "bar")))
 
 
 
-;; test that defonce allows for new defs in other namespaces
-; (ns test.defonce2
-; 	(:require-macros [orchard.macros :refer [defonce]]
+;; test that def allows for new defs in other namespaces
+; (ns test.def2
+; 	(:require-macros [orchard.macros :refer [def]]
 ; 									 [cemerick.cljs.test :refer [is deftest]])
 ; 	(:require [orchard.util.log :refer (log log-obj)]
 ; 				    [test. :refer [test-ns]]))
 
-; (defonce ::foo "woz")
+; (def ::foo "woz")
 
-; (deftest test-defonce
+; (deftest test-def
 ; 	(is
 ; 		(= foo "woz"))
 ; 	(is

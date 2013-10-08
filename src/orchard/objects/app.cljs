@@ -1,6 +1,6 @@
 (ns orchard.objects.app
   (:require-macros
-    [orchard.macros :refer [defonce]]
+    [orchard.macros :refer [def]]
     [cljs.core.async.macros :refer [go]])
   (:require
     [cljs.core.async           :refer [chan >! <! timeout]]
@@ -24,7 +24,7 @@
     orchard.objects.wiki-page))
 
 
-(defonce db  nil)
+(def db  nil)
 
 (def gui (js/node_require "nw.gui"))
 (def win (.Window.get gui))
@@ -179,7 +179,7 @@
 
 (def windows js/global.windows)
 
-(defonce app (object/create ::app))
+(def app (object/create ::app))
 
 ;(set! (.-workerSrc js/PDFJS) "js/pdf.js"))
 

@@ -2,7 +2,7 @@
   :description "Distributed development of structured information spaces."
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure             "1.5.1"]
-                 [org.clojure/clojurescript       "0.0-1820"]
+                 [org.clojure/clojurescript       "0.0-1895"]
                  [org.clojure/core.async          "0.1.0-SNAPSHOT"]
                  [prismatic/dommy                 "0.1.1"]
                  [org.clojure/data.json           "0.2.1"]
@@ -33,12 +33,13 @@
                                    :pretty-print  false
                                    :externs ["resources/externs.js"]}}
 
-                       {:id "test"
-                        :source-paths ["test" "src"]
-                        :notify-command ["growlnotify" "-m"]
-                        :compiler {:output-to "public/js/tests.js"
-                                   :optimizations :whitespace
-                                   :warnings      true
-                                   :pretty-print  true}}]
+                       ; {:id "test"
+                       ;  :source-paths ["test" "src"]
+                       ;  :notify-command ["growlnotify" "-m"]
+                       ;  :compiler {:output-to "public/js/tests.js"
+                       ;             :optimizations :whitespace
+                       ;             :warnings      true
+                       ;             :pretty-print  true}}
+                                   ]
 
               :test-commands {"unit-tests" ["./orchard" "-test"]}})
