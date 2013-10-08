@@ -211,28 +211,31 @@
          :onclick (partial handle-delete-module this)}))))
 
 
-(defn init-tinymce
+(defn handle-dom-insertion
   [this]
-  (.init js/tinyMCE
-    (clj->js
-      {:theme                 "advanced"
-       :mode                  "exact"
-       :elements              (format-class (:id @this))
-       :theme_advanced_buttons1 "mybutton, bold, italic, underline, strikethrough, separator,
-                                 link, unlink, image, code, hr, separator,
-                                 formatselect, fontselect, fontsizeselect, seperator,
-                                 forecolorpicker, backcolorpicker, separator,
-                                 justifyleft, justifycenter, justifyright, justifyfull, separator,
-                                 bullist, numlist, separator,
-                                 deletemodule"
-       :theme_advanced_buttons2 ""
-       :theme_advanced_buttons3 ""
-       :theme_advanced_toolbar_location "top"
-       :theme_advanced_toolbar_align "left"
-       :theme_advanced_statusbar_location "bottom"
-       :plugins               "autoresize,inlinepopups"
-       :width                 "100%"
-       :setup                 (partial setup-tinymce this)})))
+  (go
+    (let [ready-chan (:ready-chan @this)
+          elem (<! ready-chan)]
+      (.init js/tinyMCE
+        (clj->js
+          {:theme                 "advanced"
+           :mode                  "exact"
+           :elements              (format-class (:id @this))
+           :theme_advanced_buttons1 "mybutton, bold, italic, underline, strikethrough, separator,
+                                     link, unlink, image, code, hr, separator,
+                                     formatselect, fontselect, fontsizeselect, seperator,
+                                     forecolorpicker, backcolorpicker, separator,
+                                     justifyleft, justifycenter, justifyright, justifyfull, separator,
+                                     bullist, numlist, separator,
+                                     deletemodule"
+           :theme_advanced_buttons2 ""
+           :theme_advanced_buttons3 ""
+           :theme_advanced_toolbar_location "top"
+           :theme_advanced_toolbar_align "left"
+           :theme_advanced_statusbar_location "bottom"
+           :plugins               "autoresize,inlinepopups"
+           :width                 "100%"
+           :setup                 (partial setup-tinymce this)})))))
 
 
 (object/object* :tiny-mce-module
@@ -248,10 +251,12 @@
                             :change-count  nil}
                 :init (fn [this record]
                         (object/merge! this record
-                          {:ready (partial init-tinymce this)
-                           :save-data {:last-save (get-time)
+                          {:save-data {:last-save (get-time)
                                        :change-count 0}
                            :observer-chan (chan)})
+                        ;; watch for content being added to the dom
+                        (handle-dom-insertion this)
+                        ;; save when text changes
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (object/raise this :save)))
