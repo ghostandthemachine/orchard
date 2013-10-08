@@ -223,9 +223,6 @@
 
 (aset js/window "onkeypress" handle-keypress)
 
-(def APP-INFO {:id      :app-info
-               :version 0.1})
-
 (defn body
   []
   (.querySelector js/window.document "body"))
@@ -244,25 +241,38 @@
   (aset js/window "requireNode" js/window.require)
   (aset js/window "require" nil)
   (load-js-file "js/aloha/require.js")
-  (load-js-file "js/aloha/aloha.js")
-  )
+  (load-js-file "js/aloha/aloha.js"))
+
+
+(def APP-INFO {:id      :app-info
+               :version 0.1})
 
 (defn init []
+  (log "dev tools")
   (.showDevTools win)
-  ; (util/start-repl-server)
+  (nw/show)
+  (log "repl server")
+  (util/start-repl-server)
   (set! db (kv/local-store))
-  (go
-    (let [app-info (kv/local-get :app-info)]
-      (when (or (nil? app-info)
-                (not= (:version app-info) (:version APP-INFO)))
-        (kv/local-clear)
-        (log "start checking home")
-        (<! (setup/check-home db))
-        (log "done checking home")
-        (kv/local-set :app-info APP-INFO)))
+
+  (kv/local-clear)
+  (log "start checking home")
+  (setup/check-home db)
+  (log "done checking home")
+
+  ;(go
+  ;  (let [app-info (kv/local-get :app-info)]
+  ;    (when (or (nil? app-info)
+  ;              (not= (:version app-info) (:version APP-INFO)))
+  ;      (log "Clearing DB...")
+  ;      (kv/local-clear)
+  ;      (log "start checking home")
+  ;      (<! (setup/check-home db))
+  ;      (log "done checking home")
+  ;      (kv/local-set :app-info APP-INFO)))
     (log "Prepare logger")
     (logger/ready)
     (log "Init Aloha")
     (init-aloha)
     (log "Ready to start app...")
-    (object/raise app :start db)))
+    (object/raise app :start db))

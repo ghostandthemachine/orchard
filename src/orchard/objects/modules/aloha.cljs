@@ -136,11 +136,9 @@
                 :icon icon
                 :text ""
                 :init (fn [this record]
-                        
                         (object/merge! this record
                           {:save-data {:last-save (get-time)
                                        :change-count 0}})
-                        
                         (bound-do (subatom this :text)
                                   (fn [& args]
                                     (object/raise this :save)))
@@ -148,9 +146,9 @@
                         ;; Watch for Aloha object DOM insertion
                         ;; init aloha if inserted
                         (init-aloha this)
-                        
+
                         [:div {:class (str "span12 module " (:type @this))
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]
                           [:div.module-element
-                            (render-aloha)]]))
+                            (render-aloha this)]]))

@@ -24,6 +24,7 @@
 (defn local-get
   "Get a value in the persistent local storage by key."
   [k]
+  (log "local-get: " k)
   (try
     (let [k (if (keyword? k) (name k) (str k))
           obj-str (aget js/localStorage k)
@@ -31,6 +32,8 @@
                 (js->clj (.parse js/JSON obj-str)
                          :keywordize-keys true)
                 nil)]
+      (log "got obj: ")
+      (log-obj obj)
       obj)
     (catch js/Error e
       (log "Exception in local-get: " e)
