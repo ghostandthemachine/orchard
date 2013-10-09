@@ -27,6 +27,8 @@
   (go
     (log "Checking home...")
     (let [doc (<! (model/get-object db :home))]
+      (log "doc returned for home")
+      (log-obj doc)
       (if (nil? doc)
         (do
           (log "Creating home project...")

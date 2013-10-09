@@ -151,4 +151,4 @@
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]
                           [:div.module-element
-                            (render-aloha this)]]))
+                            (render-aloha)]]))
