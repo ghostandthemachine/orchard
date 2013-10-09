@@ -113,7 +113,7 @@
 
 
 (defn render-aloha
-  [this]
+  []
   (crate/html single-col))
 
 

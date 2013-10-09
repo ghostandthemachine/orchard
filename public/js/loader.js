@@ -19,14 +19,8 @@ var js_files = [
     "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
     "js/markdown_parser.js",
 
-    //"js/require.js",
-    "js/app.js"
-
     // "js/jquery.sortable.min.js",
     // "js/throttle.js",
-
-    // "js/alohaeditor/aloha/lib/require.js",
-    // "js/alohaeditor/aloha/lib/aloha.js",
 
     /* Syntax highlighting for source viewing and editing */
     // "js/codemirror.js",
