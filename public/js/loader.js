@@ -53,7 +53,7 @@ var head = window.document.querySelector("head");
 
 
 function load_script(path, isFile) {
-    //console.log("loading script: " + path)
+    console.log("loading script: " + path)
     script= document.createElement('script');
     script.type= 'text/javascript';
     script.async = false;
@@ -115,7 +115,7 @@ function initialize() {
                 app_script = load_script("js/app.js", false);
             });
             */
-            
+
             app_script = load_script("js/app.js", false);
         }
 
