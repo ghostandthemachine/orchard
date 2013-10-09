@@ -261,18 +261,18 @@
   (log "done checking home")
 
   (go
-   (let [app-info (kv/local-get :app-info)]
-     (when (or (nil? app-info)
-               (not= (:version app-info) (:version APP-INFO)))
-       (log "Clearing DB...")
-       (kv/local-clear)
-       (log "start checking home")
-       (<! (setup/check-home db))
-       (log "done checking home")
-       (kv/local-set :app-info APP-INFO))))
+    (let [app-info (kv/local-get :app-info)]
+      (when (or (nil? app-info)
+              (not= (:version app-info) (:version APP-INFO)))
+        (log "Clearing DB...")
+        (kv/local-clear)
+        (log "start checking home")
+        (<! (setup/check-home db))
+        (log "done checking home")
+        (kv/local-set :app-info APP-INFO)))
     (log "Prepare logger")
     (logger/ready)
     (log "Init Aloha")
     (init-aloha)
     (log "Ready to start app...")
-    (object/raise app :start db))
+    (object/raise app :start db)))
