@@ -167,4 +167,3 @@
                           [:div.module-tray]
                           [:div.module-element
                             (render-aloha (:text record))]]))
-
