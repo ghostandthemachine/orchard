@@ -98,8 +98,8 @@
 (defn open-page
   [db page-id]
   (go
-    (let [doc (<! (model/load-object db page-id))]
-      (object/raise workspace/workspace :show-page doc))))
+    (let [page (<! (model/load-object db page-id))]
+      (object/raise workspace/workspace :show-page page))))
 
 
 (defn show-project
@@ -149,7 +149,7 @@
 
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
-              (.tooltip (js/$ ".sidebar-tab-item"))
+              (comment .tooltip (js/$ ".sidebar-tab-item"))
               (nw/show)
               (show-project db :home)))
 

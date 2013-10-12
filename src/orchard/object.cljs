@@ -172,6 +172,9 @@
     (reset! obj nil)))
 
 (defn store-inst [inst]
+  (log "object [" (::id @inst) "]: ")
+  (log-obj (clj->js @inst))
+
   (swap! instances assoc (::id @inst) inst)
   inst)
 

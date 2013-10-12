@@ -2,19 +2,20 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]
     [orchard.macros :refer [defui]])
-  (:require [orchard.object    :as object]
-            [crate.core      :as crate]
-            [orchard.util.core :refer [bound-do uuid]]
-            [orchard.util.dom  :as dom]
-            [cljs.core.async :refer [chan >! <!]]
-            [orchard.module    :refer [module-view spacer default-opts
-                                  edit-module-btn-icon delete-btn edit-btn handle-delete-module]]
-            [orchard.util.log  :refer (log log-obj)]
-            [crate.binding   :refer [bound subatom]]
-            [orchard.model     :as model]
-            [orchard.observe   :refer [observe]]
+  (:require [orchard.util.core  :refer [bound-do uuid]]
+            [cljs.core.async    :refer [chan >! <!]]
+            [orchard.module     :refer [module-view spacer default-opts
+                                        edit-module-btn-icon delete-btn
+                                        edit-btn handle-delete-module]]
+            [orchard.util.log   :refer (log log-obj)]
+            [crate.binding      :refer [bound subatom]]
+            [orchard.observe    :refer [observe]]
+            [orchard.object     :as object]
+            [crate.core         :as crate]
+            [orchard.util.dom   :as dom]
+            [orchard.model      :as model]
             [orchard.util.aloha :as aloha]
-            [dommy.core      :as dommy]))
+            [dommy.core         :as dommy]))
 
 
 (defn aloha-doc
@@ -75,6 +76,7 @@
 
 (defn save?
   [this]
+  (log "save?")
   (let [time-diff  (- (get-in @this [:save-data :last-save]) (get-time))
         press-diff (get-in
                       (object/update! this [:save-data :change-count] inc)
@@ -125,7 +127,15 @@
   (go
     (let [elem (<! (:ready-chan @this))
           elems (.getElementsByClassName elem "aloha-editable")]
-      (apply aloha/aloha elems))))
+      (apply aloha/aloha elems)
+
+      (.bind js/Aloha "aloha-editable-deactivated"
+             (fn [event arg]
+               (let [editor (.-activeEditable js/Aloha)
+
+                     content (.getContents editor)]
+               (log "editable-deactivated: " content)
+               (log-obj event)))))))
 
 
 (object/object* :aloha-module

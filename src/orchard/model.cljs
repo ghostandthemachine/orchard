@@ -35,13 +35,15 @@
 
 (defn load-object
   [db id]
+  (log "load-object...")
   (go
-    (let [doc (<! (get-object db id))]
-      (when doc
-        (let [obj-type (keyword (:type doc))
-              doc (assoc doc :db db)]
+    (let [obj (<! (get-object db id))]
+      (log "loading object: " obj)
+      (when obj
+        (let [obj-type (keyword (:type obj))
+              obj (assoc obj :db db)]
           (if (object/defined? obj-type)
-            (object/create obj-type doc)
+            (object/create obj-type obj)
             (do
               (log "load-object - type not found: " (str obj-type))
               :no-matching-page-type)))))))

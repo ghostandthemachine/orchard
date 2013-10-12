@@ -87,5 +87,5 @@
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click
   (fn [e]
-    (orchard.objects.app/open-document orchard.objects.app.db (last (clojure.string/split (.-href (.-target e)) #"/")))
+    (orchard.objects.app/open-page orchard.objects.app.db (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))

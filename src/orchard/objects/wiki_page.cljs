@@ -51,7 +51,7 @@
 (object/behavior* ::ready
   :triggers #{:ready}
   :reaction (fn [this]
-              (.tooltip
+              (comment .tooltip
                 (js/$ ".header-label")
                 (clj->js
                   {:delay 100
@@ -70,7 +70,7 @@
                   delete? (js/confirm msg)]
               (when delete?
                 (model/delete-document @this)
-                (orchard.objects.app/open-document orchard.objects.app.db :home)))))
+                (orchard.objects.app/open-page orchard.objects.app.db :home)))))
 
 
 
@@ -115,7 +115,7 @@
                 ]]))
 
 
-(dispatch/react-to #{:open-document}
+(dispatch/react-to #{:page-loaded}
   (fn [event-id document]
     (set-frame-title (:title @document))))
 

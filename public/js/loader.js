@@ -15,6 +15,7 @@ var css_files = [
 
 var js_files = [
     "js/jquery-1.9.0.js",
+    //"js/jquery-2.0.3.min",
     "bootstrap/js/bootstrap.min.js",
     "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
     "js/markdown_parser.js",

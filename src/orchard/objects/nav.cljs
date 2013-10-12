@@ -229,7 +229,7 @@
     (let [project-title  (clojure.string/replace project-title #"Project Name: " "")
           new-doc     (<! (build-document orchard.objects.app.db project-title "home"))]
       (clean-up)
-      (orchard.objects.app/open-document orchard.objects.app.db (:id @new-doc)))))
+      (orchard.objects.app/open-page orchard.objects.app.db (:id @new-doc)))))
 
 
 (defn create-document
@@ -239,7 +239,7 @@
           document-title  (clojure.string/replace document-title #"Document Name: " "")
           new-doc         (<! (build-document orchard.objects.app.db project-title document-title))]
       (clean-up)
-      (orchard.objects.app/open-document orchard.objects.app.db (:id @new-doc)))))
+      (orchard.objects.app/open-page orchard.objects.app.db (:id @new-doc)))))
 
 
 (defn handle-enter
