@@ -98,25 +98,29 @@
     (object/create :aloha-module
       (<! (aloha-doc (:db app))))))
 
-(def single-col
+(defn single-col
+  [a]
   [:div.span12.module-content.aloha-module-content
-      [:div {:class "aloha-editable"}]])
+      [:div {:class "aloha-editable"} a]])
 
-(def two-col
+; TODO: have to figure out how we would save multi-column content.
+(defn two-col
+  [a b]
   [:div.row.module-content.aloha-module-content
-    [:div.span6 {:class "aloha-editable"}]
-    [:div.span6 {:class "aloha-editable"}]])
+    [:div.span6 {:class "aloha-editable"} a]
+    [:div.span6 {:class "aloha-editable"} b]])
 
-(def three-col
+(defn three-col
+  [a b c]
   [:div.row.module-content.aloha-module-content
-    [:div.span4 {:class "aloha-editable"}]
-    [:div.span4 {:class "aloha-editable"}]
-    [:div.span4 {:class "aloha-editable"}]])
+    [:div.span4 {:class "aloha-editable"} a]
+    [:div.span4 {:class "aloha-editable"} b]
+    [:div.span4 {:class "aloha-editable"} c]])
 
 
 (defn render-aloha
-  []
-  (crate/html single-col))
+  [content]
+  (crate/html (single-col (crate/raw content))))
 
 
 (def icon [:span.btn.btn-primary.aloha-icon "aloha"])
@@ -126,16 +130,15 @@
   [this]
   (go
     (let [elem (<! (:ready-chan @this))
-          elems (.getElementsByClassName elem "aloha-editable")]
-      (apply aloha/aloha elems)
-
-      (.bind js/Aloha "aloha-editable-deactivated"
+          ;editor (.getElementsByClassName elem "aloha-editable")
+          editor (.find (js/$ elem) ".aloha-editable")]
+      (aloha/aloha editor)
+      (.blur editor
              (fn [event arg]
                (let [editor (.-activeEditable js/Aloha)
-
                      content (.getContents editor)]
-               (log "editable-deactivated: " content)
-               (log-obj event)))))))
+                 (log "saving aloha content: " content)
+                 (object/assoc! this :text content)))))))
 
 
 (object/object* :aloha-module
@@ -146,6 +149,8 @@
                 :icon icon
                 :text ""
                 :init (fn [this record]
+                        (log "new aloha module: ")
+                        (log-obj (clj->js record))
                         (object/merge! this record
                           {:save-data {:last-save (get-time)
                                        :change-count 0}})
@@ -161,4 +166,5 @@
                                :id (str "module-" (:id @this))}
                           [:div.module-tray]
                           [:div.module-element
-                            (render-aloha)]]))
+                            (render-aloha (:text record))]]))
+
