@@ -35,10 +35,23 @@
 (defn draw-tree
   [canvas-id]
   (let [target (.getElementById js/document canvas-id)
-        context (.getContext target "2d")]
-    (draw-tree* context
-                (int (/ (.-width target) 2.0))
-                (int (/ (.-height target) 2.0))
-                -90 9)))
+        context (.getContext target "2d")
+        counter (atom 0)
+        grown?  (atom false)]
+    (.requestAnimationFrame js/window 
+      (fn draw []
+        (let [depth (if @grown?
+                      9
+                      (+ 2 (mod (* 0.3 @counter) 7)))]
+          (when (> depth 8.90)
+            (reset! grown? true))
+          (swap! counter #(+ % 0.3))
+          (.clearRect context 0 0 (.-width target) (.-height target));
+          (draw-tree* context
+                      (int (/ (.-width target) 2.0))
+                      (int (/ (.-height target) 2.0))
+                      -90
+                      depth)
+          (.requestAnimationFrame js/window draw))))))
 
 
