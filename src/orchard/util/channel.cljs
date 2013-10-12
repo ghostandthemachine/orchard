@@ -1,7 +1,9 @@
 (ns orchard.util.channel
-  (:require [cljs.core.async :refer [go chan >! <! put! timeout alts!]]
-  					[orchard.util.dom :refer [on-event $ prevent]]
-  					[dommy.core :as dommy]))
+  (:require-macros
+    [cljs.core.async.macros :refer [go alt!]])
+  (:require [cljs.core.async :refer [chan >! <! put! timeout]]
+            [orchard.util.dom :refer [on-event $ prevent]]
+            [dommy.core :as dommy]))
 
 
 (defn event-chan

@@ -1,6 +1,7 @@
 (ns orchard.objects.app
+  (:refer-clojure :exclude [defonce])
   (:require-macros
-    [orchard.macros :refer [def]]
+    [orchard.macros :refer [defonce]]
     [cljs.core.async.macros :refer [go]])
   (:require
     [cljs.core.async           :refer [chan >! <! timeout]]
@@ -24,16 +25,16 @@
     orchard.objects.wiki-page))
 
 
-(def db  nil)
+(defonce db  nil)
 
-(def gui (js/node_require "nw.gui"))
-(def win (.Window.get gui))
+(defonce gui (js/node_require "nw.gui"))
+(defonce win (.Window.get gui))
 
-(def closing true)
+(defonce closing true)
 
 (declare app)
 
-(def windows js/global.windows)
+(defonce windows js/global.windows)
 
 (defn setup-tray
   []
@@ -82,20 +83,22 @@
   (kv/local-set :session {:x (.-x win) :y (.-y win)
                                       :width (.-width win) :height (.-height win)}))
 
+
 (defn restore-session []
   (if-let [sesh (js->clj (kv/local-get :session))]
     (let [sesh (into {} (for [[k v] sesh] [k (js/parseInt v)]))]
       (.moveTo win (:x sesh) (:y sesh))
       (.resizeTo win (:width sesh) (:height sesh)))))
 
+
 (defn ready? [this]
   (= 0 (:delays @this)))
 
 
-(defn open-document
-  [db doc-id]
+(defn open-page
+  [db page-id]
   (go
-    (let [doc (<! (model/load-object db doc-id))]
+    (let [doc (<! (model/load-object db page-id))]
       (object/raise workspace/workspace :show-page doc))))
 
 
@@ -103,7 +106,7 @@
   [db id]
   (go
     (let [project (<! (model/get-object db id))]
-      (open-document db (:root project)))))
+      (open-page db (:root project)))))
 
 
 (defn open-from-link
@@ -120,7 +123,7 @@
                         {}
                         all-docs)]
       (if-let [d (get-in projects [(clojure.string/lower-case project-title) (clojure.string/lower-case title)])]
-        (open-document db (:_id d))
+        (open-page db (:_id d))
         (log "Tried to open document that doesn't exist")))))
 
 
@@ -192,7 +195,7 @@
     ;; navbar show/hide
     6   orchard.objects.nav/toggle
     ;; go home
-    8   (partial orchard.objects.app/open-document :home)
+    8   (partial orchard.objects.app/open-page :home)
     ;; refesh
     18  (partial object/raise orchard.objects.app/app :refresh)
     ;; create new doc
@@ -254,18 +257,12 @@
   (log "repl server")
   (util/start-repl-server)
   (set! db (kv/local-store))
-
-  (kv/local-clear)
-  (log "start checking home")
-  (setup/check-home db)
-  (log "done checking home")
-
   (go
    (let [app-info (kv/local-get :app-info)]
+     (log "app-info: " app-info)
      (when (or (nil? app-info)
                (not= (:version app-info) (:version APP-INFO)))
        (log "Clearing DB...")
-       (kv/local-clear)
        (log "start checking home")
        (<! (setup/check-home db))
        (log "done checking home")

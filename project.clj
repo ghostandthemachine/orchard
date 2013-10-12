@@ -2,13 +2,12 @@
   :description "Distributed development of structured information spaces."
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure             "1.5.1"]
-                 [org.clojure/clojurescript       "0.0-1895"]
-                 [org.clojure/core.async          "0.1.0-SNAPSHOT"]
+                 [org.clojure/clojurescript       "0.0-1913"]
+                 [org.clojure/core.async          "0.1.242.0-44b1e3-alpha"]
                  [prismatic/dommy                 "0.1.1"]
                  [org.clojure/data.json           "0.2.1"]
                  [crate                           "0.2.4"]
                  [com.cemerick/clojurescript.test "0.0.4"]]
-                 ;[node-webkit-cljs          "0.1.4"]]
 
   :test-paths ["src/test/clojure"]
 

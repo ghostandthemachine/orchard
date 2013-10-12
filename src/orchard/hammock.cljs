@@ -2,7 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [chan >! <! put! timeout close! get!]]
+    [cljs.core.async :refer [chan >! <! put! timeout close!]]
     [orchard.objects.logger :as logger]
     [orchard.util.core :as util]
     [orchard.util.fetch :refer (xhr)]

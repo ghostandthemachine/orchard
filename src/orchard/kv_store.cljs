@@ -1,6 +1,6 @@
 (ns orchard.kv-store
   (:require-macros
-    [cljs.core.async.macros :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt!]])
   (:require
     [orchard.util.log :refer (log log-obj log-err)]
     [orchard.model :refer (ObjectStore ObjectIndex)]))
@@ -24,7 +24,7 @@
 (defn local-get
   "Get a value in the persistent local storage by key."
   [k]
-  (log "local-get: " k)
+  ;(log "local-get: " k)
   (try
     (let [k (if (keyword? k) (name k) (str k))
           obj-str (aget js/localStorage k)
@@ -32,8 +32,8 @@
                 (js->clj (.parse js/JSON obj-str)
                          :keywordize-keys true)
                 nil)]
-      (log "got obj: ")
-      (log-obj obj)
+      ;(log "got obj: ")
+      ;(log-obj obj)
       obj)
     (catch js/Error e
       (log "Exception in local-get: " e)

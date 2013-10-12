@@ -1,9 +1,9 @@
 (ns orchard.objects.project
   (:require-macros
     [orchard.macros :refer [defui defgui]]
-    [cljs.core.async.macros :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt!]])
   (:require
-    [cljs.core.async :refer [chan >!! <!! thread timeout]]
+    [cljs.core.async :refer [chan >! <! timeout]]
     [orchard.object :as object]
     [orchard.model :as model]
     [orchard.util.core :as util]

@@ -7,10 +7,10 @@
     [cljs.core.async :refer (chan >! <!)]
     [orchard.object    :as object]
     [orchard.module    :refer [module-btn-icon module-btn]]
-    [orchard.util.core :refer [bound-do]]
+    [orchard.util.core :refer [bound-do uuid]]
     [orchard.util.dom  :as dom]
     [orchard.model     :as model]
-    [orchard.util.log  :refer [log log-obj uuid]]
+    [orchard.util.log  :refer [log log-obj]]
     [crate.core      :as crate]
     [crate.binding   :refer [bound subatom]]
     [clojure.string  :as string]))

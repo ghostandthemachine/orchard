@@ -1,6 +1,6 @@
 (ns orchard.setup
   (:require-macros
-    [cljs.core.async.macros :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt!]])
   (:require [orchard.util.core :as util]
             [orchard.util.log :refer (log log-obj log-err)]
             [orchard.model     :as model]
@@ -24,17 +24,15 @@
 (defn check-home
   "Checks to see if the :home project exists, creating it if not."
   [db]
+  (log "checking for the home project...")
   (go
-    (log "Checking home...")
-    (let [doc (<! (model/get-object db :home))]
-      (log "doc returned for home")
-      (log-obj doc)
-      (if (nil? doc)
+    (let [obj (<! (model/get-object db :home))]
+      (log "home: [" obj "]")
+      (if obj
+        (log "Found home project.")
         (do
           (log "Creating home project...")
-          (save-home-project! db))
-        (do
-          (log "Found home project."))))))
+          (save-home-project! db))))))
 
 
 (defn test-doc

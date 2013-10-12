@@ -1,6 +1,6 @@
 (ns orchard.util.fs
   (:require-macros
-    [cljs.core.async.macros :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt!]])
   (:require
     [cljs.core.async    :refer (chan >! <! timeout)]))
 

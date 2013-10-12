@@ -1,9 +1,9 @@
 (ns orchard.objects.templates.single-column
   (:require-macros
     [orchard.macros :refer [defui]]
-     [cljs.core.async.macros :as m :refer [go alt! alts!]])
+     [cljs.core.async.macros :as m :refer [go alt!]])
   (:require
-    [cljs.core.async :refer (chan >!! <!! close! thread timeout)]
+    [cljs.core.async :refer (chan >! <! close! timeout)]
     [orchard.object :as object]
     [orchard.util.log :refer (log log-obj)]
     [orchard.util.core :as util]

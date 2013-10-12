@@ -1,6 +1,6 @@
 (ns orchard.model
   (:require-macros
-    [cljs.core.async.macros :refer [go alt! alts!]])
+    [cljs.core.async.macros :refer [go alt!]])
   (:require
     [orchard.util.core    :as util]
     [orchard.util.time    :as time]
