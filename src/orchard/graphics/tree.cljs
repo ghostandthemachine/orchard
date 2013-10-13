@@ -52,6 +52,7 @@
                       (int (/ (.-height target) 2.0))
                       -90
                       depth)
-          (.requestAnimationFrame js/window draw))))))
+          (if (not @grown?)
+            (.requestAnimationFrame js/window draw)))))))
 
 
