@@ -1,9 +1,7 @@
 (ns orchard.macros
   [:refer-clojure :exclude [defonce]]
   (:require [clojure.string :as str]
-            ;[cljs.core.async :refer [go chan >! <! put! timeout alts!]]
-            [cljs.analyzer :refer (*cljs-ns* get-expander)]
-            ))
+            [cljs.analyzer :refer (*cljs-ns* get-expander)]))
 
 
 (defmacro with-instance
@@ -35,6 +33,7 @@
   [sym]
   `(str '~*cljs-ns* "/" ~(name sym)))
 
+
 (defmacro defonce
   ^{:doc
     "Clojurescript version of defonce.
@@ -64,3 +63,20 @@ node.js callback scheme. For example:
                           (cljs.core.async/put! chan# {:error nil :value (~transformer value#)})))]
         (~@form callback#)
         chan#)))
+
+
+(defmacro with-log-group
+  [group-msg & body]
+  `(do
+       (.group js/console (str ~group-msg))
+       ~@body
+       (.groupEnd js/console)))
+
+
+(defmacro with-profile
+  [profile-name & body]
+  `(do
+       (.time js/console (str ~profile-name))
+       ~@body
+       (.timeEnd js/console (str ~profile-name))))
+
