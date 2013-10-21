@@ -126,11 +126,19 @@
 (def icon [:span.btn.btn-primary.aloha-icon "aloha"])
 
 
+(def aloha-settings
+  (clj->js
+    {:plugins
+      {:block
+        {:defaults
+          {".default-block" {}
+           ".columnBlock"   {"aloha-block-type" "UneditableColumnBlock"}}}}}))
+
+
 (defn init-aloha
   [this]
   (go
     (let [elem (<! (:ready-chan @this))
-          ;editor (.getElementsByClassName elem "aloha-editable")
           editor (.find (js/$ elem) ".aloha-editable")]
       (aloha/aloha editor)
       (.blur editor

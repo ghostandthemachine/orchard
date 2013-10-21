@@ -231,12 +231,15 @@
   (.querySelector js/window.document "body"))
 
 (defn load-js-file
-  [path]
+  [path & args]
   (let [js-file (.createElement js/document "script")]
     (aset js-file "src" path)
     (aset js-file "type" "text/javascript")
     (aset js-file "async" false)
+    (doseq [[arg v] (partition 2 args)]
+      (.setAttribute js-file arg v))
     (.appendChild (body) js-file)
+    (log-obj js-file)
     js-file))
 
 (defn init-aloha
@@ -244,7 +247,7 @@
   (aset js/window "requireNode" js/window.require)
   (aset js/window "require" nil)
   (load-js-file "js/aloha/require.js")
-  (load-js-file "js/aloha/aloha.js"))
+  (load-js-file "js/aloha/aloha.js" "data-aloha-plugins" "common/ui,common/format"))
 
 
 (def APP-INFO {:id      :app-info

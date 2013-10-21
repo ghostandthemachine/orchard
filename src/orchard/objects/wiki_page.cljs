@@ -15,12 +15,6 @@
     [orchard.util.log :refer (log log-obj)]))
 
 
-(defui render-template
-  [this template]
-  [:div.document-content
-    (object/->content template)])
-
-
 (object/behavior* ::save-document
   :triggers #{:save}
   :reaction (fn [this]
@@ -104,15 +98,9 @@
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div.document
-            [:div.row-fluid
-              [:div
-                (bound (subatom this [:template])
-                  (partial render-template this))]
-              ; [:div.pull-left
-              ;   (id-btn this)
-              ;   (delete-doc-btn this)]
-                ]]))
+          [:div.row-fluid.document
+            (bound (subatom this [:template])
+              #(object/->content %))]))
 
 
 (dispatch/react-to #{:page-loaded}

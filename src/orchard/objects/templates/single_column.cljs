@@ -95,9 +95,8 @@
                 (object/parent! this module)
                 (object/update! this [:modules] conj module))))
           [:div.template.single-column-template
-           [:div.modules-container
             (bound (subatom this :modules)
-                   (partial render-modules this))]]))
+                   (partial render-modules this))]))
 
 
 (defn single-column-template-doc

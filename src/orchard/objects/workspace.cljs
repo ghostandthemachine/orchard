@@ -80,18 +80,16 @@
                 :triggers  #{:show-page :add-sidebar}
                 :behaviors [::show-page ::add-sidebar]
                 :width 0
-                ; :channels {:event []}
                 :sidebar sidebar/sidebar
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
                         [:div#workspace
-                          [:div.document-container
-                            {:style {:left (bound (subatom orchard.objects.sidebar/sidebar :width) left-offset)}}
-                            (bound (subatom this :wiki-page) render-wiki-page)]]))
+                          ; {:style {:left (bound (subatom orchard.objects.sidebar/sidebar :width) left-offset)}}
+                          (bound (subatom this :wiki-page) render-wiki-page)]))
 
 (def workspace (object/create ::workspace))
-(dom/append (dom/$ :#container) (:content @workspace))
+(dom/replace-with (dom/$ :#workspace) (:content @workspace))
 
 
 ; (defn channel-type-supported?

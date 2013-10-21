@@ -1,4 +1,4 @@
-#container {
+#workspace {
   position: relative;
   top: -5px;
 }
@@ -12,6 +12,11 @@
     Document
 **************************************************************************/
 
+.document {
+  position: relative;
+  top: 100px;
+}
+/*
 .document-container {
   width: 100%;
   margin-left: 0;
@@ -21,7 +26,7 @@
   left: 0px;
   padding-right: 0;
   padding-left: 0;
-}
+}*/
 
 .header-label {
   margin-left: 5px;
@@ -274,9 +279,6 @@ li.modules-item {
   border-color: rgb(180, 180, 180);
   border-width: 1px;
   border-style: solid;
-}
-
-.modules-container {
 }
 
 .module-tray {
