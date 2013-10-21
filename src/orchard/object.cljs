@@ -1,5 +1,7 @@
 (ns orchard.object
   (:refer-clojure :exclude [set! assoc! dissoc! children])
+  (:require-macros
+    [orchard.macros :refer [with-log-group]])
   (:require [crate.core :as crate]
             [clojure.set :as set]
             [orchard.observe :refer [dom-ready-chan add-ready-observer]]
@@ -105,10 +107,11 @@
     id))
 
 
-(defn object* [name & r]
-  (-> (apply make-object* name r)
-      (store-object*)
-      (handle-redef)))
+(defn object* [obj-type & r]
+  (with-log-group (name obj-type)
+    (-> (apply make-object* obj-type r)
+        (store-object*)
+        (handle-redef))))
 
 
 (defn defined?

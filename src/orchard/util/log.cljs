@@ -1,12 +1,15 @@
 (ns orchard.util.log
   (:require [orchard.dispatch :as dispatch]))
 
+
 (defn log
   "Print a log message to the console."
   [v & text]
-  (let [vs (if (string? v)
-             (apply str v text)
-             (str v))]
+  (let [vs (cond 
+             (string? v) (apply str v text)
+             (= cljs.core/PersistentArrayMap (type v)) (clj->js v)
+             (= cljs.core/PersistentVector   (type v)) (clj->js v)
+             :default (str v))]
     (dispatch/fire :log-message vs)
     (.log js/console vs)))
 
@@ -15,9 +18,29 @@
 ; outputting objects, types, nested object structures, etc...
 (defn log-obj
   "Print a JS object to the console."
-  [obj]
-  (.log js/console obj)
-  obj)
+  [v]
+  (let [obj (cond 
+             (= cljs.core/PersistentArrayMap (type v)) (clj->js v)
+             (= cljs.core/PersistentVector   (type v)) (clj->js v)
+             :default v)]
+    (.log js/console obj)
+    v))
+
+
+(defn timeline
+  "Create a timeline entry if in timeline record mode."
+  [msg]
+  (.timeStamp js/console (str msg)))
+
+
+(defn profile-start
+  [name]
+  (.time js/console (str name)))
+
+
+(defn profile-end
+  [name]
+  (.timeEnd js/console (str name)))
 
 
 ;(defn trace-ns
