@@ -40,6 +40,7 @@
         grown?  (atom false)]
     (.requestAnimationFrame js/window 
       (fn draw []
+        (log "draw tree")
         (let [depth (if @grown?
                       9
                       (+ 2 (mod (* 0.3 @counter) 7)))]

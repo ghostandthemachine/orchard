@@ -4,7 +4,7 @@
             [crate.core :as crate]
             [orchard.util.dom :as dom]
             [orchard.util.core :refer [bound-do uuid]]
-            [orchard.module :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
+            [orchard.util.module :refer [default-opts edit-module-btn-icon delete-btn edit-btn]]
             [orchard.util.log :refer (log log-obj)]
             [crate.binding :refer [bound subatom]]
             [dommy.core :as dommy]))

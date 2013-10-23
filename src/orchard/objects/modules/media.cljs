@@ -6,7 +6,7 @@
   (:require
     [cljs.core.async :refer (chan >! <!)]
     [orchard.object    :as object]
-    [orchard.module    :refer [module-btn-icon module-btn]]
+    [orchard.util.module    :refer [module-btn-icon module-btn]]
     [orchard.util.core :refer [bound-do uuid]]
     [orchard.util.dom  :as dom]
     [orchard.model     :as model]

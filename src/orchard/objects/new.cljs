@@ -13,7 +13,7 @@
     [orchard.objects.modules.aloha :as aloha]
     [orchard.objects.wiki-page :as wiki-page]
     [orchard.objects.workspace :as workspace]
-    [orchard.module :as modules]
+    [orchard.util.module :as modules]
     [crate.binding :refer [subatom bound]]
     [orchard.util.log :refer (log log-obj)]
     [orchard.util.dom :as dom]))

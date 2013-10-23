@@ -8,7 +8,7 @@
     [crate.core :as crate]
     [orchard.util.core :refer [bound-do uuid]]
     [orchard.util.dom :as dom]
-    [orchard.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
+    [orchard.util.module :refer [module-view spacer default-opts edit-module-btn-icon delete-btn edit-btn]]
     [orchard.util.log :refer (log log-obj)]
     [crate.binding :refer [bound subatom]]
     [orchard.model :as model]
@@ -60,7 +60,7 @@
 (object/object* :markdown-module
                 :tags #{:modules}
                 :triggers #{:delete-module :save}
-                :behaviors [:orchard.module/delete-module :orchard.module/save-module]
+                :behaviors [:orchard.util.module/delete-module :orchard.util.module/save-module]
                 :mode :present
                 :label "Markdown"
                 :icon icon

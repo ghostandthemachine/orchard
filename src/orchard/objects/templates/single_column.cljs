@@ -9,7 +9,7 @@
     [orchard.util.core :as util]
     [orchard.util.dom :as dom]
     [orchard.model :as model]
-    [orchard.module :refer [top-spacer spacer]]
+    [orchard.util.module :refer [top-spacer spacer]]
     [orchard.objects.modules.module-selector :as selector]
     [crate.binding :refer [map-bound bound subatom]]))
 

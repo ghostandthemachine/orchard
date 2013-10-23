@@ -9,7 +9,7 @@
     [orchard.util.dom :as dom]
     [orchard.model :as model]
     [orchard.util.core :refer [bound-do uuid]]
-    [orchard.module :refer [module-view default-opts edit-module-btn-icon delete-btn edit-btn]]
+    [orchard.util.module :refer [module-view default-opts edit-module-btn-icon delete-btn edit-btn]]
     [orchard.util.log :refer (log log-obj)]
     [crate.binding :refer [bound subatom]]
     [dommy.core :as dommy]))
@@ -48,7 +48,7 @@
 (object/object* :html-module
   :tags #{:module}
   :triggers #{:save :delete}
-  :behaviors [:orchard.module/save-module :orchard.module/delete-module]
+  :behaviors [:orchard.util.module/save-module :orchard.util.module/delete-module]
   :mode :present
   :editor nil
   :icon icon

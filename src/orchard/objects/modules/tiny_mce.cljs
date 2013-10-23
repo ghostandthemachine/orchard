@@ -7,7 +7,7 @@
             [orchard.util.core :refer [bound-do uuid]]
             [orchard.util.dom  :as dom]
             [cljs.core.async :refer [chan >! <!]]
-            [orchard.module    :refer [module-view spacer default-opts
+            [orchard.util.module    :refer [module-view spacer default-opts
                                   edit-module-btn-icon delete-btn edit-btn handle-delete-module]]
             [orchard.util.log  :refer (log log-obj)]
             [crate.binding   :refer [bound subatom]]
@@ -236,7 +236,7 @@
 (object/object* :tiny-mce-module
                 :tags #{:modules}
                 :triggers #{:delete-module :save :ready}
-                :behaviors [:orchard.module/delete-module :orchard.module/save-module ::ready]
+                :behaviors [:orchard.util.module/delete-module :orchard.util.module/save-module ::ready]
                 :label "TinyMCE"
                 :icon icon
                 :text ""

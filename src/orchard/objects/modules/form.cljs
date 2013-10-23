@@ -3,7 +3,7 @@
     [dommy.macros :refer [sel]]
     [orchard.macros :refer [defui]])
   (:require [orchard.object :as object]
-            [orchard.module :refer [module-btn-icon module-btn]]
+            [orchard.util.module :refer [module-btn-icon module-btn]]
             [orchard.util.core :refer [bound-do]]
             [orchard.util.log :refer [log log-obj]]
             [crate.binding :refer [bound subatom]]

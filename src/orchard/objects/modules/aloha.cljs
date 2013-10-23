@@ -4,7 +4,7 @@
     [orchard.macros :refer [defui]])
   (:require [orchard.util.core  :refer [bound-do uuid]]
             [cljs.core.async    :refer [chan >! <!]]
-            [orchard.module     :refer [module-view spacer default-opts
+            [orchard.util.module     :refer [module-view spacer default-opts
                                         edit-module-btn-icon delete-btn
                                         edit-btn handle-delete-module]]
             [orchard.util.log   :refer (log log-obj)]
@@ -141,18 +141,19 @@
     (let [elem (<! (:ready-chan @this))
           editor (.find (js/$ elem) ".aloha-editable")]
       (aloha/aloha editor)
+      (aset js/Aloha "settings" aloha-settings)
       (.blur editor
              (fn [event arg]
                (let [editor (.-activeEditable js/Aloha)
                      content (.getContents editor)]
-                 (log "saving aloha content: " content)
+                 ; (log "saving aloha content: " content)
                  (object/assoc! this :text content)))))))
 
 
 (object/object* :aloha-module
                 :tags #{:modules}
                 :triggers #{:delete-module :save :ready}
-                :behaviors [:orchard.module/delete-module :orchard.module/save-module]
+                :behaviors [:orchard.util.module/delete-module :orchard.util.module/save-module]
                 :label "aloha"
                 :icon icon
                 :text ""
@@ -175,3 +176,24 @@
                           [:div.module-tray]
                           [:div.module-element
                             (render-aloha (:text record))]]))
+
+(comment
+
+
+(deftype AlohaModule
+  []
+  ModuleTransaction
+  (save-module! [parent object]
+    "Saves {:id value}.")
+
+  (add-module [parent object]
+    "Returns the object on a channel.")
+
+  (remove-module [parent object]
+    "Returns a seq of all objects on a channel.")
+
+  (move-module [parent source-index target-index]
+    "Swap position order of a module in a parent"))
+
+
+)

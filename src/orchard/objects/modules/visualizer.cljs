@@ -4,7 +4,7 @@
   (:require 
             [orchard.object :as object]
             [orchard.util.core :refer [uuid]]
-            [orchard.module :refer [module-btn-icon module-btn]]))
+            [orchard.util.module :refer [module-btn-icon module-btn]]))
 
 
 ; (defn visualizer-doc

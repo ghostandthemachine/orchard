@@ -9,7 +9,7 @@
     [orchard.util.core :as util]
     [orchard.util.dom :refer [set-frame-title]]
     [orchard.objects.templates.single-column :as single-column]
-    [orchard.module :as modules]
+    [orchard.util.module :as modules]
     [orchard.dispatch :as dispatch]
     [crate.binding :refer [subatom bound]]
     [orchard.util.log :refer (log log-obj)]))
