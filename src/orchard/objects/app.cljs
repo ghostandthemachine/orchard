@@ -17,7 +17,6 @@
     [orchard.util.time         :as time]
     [orchard.objects.nav       :as nav]
     [orchard.objects.logger    :as logger]
-    [orchard.objects.sidebar   :as sidebar]
     [orchard.util.nw           :as nw]
     [orchard.dispatch          :as dispatch]
     [orchard.objects.workspace :as workspace]
@@ -145,7 +144,6 @@
                      (object/raise this :quit)
                      (this-as this (.close this true))))
               (object/raise orchard.objects.nav/workspace-nav :add!)
-              ; (sidebar/init)
 
               ;; create resize handler
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
@@ -242,13 +240,6 @@
     (log-obj js-file)
     js-file))
 
-(defn init-aloha
-  []
-  (aset js/window "requireNode" js/window.require)
-  (aset js/window "require" nil)
-  (load-js-file "js/aloha/require.js")
-  (load-js-file "js/aloha/aloha.js" "data-aloha-plugins" "common/ui,common/format"))
-
 
 (def APP-INFO {:id      :app-info
                :version 0.1})
@@ -272,7 +263,5 @@
        (kv/local-set :app-info APP-INFO)))
     (log "Prepare logger")
     (logger/ready)
-    (log "Init Aloha")
-    (init-aloha)
     (log "Ready to start app...")
     (object/raise app :start db)))

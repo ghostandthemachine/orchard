@@ -176,24 +176,3 @@
                           [:div.module-tray]
                           [:div.module-element
                             (render-aloha (:text record))]]))
-
-(comment
-
-
-(deftype AlohaModule
-  []
-  ModuleTransaction
-  (save-module! [parent object]
-    "Saves {:id value}.")
-
-  (add-module [parent object]
-    "Returns the object on a channel.")
-
-  (remove-module [parent object]
-    "Returns a seq of all objects on a channel.")
-
-  (move-module [parent source-index target-index]
-    "Swap position order of a module in a parent"))
-
-
-)

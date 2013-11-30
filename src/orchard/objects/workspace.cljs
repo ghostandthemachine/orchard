@@ -1,6 +1,5 @@
 (ns orchard.objects.workspace
   (:require [orchard.object          :as object]
-            [orchard.objects.sidebar :as sidebar]
             [orchard.dispatch        :as dispatch]
             [orchard.util.core       :refer (has?)]
             [orchard.util.dom        :as dom]
@@ -18,12 +17,6 @@
   (object/->content doc))
 
 
-(object/behavior* ::add-sidebar
-                  :triggers #{:add-sidebar}
-                  :reaction (fn [this sidebar]
-                                (object/assoc! this :sidebar sidebar)))
-
-
 ; TODO:
 ; Change this to a more generic show-content, which just takes a UI element
 ; and loads it onto the main page.  (The ready handler(s) for the enclosed
@@ -35,9 +28,6 @@
                               (dispatch/fire :page-loading obj)
                               (let [workspace$ (dom/$ "#workspace")
                                     active     (:wiki-page @this)]
-                                ; TODO: Nothing to specific modules should be happening here...
-                                (orchard.objects.modules.tiny-mce/clear-editors!)
-
                                 (when active
                                   (dom/remove (:content @active)))
 
@@ -61,14 +51,7 @@
 (defn render-wiki-page
   [wiki-page]
   (when wiki-page
-  ; (log-obj (clj->js @wiki-page))
     (:content @wiki-page)))
-
-
-(defn render-sidebar
-  [sidebar]
-  (when sidebar
-    (:content @sidebar)))
 
 
 (defn left-offset
@@ -77,15 +60,13 @@
 
 
 (object/object* ::workspace
-                :triggers  #{:show-page :add-sidebar}
-                :behaviors [::show-page ::add-sidebar]
+                :triggers  #{:show-page}
+                :behaviors [::show-page]
                 :width 0
-                :sidebar sidebar/sidebar
                 :transients '()
                 :max-width default-width
                 :init (fn [this]
                         [:div#workspace
-                          ; {:style {:left (bound (subatom orchard.objects.sidebar/sidebar :width) left-offset)}}
                           (bound (subatom this :wiki-page) render-wiki-page)]))
 
 (def workspace (object/create ::workspace))

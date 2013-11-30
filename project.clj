@@ -1,9 +1,9 @@
 (defproject orchard "0.1.0-SNAPSHOT"
   :description "Distributed development of structured information spaces."
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure             "1.5.1"]
-                 [org.clojure/clojurescript       "0.0-1913"]
-                 [org.clojure/core.async          "0.1.242.0-44b1e3-alpha"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [org.clojure/clojurescript "0.0-2080"]
+                 [org.clojure/core.async "0.1.242.0-44b1e3-alpha"]
                  [prismatic/dommy                 "0.1.1"]
                  [org.clojure/data.json           "0.2.1"]
                  [crate                           "0.2.4"]
@@ -13,24 +13,24 @@
 
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
 
-  :plugins [[lein-cljsbuild "0.3.0"]]
+  :plugins [[lein-cljsbuild "1.0.1-SNAPSHOT"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds [{:id "whitespace"
-                        :source-paths ["src"]
+                        :source-paths ["src/orchard"]
                         :notify-command ["growlnotify" "-m"]
                         :compiler {:output-to "public/js/app.js"
-                                   :optimizations :whitespace
-                                   :warnings      true
-                                   :pretty-print  true}}
-
-                       {:id "advanced"
-                        :source-paths ["src"]
-                        :notify-command ["growlnotify" "-m"]
-                        :compiler {:output-to "public/js/app.js"
-                                   :optimizations :advanced
                                    :warnings      true
                                    :pretty-print  false
-                                   :externs ["resources/externs.js"]}}
+                                   :optimizations :whitespace}}
+
+                       ; {:id "advanced"
+                       ;  :source-paths ["src/orchard"]
+                       ;  :notify-command ["growlnotify" "-m"]
+                       ;  :compiler {:output-to "public/js/app.js"
+                       ;             :optimizations :advanced
+                       ;             :warnings      true
+                       ;             :pretty-print  false
+                       ;             :externs ["resources/externs.js"]}}
 
                        ; {:id "test"
                        ;  :source-paths ["test" "src"]

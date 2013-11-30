@@ -5,40 +5,13 @@ var initialized = false;
 (function(window) {
 
 var css_files = [
-    // "css/codemirror.css",
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
-    "css/jquery-ui.css",
-    "js/aloha/css/aloha.css",
-    "css/style.css"
-    ];
+    "css/style.css"];
 
 var js_files = [
     "js/jquery-1.9.0.js",
-    //"js/jquery-2.0.3.min",
-    "bootstrap/js/bootstrap.min.js",
-    "js/tinymce/jscripts/tiny_mce/tiny_mce.js",
-    "js/markdown_parser.js",
-
-    // "js/jquery.sortable.min.js",
-    // "js/throttle.js",
-
-    /* Syntax highlighting for source viewing and editing */
-    // "js/codemirror.js",
-    // "js/cm/clojure.js",
-    // "js/cm/markdown.js",
-    // "js/cm/gfm.js",
-
-    /* PDF viewer */
-    // "js/pdf/compatibility.js",
-    // "js/pdf/l10n.js",
-    // "js/pdf.js",
-    // "js/pdf/debugger.js",
-    // "js/pdf/viewer.js",
-
-    /* Interactive visualizations, charts, graphs... */
-    // "js/d3.v3.min.js",
-    ];
+    "bootstrap/js/bootstrap.min.js"];
 
 
 function log_error(err) {
@@ -108,15 +81,6 @@ function initialize() {
         } else {
             console.log("Loading app...");
 
-            /*
-            window.require = require;
-            init_aloha(function(aloha) {
-                console.log("Resetting require for node-webkit...");
-                require = window.require_nw;
-                app_script = load_script("js/app.js", false);
-            });
-            */
-
             app_script = load_script("js/app.js", false);
         }
 
@@ -126,7 +90,7 @@ function initialize() {
                     setTimeout(gui.App.quit, 5000);
                 } else {
                     console.log("Starting app...");
-                    orchard.objects.app.init();
+                    orchard.core.init();
                 }
             } catch (e) {
                 log_error(e);

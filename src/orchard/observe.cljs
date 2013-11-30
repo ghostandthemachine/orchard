@@ -30,21 +30,21 @@
         (>! chan n)))))
 
 
-(defn add-ready-observer
+(defn ready-observer
   "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
   [obj]
-  (when (:ready @obj)
-    (let [node (:content @obj)
-          ready-chan (chan)
-          observer (observe js/document.body (partial handle-node-ready node ready-chan) :child-list :subtree)]
-      (go
-        (let [created (<! ready-chan)]
-          (.disconnect observer)
-          ((:ready @obj) obj))))))
+  (log "ready-observer")
+  (let [node (:content obj)
+        ready-chan (chan)
+        observer (observe js/document.body (partial handle-node-ready node ready-chan) :child-list :subtree)]
+    (go
+      (let [created (<! ready-chan)]
+        (.disconnect observer)
+        ((:ready obj) obj)))))
 
 
 (defn dom-ready-chan
-  "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
+  "Takes an element and attaches an on-ready observer returning the element when it is added to the dom"
   [elem]
   (let [ready-chan (chan)
         ;; NOTE: this is a problem line. When :child-list is not present the app crashes

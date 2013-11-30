@@ -10,7 +10,8 @@
     [orchard.util.dom  :as dom]
     [crate.binding   :refer [map-bound bound subatom]]
     [orchard.model     :as model]
-    [orchard.dispatch  :as dispatch]))
+    [orchard.dispatch  :as dispatch]
+    [orchard.objects.new :as n]))
 
 
 (def visible* (atom true))
@@ -49,7 +50,7 @@
   [:li.nav-element
     [:i.icon-plus.icon-white]]
 
-  :click orchard.objects.new/load-new-doc)
+  :click n/load-new-doc)
 
 
 (defui home-btn
@@ -212,7 +213,7 @@
 (defn build-document
   [db project-title document-title]
   (go
-    (let [mod-doc    (<! (orchard.objects.modules.tiny-mce/tiny-mce-doc db))
+    (let [mod-doc    (<! (orchard.objects.modules.editor/editor-doc db))
           tpl-doc    (<! (orchard.objects.templates.single-column/single-column-template-doc db (:id mod-doc)))
           wiki-page   (<! (orchard.objects.wiki-pageument/wiki-page db
                              :title     document-title

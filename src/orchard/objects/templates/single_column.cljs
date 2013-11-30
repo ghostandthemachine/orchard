@@ -24,13 +24,8 @@
 (defui render-modules
   [this modules]
   [:ul.modules.connected-sortable
-    [:li.modules-item
-      (top-spacer this)]
     (for [module modules]
-      [:li.modules-item
-        [:div.row-fluid
-          (:content @module)]
-        (spacer module)])])
+      [:li.modules-item (:content @module)])])
 
 
 (object/behavior* ::save-template

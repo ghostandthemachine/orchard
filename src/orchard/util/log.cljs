@@ -112,8 +112,8 @@
 
 
 (defn log$
-  ([arg & args]
-    (log$ :global arg args))
+  ; ([arg & args]
+  ;   (log$ :global arg args))
   ([flags & args]
     (let [flags (flatten [flags])
           flagged? (reduce #(or %1 (in? %2)) false flags)

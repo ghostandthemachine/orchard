@@ -64,8 +64,8 @@
     (let [docs (<! (model/all-wiki-pages orchard.objects.app.db))]
       (dom/replace-with ($module this) (render-present docs))
       (when @load-tree? 
-          (reset! load-tree? false)
-          (tree/draw-tree "tree-canvas")))))
+        (reset! load-tree? false)
+        (tree/draw-tree "tree-canvas")))))
 
 
 (defn render-module
