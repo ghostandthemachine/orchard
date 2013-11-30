@@ -76,7 +76,7 @@
 (object/behavior* ::save-module
   :triggers #{:save}
   :reaction (fn [this]
-              (log "Save module")
+              ; (log "Save module")
               (let [original-doc (first (:args @this))
                     doc-keys     (conj (keys original-doc) :id :rev)
                     new-doc      (select-keys @this doc-keys)

@@ -16,7 +16,7 @@
 (defn local-set
   "Set a key/value pair in the persistent local storage."
   [k v]
-  (log "local-set " k " = " v)
+  ; (log "local-set " k " = " v)
   (let [k (if (keyword? k) (name k) (str k))]
     (aset js/localStorage k (.stringify js/JSON (clj->js v))))
   v)
