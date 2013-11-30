@@ -47,7 +47,7 @@
 
 (defui new-doc-btn
   []
-  [:li.nav-element
+  [:div.btn
     [:i.icon-plus.icon-white]]
 
   :click n/load-new-doc)
@@ -55,7 +55,7 @@
 
 (defui home-btn
   []
-  [:li.nav-element
+  [:div.btn
     [:i.icon-home.icon-white]]
 
   :click (fn [e]
@@ -97,13 +97,13 @@
 
 (defn lock-btn
   [this]
-  [:li.nav-element
+  [:div.btn
     (bound (subatom this [:locked?]) (partial lock-btn-handler this))])
 
 
 (defui refresh-btn
   []
-  [:li.nav-element
+  [:div.btn
     [:i.icon-refresh.icon-white]]
   :click (fn [e]
             (object/raise orchard.objects.app/app :refresh)))
@@ -111,7 +111,7 @@
 
 (defui synch-btn
   []
-  [:li.nav-element
+  [:div.btn
    [:i.icon-sitemap.icon-white]]
   :click (fn [e]
            (log "synch projects")
@@ -122,7 +122,7 @@
 
 (defui dev-tools-btn
   []
-  [:li.nav-element
+  [:div.btn
     [:i.icon-dashboard.icon-white]]
   :click (fn [e]
             (object/raise orchard.objects.app/app :show-dev-tools)))
@@ -328,14 +328,11 @@
           (let [key-chan (chan)]
             (object/assoc! this :ready init-navbar)
             (handle-keypress this key-chan)
-            [:div#nav-wrapper.nav
-              [:ul#nav-list
+            [:form.navbar-form.navbar-left.main-nav
+              [:div.form-group
                 (home-btn)
                 (new-doc-btn)
                 (refresh-btn)
-                (text-input this key-chan)
-                (lock-btn this)
-                (synch-btn)
                 (dev-tools-btn)]])))
 
 

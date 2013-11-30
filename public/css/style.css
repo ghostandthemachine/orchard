@@ -47,30 +47,16 @@
   Top Nav
 ***************************************************************************/
 
-#nav-wrapper {
-  background:transparent;
-}
 
-ul#nav-list {
-  list-style: none;
+.main-nav {
   background: rgb(120 ,120 ,120 );
   position: fixed;
   width: 100%;
   bottom: 0px;
   margin: 0;
-  overflow: hidden;
   z-index: 10;
 }
 
-
-ul#nav-list li {
-  display: inline;
-}
-
-ul#nav-list li.nav-element:hover {
-  background:#ccc;
-  color:#555;
-}
 
 .nav-element {
   margin: 0;
@@ -78,7 +64,6 @@ ul#nav-list li.nav-element:hover {
   height: 30px;
   -webkit-user-select: none;
   user-select: none;
-
 }
 
 .nav-input-element {
@@ -487,9 +472,39 @@ td.mceIframeContainer.mceFirst.mceLast {
 
 
 /**************************************************************************
-    Aloha
+    Editor
 ***************************************************************************/
 
-.aloha-module-content {
-  padding: 10px;
+.editable {
+  margin: 10px;
+  margin-top: 35px;
+  outline-width: 0.5px;
+  outline-color: #88D800;
+}
+
+.editable-toolbar {
+  display: block;
+  margin: 0px;
+  margin-bottom: 10px;
+  position: fixed;
+  top: 0px;
+  background: white;
+  height: 0px;
+  z-index: 100;
+  width: 100%;
+  padding: 3px;
+  height: 36px;
+}
+
+.editable-toolbar-subgroup {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.justify-btn {
+  height: 30px;
+}
+
+.editor-top {
+  height: 0;
 }

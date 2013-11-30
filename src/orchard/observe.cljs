@@ -19,12 +19,20 @@
     obs))
 
 
+(defn observer-chan
+  [elem & config]
+  (let [c (chan)]
+    (new js/WebKitMutationObserver (partial put! c)
+      (reduce #(assoc %1 (js-style-name (name %2)) true) {} config))
+    c))
+
+
 (defn handle-node-ready
   "Given a node to query for, a channel, and an Array of MutationRecords,
   the querried node will be pushed onto the channel once found."
-  [node chan records]
+  [el chan records]
   (let [nodes (apply concat (map (fn [mr] (aget mr "addedNodes")) records))
-        n     (filter #(= node %) nodes)]
+        n     (filter #(= el %) nodes)]
     (go
       (when n
         (>! chan n)))))
@@ -34,9 +42,11 @@
   "Takes a Thinker Object (atom) and attaches an on-ready observer if a :ready handler is registered in the object."
   [obj]
   (log "ready-observer")
-  (let [node (:content obj)
-        ready-chan (chan)
-        observer (observe js/document.body (partial handle-node-ready node ready-chan) :child-list :subtree)]
+  (let [el          (:content obj)
+        ready-chan  (chan)
+        observer    (observe js/document.body
+                      (partial handle-node-ready el ready-chan)
+                      :child-list :subtree)]
     (go
       (let [created (<! ready-chan)]
         (.disconnect observer)

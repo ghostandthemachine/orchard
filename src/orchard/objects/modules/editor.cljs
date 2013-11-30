@@ -2,17 +2,18 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]
     [orchard.macros :refer [defui]])
-  (:require [cljs.core.async    :refer [chan >! <!]]
-            [orchard.util.module     :refer (module-view spacer default-opts
-                                             edit-module-btn-icon delete-btn
-                                             edit-btn handle-delete-module)]
-            [orchard.util.core  :refer (bound-do uuid)]
-            [orchard.util.log   :refer (log log-obj)]
-            [crate.binding      :refer (bound subatom)]
-            [orchard.object     :as object]
-            [crate.core         :as crate]
-            [orchard.model      :as model]
-            [orchard.objects.editable.editor :as editor]))
+  (:require [cljs.core.async          :refer [chan >! <! put!]]
+            [orchard.util.module      :refer (module-view spacer edit-module-btn-icon delete-btn edit-btn handle-delete-module)]
+            [orchard.util.core        :refer (bound-do uuid)]
+            [orchard.util.log         :refer (log log-obj)]
+            [orchard.util.dom         :as dom]
+            [orchard.editable.toolbar :as toolbar]
+            [orchard.editable.core    :refer [event-chan make-editable! selected-node]]
+            [orchard.object           :as object]
+            [orchard.observe          :as observe]
+            [orchard.model            :as model]
+            [crate.binding            :refer (bound subatom)]
+            [crate.core               :as crate]))
 
 
 (defn editor-doc
@@ -27,27 +28,122 @@
 (defn sel [this] (str "editor-" (:id @this)))
 
 
-(defn render-editor
-  [this]
-  (crate/html
-    [:div {:id (sel this)}
-      (:text @this)]))
+(defn default-editor-element
+  [opts]
+  [:div.editable])
 
 
 (def icon [:span.btn.btn-primary.editor-icon "editor"])
 
 
-(defn init-editor
+
+(defn set-btn-active
+  [editor sel b]
+  (let [btn     (dom/$ (:toolbar editor) sel)
+        active? (dom/has-class? btn "active")]
+    (if b
+      (when-not active?
+        (dom/add-class btn "active"))
+      (when active?
+        (dom/remove-class btn "active")))))
+
+
+(defn toggle-bold-btn
+  [editor]
+  (if (= (.-nodeName (selected-node)) "B")
+    (set-btn-active editor "bold-btn" true)
+    (set-btn-active editor "bold-btn" false)))
+
+
+;; Channel based go block handlers
+(defn mouse-down-handler
+  [{:keys [channels] :as editor}]
+  (go
+    (loop []
+      (let [ev (<! (:mouse-down-chan channels))]
+        (log-obj (selected-node))
+        (toggle-bold-btn editor))
+      (recur))))
+
+(defn mouse-up-handler
+  [{:keys [channels] :as editor}]
+  (go
+    (loop []
+      (let [ev (<! (:mouse-up-chan channels))]
+        (log-obj (selected-node))
+        (toggle-bold-btn editor)
+      (recur)))))
+
+
+(def default-opts
+  {:editor-height "100px"})
+
+
+(defn create-editor
+  [this & opts]
+  (let [opts              (merge default-opts (apply hash-map (flatten (partition 2 opts))))
+
+        element           (crate/html (default-editor-element opts))
+        toolbar           (crate/html (toolbar/view))
+
+        mouse-click-chan  (event-chan element :click)
+        mouse-down-chan   (event-chan element :mousedown)
+        mouse-up-chan     (event-chan element :mouseup)
+        blur-chan         (event-chan element :blur)
+        focus-chan        (event-chan element :focus)
+        input-chan        (event-chan element :input)
+
+        editor            (merge opts
+                            {:container   [:div.editor-container toolbar element]
+                             :element     element
+                             :toolbar     toolbar
+                             :channels   {:blur         blur-chan
+                                          :focus        focus-chan
+                                          :input        input-chan
+                                          :mouse-click  mouse-click-chan
+                                          :mouse-down   mouse-down-chan
+                                          :mouse-up     mouse-up-chan}})]
+        ;; look and feel
+    (dom/set-css element {:height (:editor-height opts)})
+    (make-editable! element)
+    editor))
+
+(defn toolbar
   [this]
-  (log "call init editor")
-  (let [ed-obj (editor/editor (sel this))
-        editor (:editor ed-obj)]
-    (object/assoc! this :editor editor)
-    (.blur editor
-    (fn [event arg]
-      (let [content (.getContents editor)]
-        (log "saving editor content: " content)
-        (object/assoc! this :text content))))))
+  (get-in @this [:editor :toolbar]))
+
+
+(defn editor-element
+  [this]
+  (get-in @this [:editor :element]))
+
+
+(defn editor-container
+  [this]
+  (get-in @this [:editor :container]))
+
+
+(defn editor-content
+  [this]
+  (aget (editor-element this) "innerHTML"))
+
+(defn set-editor-content
+  [this content]
+  (aset (editor-element this) "innerHTML" content))
+
+
+(defn initialize-editor
+  [this]
+  (aset (editor-element this) "id" (sel this))
+  (set-editor-content this (:text @this))
+  ;; observe inputs changes and save
+  (go
+    (while true
+      (let [e (<! (get-in @this [:editor :channels :input]))]
+        (object/assoc! this
+          :text (editor-content this)))))
+  ;; return the container element holding the editor and toolbar
+  (editor-container this))
 
 
 (object/object* :editor-module
@@ -56,15 +152,24 @@
                 :behaviors [:orchard.util.module/delete-module :orchard.util.module/save-module]
                 :label "editor"
                 :icon icon
-                :ready init-editor
                 :text ""
                 :init (fn [this record]
                         (log "new editor module: ")
-                        (log-obj (clj->js record))
-                        (object/merge! this record)
+
+                        (object/merge!
+                          this
+                          record
+                          {:editor (create-editor this)})
+
+                        (bound-do (subatom this :text)
+                          (fn [& args]
+                            (object/raise this :save)))
+
+                        (initialize-editor this)
+
                         [:div {:class (str "span12 module " (:type @this))
                                :id (str "module-" (:id @this))}
-                          (render-editor this)]))
+                          (editor-container this)]))
 
 
 (defn create-module

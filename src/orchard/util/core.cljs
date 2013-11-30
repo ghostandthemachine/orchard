@@ -456,3 +456,8 @@
         end     (re-seq #"[A-Z][a-z0-9]*" attr-name)
         cleaned (map #(str "-" (clojure.string/lower-case %)) end)]
     (apply str (flatten (merge cleaned start)))))
+
+
+(defn jsify
+  [v]
+  (js-style-name (name v)))

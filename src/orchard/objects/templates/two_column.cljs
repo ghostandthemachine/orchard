@@ -10,14 +10,14 @@
 ;   [this modules]
 ;   [:div.modules
 ;     (for [module (:left modules)]
-;       [:div.row-fluid
+;       [:div.row
 ;         (:content @module)])])
 
 ; (defn render-right-modules
 ;   [this modules]
 ;   [:div.modules
 ;     (for [module (:right modules)]
-;       [:div.row-fluid
+;       [:div.row
 ;         (:content @module)])])
 
 

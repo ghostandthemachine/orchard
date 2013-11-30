@@ -35,14 +35,16 @@
 (defui render-present
   [docs]
   [:div.module-content.index-module-content
-   [:h3 "Index"]
-    [:div.span4
-     [:ul
-      (for [doc docs]
-        [:li
-          [:a {:href (:id doc)} (str (when (:project doc) (str (:project doc) " - ")) (:title doc))]])]]
-   [:div.span4
-    [:canvas#tree-canvas {:width 400 :height 600}]]])
+    [:div.row
+      [:h3 "Index"]]
+    [:div.row
+      [:div.span4
+       [:ul
+        (for [doc docs]
+          [:li
+            [:a {:href (:id doc)} (str (when (:project doc) (str (:project doc) " - ")) (:title doc))]])]]
+      [:div.span4
+        [:canvas#tree-canvas {:width 400 :height 400}]]]])
 
 
 (defui render-edit
@@ -84,7 +86,7 @@
                         (object/merge! this record)
                         (bound-do (subatom this [:mode]) (partial render-module this))
                         (load-index this)
-                        [:div.container-fluid
+                        [:div.container
                           [:div.span11.module.index-module {:id (str "module-" (:id @this))}
                             [:div.module-tray (module-btn this)]
                             [:div.module-content.index-module-content]]]))

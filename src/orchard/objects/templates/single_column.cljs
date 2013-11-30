@@ -10,7 +10,6 @@
     [orchard.util.dom :as dom]
     [orchard.model :as model]
     [orchard.util.module :refer [top-spacer spacer]]
-    [orchard.objects.modules.module-selector :as selector]
     [crate.binding :refer [map-bound bound subatom]]))
 
 
@@ -23,18 +22,22 @@
 
 (defui render-modules
   [this modules]
-  [:ul.modules.connected-sortable
+  [:div.modules
     (for [module modules]
-      [:li.modules-item (:content @module)])])
+      (let [content (:content @module)]
+        (when (:ready @module)
+          (go
+            (let [rc        (<! (:ready-chan @module))
+                  ready-fn  (:ready @module)]
+              (ready-fn module))))
+        content))])
 
 
 (object/behavior* ::save-template
   :triggers #{:save}
   :reaction
   (fn [this]
-    (let [mod-ids      (map #(:id @%)
-                            (filter
-                              #(not= (:type @%) "module-selector-module") (:modules @this)))
+    (let [mod-ids      (map #(:id @%) (:modules @this))
           original-doc (first (:args @this))
           rev          (:rev original-doc)
           id           (:id original-doc)
@@ -71,11 +74,7 @@
   :reaction (fn [this template new-mod index]
               (object/parent! template new-mod)
               (object/update! template [:modules] #(util/insert-at % index new-mod))
-              (object/raise this :save)
-         ;      (.css (js/$ ".module")
-  							; "background-color"
-  							; "rgb(247, 247, 247)")
-              ))
+              (object/raise this :save)))
 
 
 (object/object* :single-column-template
@@ -102,4 +101,3 @@
       {:type :single-column-template
        :modules mod-ids
        :id id})))
-

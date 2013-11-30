@@ -49,11 +49,11 @@
   :triggers #{}
   :behaviors []
   :init (fn [this]
-          [:div.container-fluid
+          [:div.container
             [:div.span9.offset3
-              [:div.row-fluid
+              [:div.row
                 [:h4 "Create a new Wiki Document"]]
-              [:div.row-fluid
+              [:div.row
                 [:div.new-content.new-document-content
                   (new-document-form this)]]]]))
 

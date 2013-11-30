@@ -97,7 +97,7 @@
               (object/parent! this tpl-obj)
               (object/raise tpl-obj :post-init (:id @this))))
           (object/merge! this document {:template (atom {:content [:div]})})
-          [:div.row-fluid.document
+          [:div.document
             (bound (subatom this [:template])
               #(object/->content %))]))
 

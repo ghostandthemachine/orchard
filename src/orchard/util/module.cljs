@@ -227,7 +227,7 @@
 
 (defui top-spacer
   [template]
-  [:div.row-fluid.spacer-tray
+  [:div.row.spacer-tray
     [:ul.spacer-nav.pagination-centered {:id (str "top-spacer-nav-" (:id @template))}
       [:li.active.spacer-item
         (create-module-btn template :top)]]]
@@ -246,7 +246,7 @@
 
 (defui spacer
   [module]
-  [:div.row-fluid.spacer-tray
+  [:div.row.spacer-tray
    [:ul.spacer-nav.pagination-centered {:id (str "spacer-nav-" (:id @module))}
     [:li.active.spacer-item
      (create-module-btn module :content)]]]
