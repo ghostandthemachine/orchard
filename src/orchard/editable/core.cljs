@@ -163,3 +163,12 @@
       (.moveToElementText rng el)
       (.collapse rng false)
       (.select rng))))
+
+
+(defn find-nodes
+  [element]
+  (loop [el (aget element "parentNode") nodes []]
+    (if-let [p (aget el "parentNode")]
+      (recur (aget el "parentNode") (distinct (conj nodes (aget el "nodeName"))))
+      ;; drop '(HTML BODY ...)
+      (drop 2 nodes))))

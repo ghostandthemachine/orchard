@@ -8,7 +8,7 @@
             [orchard.util.log         :refer (log log-obj)]
             [orchard.util.dom         :as dom]
             [orchard.editable.toolbar :as toolbar]
-            [orchard.editable.core    :refer [event-chan make-editable! selected-node]]
+            [orchard.editable.core    :refer [event-chan make-editable! selected-node has-node]]
             [orchard.object           :as object]
             [orchard.observe          :as observe]
             [orchard.model            :as model]
@@ -60,7 +60,7 @@
   [{:keys [channels] :as editor}]
   (go
     (loop []
-      (let [ev (<! (:mouse-down-chan channels))]
+      (let [ev (<! (:mouse-down channels))]
         (log-obj (selected-node))
         (toggle-bold-btn editor))
       (recur))))
@@ -69,10 +69,18 @@
   [{:keys [channels] :as editor}]
   (go
     (loop []
-      (let [ev (<! (:mouse-up-chan channels))]
+      (let [ev (<! (:mouse-up channels))]
         (log-obj (selected-node))
         (toggle-bold-btn editor)
       (recur)))))
+
+
+(defn input-handler
+  [{:keys [channels] :as editor}]
+  (go
+    (while true
+      (let [in (<! (:input channels))]
+        (log-obj in)))))
 
 
 (def default-opts
@@ -106,6 +114,7 @@
         ;; look and feel
     (dom/set-css element {:height (:editor-height opts)})
     (make-editable! element)
+    (input-handler editor)
     editor))
 
 (defn toolbar
@@ -133,6 +142,8 @@
 
 
 (defn initialize-editor
+  "Here we intialize editor content and set selection ids. Doing this here
+  allows editr creatino to be independant of the object system."
   [this]
   (aset (editor-element this) "id" (sel this))
   (set-editor-content this (:text @this))
@@ -154,8 +165,6 @@
                 :icon icon
                 :text ""
                 :init (fn [this record]
-                        (log "new editor module: ")
-
                         (object/merge!
                           this
                           record

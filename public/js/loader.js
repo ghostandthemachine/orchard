@@ -7,7 +7,8 @@ var initialized = false;
 var css_files = [
     "bootstrap/css/bootstrap.min.css",
     "font-awesome/css/font-awesome.min.css",
-    "css/style.css"];
+    "css/style.css",
+    "css/slide-menu.css"];
 
 var js_files = [
     "js/jquery-1.9.0.js",

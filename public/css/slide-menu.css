@@ -1,0 +1,208 @@
+/*from http://tympanus.net/codrops/2013/04/17/slide-and-push-menus/*/
+
+/* General styles for all menus */
+ 
+.slide-menu {
+    background: #47a3da;
+    position: fixed;
+}
+ 
+.slide-menu h3 {
+    color: #afdefa;
+    font-size: 1.9em;
+    padding: 20px;
+    margin: 0;
+    font-weight: 300;
+    background: #0d77b6;
+}
+ 
+.slide-menu a {
+    display: block;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 300;
+}
+ 
+.slide-menu a:hover {
+    background: #258ecd;
+}
+ 
+.slide-menu a:active {
+    background: #afdefa;
+    color: #47a3da;
+}
+ 
+
+.slide-menu-btn {
+    background: #47a3da;
+    position: fixed;
+}
+
+/* Orientation-dependent styles for the content of the menu */
+
+.slide-menu-btn-vertical {
+    width: 25px;
+    height: 30px;
+    top: 10px;
+    padding-top: 6px;
+    padding-left: 7px;
+    z-index: 999999999;
+}
+
+.slide-menu-btn-right {
+    right: 0px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    border-style: solid;
+    border-width: 0px;
+}
+
+.slide-menu-btn-right.slide-menu-btn-open {
+    right: 240px;
+}
+
+
+.slide-menu-vertical {
+    width: 240px;
+    height: 100%;
+    top: 0;
+    z-index: 999999999;
+}
+ 
+.slide-menu-vertical a {
+    border-bottom: 1px solid #258ecd;
+    padding: 1em;
+}
+ 
+.slide-menu-horizontal {
+    width: 100%;
+    height: 150px;
+    left: 0;
+    z-index: 999999999;
+    overflow: hidden;
+}
+ 
+.slide-menu-horizontal h3 {
+    height: 100%;
+    width: 20%;
+    float: left;
+}
+ 
+.slide-menu-horizontal a {
+    float: left;
+    width: 20%;
+    padding: 0.8em;
+    border-left: 1px solid #258ecd;
+}
+ 
+/* Vertical menu that slides from the left or right */
+ 
+.slide-menu-left {
+    left: -240px;
+}
+ 
+.slide-menu-right {
+    right: -240px;
+}
+ 
+.slide-menu-left.slide-menu-open {
+    left: 0px;
+}
+ 
+.slide-menu-right.slide-menu-open {
+    right: 0px;
+}
+ 
+/* Horizontal menu that slides from the top or bottom */
+ 
+.slide-menu-top {
+    top: -150px;
+}
+ 
+.slide-menu-bottom {
+    bottom: -150px;
+}
+ 
+.slide-menu-top.slide-menu-open {
+    top: 0px;
+}
+ 
+.slide-menu-bottom.slide-menu-open {
+    bottom: 0px;
+}
+ 
+/* Push classes applied to the body */
+ 
+.slide-menu-push {
+    overflow-x: hidden;
+    position: relative;
+    left: 0;
+}
+ 
+.slide-menu-push-toright {
+    left: 240px;
+}
+ 
+.slide-menu-push-toleft {
+    left: -240px;
+}
+ 
+/* Transitions */
+ 
+.slide-menu,
+.slide-menu-push {
+    -webkit-transition: all 0.175s ease-in-out;
+}
+
+
+.slide-menu-btn,
+.slide-menu-btn-push {
+    -webkit-transition: all 0.175s ease-in-out;
+}
+ 
+/* Example media queries */
+ 
+@media screen and (max-width: 55.1875em){
+ 
+    .slide-menu-horizontal {
+        font-size: 75%;
+        height: 110px;
+    }
+ 
+    .slide-menu-top {
+        top: -110px;
+    }
+ 
+    .slide-menu-bottom {
+        bottom: -110px;
+    }
+ 
+}
+ 
+@media screen and (max-height: 26.375em){
+ 
+    .slide-menu-vertical {
+        font-size: 90%;
+        width: 190px;
+    }
+ 
+    .slide-menu-left,
+    .slide-menu-push-toleft {
+        left: -190px;
+    }
+ 
+    .slide-menu-right {
+        right: -190px;
+    }
+ 
+    .slide-menu-push-toright {
+        left: 190px;
+    }
+}
+
+
+/*Buttons*/
+ 
+.white, .white a {
+  color: #fff;
+}

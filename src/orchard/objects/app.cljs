@@ -15,6 +15,7 @@
     [orchard.util.dom          :as dom]
     [orchard.util.core         :as util]
     [orchard.util.time         :as time]
+    [orchard.sidebar   :as sidebar]
     [orchard.objects.nav       :as nav]
     [orchard.objects.logger    :as logger]
     [orchard.util.nw           :as nw]
@@ -244,9 +245,18 @@
 (def APP-INFO {:id      :app-info
                :version 0.1})
 
+
+(defn setup-sidebar
+  []
+  (let [el (body)
+        [menu btn] (sidebar/sidebar-components)]
+    (dom/append el menu)
+    (dom/append el btn)))
+
 (defn init []
   (log "dev tools")
   (.showDevTools win)
+  (setup-sidebar)
   (nw/show)
   (log "repl server")
   (util/start-repl-server)

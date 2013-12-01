@@ -85,6 +85,12 @@
   (.appendChild parent child)
   parent)
 
+(defn prepend [parent child]
+  (.insertBefore
+    parent
+    child
+    (aget parent "firstChild")))
+
 
 (defn add-class [elem class]
   (when elem
