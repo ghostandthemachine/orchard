@@ -477,7 +477,7 @@ td.mceIframeContainer.mceFirst.mceLast {
 
 .editable {
   margin: 10px;
-  margin-top: 35px;
+  margin-top: 45px;
   outline-width: 0.5px;
   outline-color: #88D800;
 }
@@ -508,4 +508,8 @@ td.mceIframeContainer.mceFirst.mceLast {
 
 .editor-top {
   height: 0;
+}
+
+.new-document-container {
+  margin-top: 100px;
 }

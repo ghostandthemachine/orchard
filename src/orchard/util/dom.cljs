@@ -430,4 +430,3 @@
       (first
         (filter #(= c %) elems)))
     nil))
-

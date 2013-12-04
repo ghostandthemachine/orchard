@@ -35,7 +35,7 @@
 
 (defn load-object
   [db id]
-  (log "load-object...")
+  ; (log "load-object...")
   (go
     (let [obj (<! (get-object db id))]
       (log "loading object: " obj)
@@ -74,11 +74,6 @@
    :updated-at (util/date-json)})
 
 
-(defn project
-  "Create a new project with a title."
-  [{:keys [title root] :as project}]
-  (merge project (module :project)))
-
 (defn wiki-page
   "Create a new wiki page with the given template, title and revision number."
   [{:keys [title template] :as page}]
@@ -94,6 +89,28 @@
 (defn index-module
   []
   (module :index-module))
+
+
+(defn project
+  "Create a new project with a title."
+  [{:keys [title root] :as project}]
+  (merge project (module :project)))
+
+
+(defn create-project
+  "Creates a project, saving all enclosed objects in the database."
+  [db {:keys [title]}]
+  (log "Create project")
+  (let [index     (module :project-index-module)
+        tpl       (single-column-template (:id index))
+        page      (wiki-page {:title "Home" :template (:id tpl)})
+        project   (project  {:title title :root (:id page) :documents []})
+        index     (assoc index :project (:id project))]
+    (doseq [obj [index tpl page project]]
+      (log "save new project elements")
+      (log-obj obj)
+      (save-object! db (:id obj) obj))
+    project))
 
 
 (defn html-module

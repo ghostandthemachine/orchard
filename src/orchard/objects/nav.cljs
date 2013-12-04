@@ -49,7 +49,6 @@
   []
   [:div.btn
     [:i.icon-plus.icon-white]]
-
   :click n/load-new-doc)
 
 

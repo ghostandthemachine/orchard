@@ -33,33 +33,3 @@
         (do
           (log "Creating home project...")
           (save-home-project! db))))))
-
-
-(defn test-doc
-  [id tpl-id]
-  (assoc (model/wiki-page
-           {:title (str "test-doc[" id "]")
-            :template tpl-id})
-         :id id))
-
-
-(defn create-test-doc
-  [db]
-  (let [md-doc     (model/markdown-module)
-        ht-doc     (model/html-module)
-        tpl-doc    (model/single-column-template (:id md-doc) (:id ht-doc))
-        test-doc   (test-doc :test-doc1 (:id tpl-doc))]
-    (doseq [doc [md-doc ht-doc tpl-doc test-doc]]
-      (model/save-object! db (:id doc) doc))))
-
-
-(defn create-media-doc
-  [db]
-  (let [md-doc     (model/markdown-module)
-        media-doc  (model/media-module)
-        tpl-doc    (model/single-column-template (:id md-doc) (:id media-doc))
-        test-doc   (test-doc :test-doc1 (:id tpl-doc))]
-    (doseq [doc [md-doc media-doc tpl-doc test-doc]]
-      (model/save-object! db (:id doc) doc))))
-
-

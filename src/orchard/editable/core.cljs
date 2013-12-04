@@ -172,3 +172,19 @@
       (recur (aget el "parentNode") (distinct (conj nodes (aget el "nodeName"))))
       ;; drop '(HTML BODY ...)
       (drop 2 nodes))))
+
+
+(defn selection []
+  (.getSelection js/document))
+
+
+(defn focus-node []
+  (aget (selection) "focusNode"))
+
+
+(defn toolbar-state
+  "Takes a coll of node names which represent the toolbar btn names which should be active or not based on
+  selection node's tree. Returns a coll of the elements present in the current focus."
+  [btns]
+  (let [cur-nodes (find-nodes (focus-node))]
+    ))

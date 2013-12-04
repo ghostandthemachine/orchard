@@ -1,4 +1,4 @@
-(ns orchard.objects.modules.index
+(ns orchard.objects.modules.project-index
   (:refer-clojure :exclude [defonce])
   (:require-macros
     [orchard.macros         :refer [defui defonce]]
@@ -16,33 +16,18 @@
     [crate.binding         :refer (bound subatom)]))
 
 
-(defn module-btn-icon
-  [mode]
-  (if (= mode :present)
-    "icon-pencil module-btn"
-    "icon-ok module-btn"))
-
-
-(defui module-btn
-  [this]
-  [:i {:class (bound (subatom this [:mode]) module-btn-icon)}]
-  :click (fn [e]
-            (object/assoc! this :mode
-              (if (= (:mode @this) :present)
-                :edit
-                :present))))
-
 (defui render-present
-  [docs]
+  [proj docs]
   [:div.module-content.index-module-content
     [:div.row
       [:h3 "Index"]]
     [:div.row
       [:div.span4
        [:ul
-        (for [d docs]
-          [:li
-            [:a {:href (:root d)} (:title d)]])]]
+        (for [doc docs]
+          (let [link (str (:title proj) "/" (:title doc))]
+            [:li
+              [:a {:href link} link]]))]]
       [:div.span4
         [:canvas#tree-canvas {:width 400 :height 400}]]]])
 
@@ -58,45 +43,27 @@
   (dom/$ (str "#module-" (:id @this) " .module-content")))
 
 
-(defonce load-tree? (atom true))
-
 (defn load-index
   [this]
   (go
-    (let [docs (<! (model/all-projects orchard.objects.app/db))]
-      (dom/replace-with ($module this) (render-present docs))
-      (when @load-tree? 
-        (reset! load-tree? false)
-        (tree/draw-tree "tree-canvas")))))
+    (let [docs  (<! (model/all-project-pages orchard.objects.app.db (:project @this)))]
+      (dom/replace-with ($module this) (render-present (:project @this) docs)))))
 
 
-(defn render-module
-  [this mode]
-  (case mode
-    :present (load-index this)
-    :edit (dom/replace-with ($module this) (render-edit this))))
-
-
-(object/object* :index-module
+(object/object* :project-index-module
                 :tags #{:module}
                 :triggers #{:save}
                 :behaviors [:orchard.objects.modules/save-module]
                 :mode :present
-                :init (fn [this record]
-                        (object/merge! this record)
-                        (bound-do (subatom this [:mode]) (partial render-module this))
+                :init (fn [this proj]
+                        (object/assoc! this :project proj)
                         (load-index this)
                         [:div.container
                           [:div.span11.module.index-module {:id (str "module-" (:id @this))}
-                            [:div.module-tray (module-btn this)]
                             [:div.module-content.index-module-content]]]))
 
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click
   (fn [e]
-    (go
-      (let [link (last (clojure.string/split (.-href (.-target e)) #"/"))]
-        (log "link " link)
-        (log "project to load")
-        (orchard.objects.app/show-project orchard.objects.app/db link)))
+    (orchard.objects.app/open-page orchard.objects.app.db (last (clojure.string/split (.-href (.-target e)) #"/")))
     (.preventDefault e)))
