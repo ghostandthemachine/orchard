@@ -1,9 +1,12 @@
 (ns orchard.sidebar
   (:require-macros
+            [cljs.core.async.macros :refer [go]]
             [orchard.macros :refer (defui defgui)])
   (:require [crate.core :as crate]
             [orchard.util.dom :as dom]
-            [orchard.util.log :refer (log log-obj)]))
+            [orchard.model :as model]
+            [orchard.util.log :refer (log log-obj)]
+            [cljs.core.async :refer [chan >! <! put!]]))
 
 
 (defui sidebar-item
@@ -38,9 +41,15 @@
 
 (defui menu
   [elems item-view]
-  [:nav.slide-menu.slide-menu-vertical.slide-menu-right
+  [:nav#project-sidebar.slide-menu.slide-menu-vertical.slide-menu-right
     (for [[title handler] elems]
       (item-view title handler))])
+
+
+(defn update-projects
+  []
+  (go
+    (let [projects (<! (model/all-projects orchard.objects.app/db))])))
 
 
 (defn sidebar-components

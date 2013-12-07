@@ -513,3 +513,7 @@ td.mceIframeContainer.mceFirst.mceLast {
 .new-document-container {
   margin-top: 100px;
 }
+
+.anchor-btn {
+  height: 30px;
+}

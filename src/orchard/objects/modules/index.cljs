@@ -95,8 +95,5 @@
   (fn [e]
     (go
       (let [project-link (last (clojure.string/split (.-href (.-target e)) #"/"))]
-        (log "project-link " project-link)
-        (log "project to load")
-        (log project-link)
         (orchard.objects.app/open-page orchard.objects.app/db project-link)))
     (.preventDefault e)))

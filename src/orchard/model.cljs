@@ -33,6 +33,52 @@
 ;    "Returns a channel of modules for which (pred module) => true"))
 
 
+(defn get-collection
+  [db ids]
+  (go
+    (loop [ids ids objs []]
+      (if (empty? ids)
+        objs
+        (let [doc       (<! (get-object db (first ids)))
+              objs (conj objs doc)]
+          (recur (rest ids) objs))))))
+
+
+(defn get-dependency
+  "Given a db, id, and query type (a single id or collection of id's which is
+  related to the pluralization of the keyword given as the dependant (:document vs :documents).
+
+  this is a railsy holdover until a better solution exists"
+  [db id v]
+  )
+
+(defn get-object-with-dependants
+  [db id & args]
+  (go
+    (let [obj (<! (get-object db id))]
+      (loop [obj obj deps args]
+        (if (empty? deps)
+          obj
+          (let [arg     (first deps)
+                plural? (= (last (name arg)) "s")]
+            (assoc obj arg
+              (if plural?
+                (get-collection db (get obj arg))
+                (get obj arg)))))))))
+
+
+; (let [db orchard.objects.app/db]
+;   (go
+;     (let [project (<! (get-object db "1a2289d2-ac1f-4559-924e-fe2e56721495"))
+;           docs    (:documents project)
+;           documents (<! (get-collection db docs))]
+;       (log-obj documents))))
+
+
+
+; (get-object-with-dependants db "some-id" :documents)
+
+
 (defn load-object
   [db id]
   ; (log "load-object...")
@@ -64,6 +110,31 @@
   (go
     (let [docs (<! (all-wiki-pages db))]
       (sort-by :title docs))))
+
+
+(defn all-projects-by-title
+  [db]
+  (go
+    (let [docs (<! (all-projects db))]
+      (sort-by :title docs))))
+
+
+(defn project-by-title
+  "Takes a db and project title. Returns a seq of projects matching the given title."
+  [db title]
+  (go
+    (let [projects (<! (all-projects db))]
+      (filter #(= (:title %) title) projects))))
+
+
+(defn page-by-title
+  "Takes a db, project-id, and page title. Returns a seq of pages matching the given title."
+  [db project-id title]
+  (go
+    (let [project   (<! (get-object db project-id))
+          pages     (<! (get-collection db (:documents project)))
+          pages     (filter #(= (:title %) title) pages)]
+      pages)))
 
 
 (defn module

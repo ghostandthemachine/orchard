@@ -30,6 +30,44 @@
   (event-chan (dom/$ sel) :click))
 
 
+
+(defn find-nodes
+  [element]
+  (loop [el (aget element "parentNode") nodes []]
+    (if-let [p (aget el "parentNode")]
+      (recur (aget el "parentNode") (distinct (conj nodes (aget el "nodeName"))))
+      ;; drop '(HTML BODY ...)
+      (drop 2 nodes))))
+
+
+(defn selection []
+  (.getSelection js/document))
+
+
+(defn selected-text
+  "While selection returns a selection object, this function just returns the text selected."
+  []
+  (let [sel (selection)
+        range-count (aget sel "rangeCount")]
+    (when range-count
+      (loop [i 0 container (crate/html [:div])]
+        (if (< i range-count)
+          (let [nxt (.cloneContents (.getRangeAt sel i))]
+            (recur (inc i) (dom/append container nxt)))
+          (aget container "innerHTML"))))))
+
+
+(defn focus-node []
+  (aget (selection) "focusNode"))
+
+
+(defn toolbar-state
+  "Takes a coll of node names which represent the toolbar btn names which should be active or not based on
+  selection node's tree. Returns a coll of the elements present in the current focus."
+  [btns]
+  (let [cur-nodes (find-nodes (focus-node))]
+    ))
+
 (defn set-attr
   [el & args]
   (let [args (partition 2 args)]
@@ -107,6 +145,12 @@
   (exec-cmd :format-block (name tag)))
 
 
+(defn create-link
+  "Takes the href to link to."
+  [href]
+  (exec-cmd :create-link href))
+
+
 (defn underline-selection []
   (exec-cmd :underline))
 
@@ -163,28 +207,3 @@
       (.moveToElementText rng el)
       (.collapse rng false)
       (.select rng))))
-
-
-(defn find-nodes
-  [element]
-  (loop [el (aget element "parentNode") nodes []]
-    (if-let [p (aget el "parentNode")]
-      (recur (aget el "parentNode") (distinct (conj nodes (aget el "nodeName"))))
-      ;; drop '(HTML BODY ...)
-      (drop 2 nodes))))
-
-
-(defn selection []
-  (.getSelection js/document))
-
-
-(defn focus-node []
-  (aget (selection) "focusNode"))
-
-
-(defn toolbar-state
-  "Takes a coll of node names which represent the toolbar btn names which should be active or not based on
-  selection node's tree. Returns a coll of the elements present in the current focus."
-  [btns]
-  (let [cur-nodes (find-nodes (focus-node))]
-    ))

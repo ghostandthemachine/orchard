@@ -31,10 +31,6 @@
                                 (when active
                                   (dom/remove (:content @active)))
 
-                                (log "object to load")
-                                (log-obj (:content @obj))
-                                (log-obj @obj)
-
                                 (object/assoc! this
                                   :wiki-page obj
                                   :current-project (or (:project @obj) "No Project"))

@@ -12,6 +12,7 @@
             [orchard.object           :as object]
             [orchard.observe          :as observe]
             [orchard.model            :as model]
+            [dommy.core               :as dommy]
             [crate.binding            :refer (bound subatom)]
             [crate.core               :as crate]))
 
@@ -71,7 +72,8 @@
   (go
     (while true
       (let [in (<! (:input channels))]
-        (log-obj in)))))
+        ; (log-obj in)
+        ))))
 
 
 (def default-opts
@@ -185,3 +187,12 @@
   (go
     (object/create :editor-module
       (<! (editor-doc (:db app))))))
+
+
+
+(dommy/listen! [(dom/$ :body) :.editor-container :a] :click
+  (fn [e]
+    (go
+      (let [page-link (last (clojure.string/split (.-href (.-target e)) #"/"))]
+        (orchard.objects.app/open-page orchard.objects.app/db page-link)))
+    (.preventDefault e)))

@@ -1,8 +1,10 @@
 (ns orchard.editable.toolbar
   (:require-macros
+    [cljs.core.async.macros :refer [go]]
     [orchard.macros :refer [defui]])
   (:require [orchard.util.dom :as dom]
             [orchard.editable.core :as ed]
+            [orchard.model :as model]
             [crate.core :as crate]
             [clojure.string :as string]
             [cljs.core.async :refer (chan >! <! timeout put! get!)]))
@@ -27,6 +29,22 @@
 (defui strike-through-btn []
   [:button {:class "btn btn-default strike-through-btn" :type "button"} [:strike "S"]]
   :click (fn [_] (ed/strike-through-selection)))
+
+
+
+(defui anchor-btn []
+  [:button {:class "btn btn-default anchor-btn" :type "button"}
+    (icon (str "glyphicon-link"))]
+  :click (fn [_]
+            (when (not= (ed/selected-text) "")
+              (go
+                (let [db          orchard.objects.app/db
+                      s           (string/trim (ed/selected-text))
+                     [proj-title page-title]
+                                  (string/split s #"/")
+                      proj-id     (:id (first (<! (model/project-by-title db proj-title))))
+                      page-id     (:id (first (<! (model/page-by-title db proj-id page-title))))]
+                  (ed/create-link page-id))))))
 
 
 ;; format block group
@@ -64,7 +82,8 @@
         (bold-btn)
         (italic-btn)
         (underline-btn)
-        (strike-through-btn)]
+        (strike-through-btn)
+        (anchor-btn)]
       [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
         (blockquote-btn)
         (header-btn 1)
