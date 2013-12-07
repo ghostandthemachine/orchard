@@ -97,11 +97,8 @@
 
 (defn open-page
   [db page-id]
-  (log "page id " page-id)
   (go
     (let [page (<! (model/load-object db page-id))]
-      (log "load page")
-      (log-obj page)
       (object/raise workspace/workspace :show-page page))))
 
 

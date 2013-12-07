@@ -25,9 +25,9 @@
       [:div.span4
        [:ul
         (for [doc docs]
-          (let [link (str (:title proj) "/" (:title doc))]
+          (let [lbl (str (:title proj) "/" (:title doc))]
             [:li
-              [:a {:href link} link]]))]]
+              [:a {:href (:id doc)} lbl]]))]]
       [:div.span4
         [:canvas#tree-canvas {:width 400 :height 400}]]]])
 
@@ -46,8 +46,11 @@
 (defn load-index
   [this]
   (go
-    (let [docs  (<! (model/all-project-pages orchard.objects.app.db (:project @this)))]
-      (dom/replace-with ($module this) (render-present (:project @this) docs)))))
+    (let [proj  (<! (model/get-object orchard.objects.app/db (:project @this)))
+          docs* (atom [])]
+      (doseq [id (:documents proj)]
+        (swap! docs* conj (<! (model/get-object orchard.objects.app/db id))))
+      (dom/replace-with ($module this) (render-present proj @docs*)))))
 
 
 (object/object* :project-index-module
@@ -55,12 +58,12 @@
                 :triggers #{:save}
                 :behaviors [:orchard.objects.modules/save-module]
                 :mode :present
-                :init (fn [this proj]
-                        (object/assoc! this :project proj)
+                :init (fn [this record]
+                        (object/merge! this record)
                         (load-index this)
                         [:div.container
                           [:div.span11.module.index-module {:id (str "module-" (:id @this))}
-                            [:div.module-content.index-module-content]]]))
+                            [:div.module-content.project-index-module-content]]]))
 
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click

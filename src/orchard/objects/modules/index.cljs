@@ -88,15 +88,15 @@
                         (load-index this)
                         [:div.container
                           [:div.span11.module.index-module {:id (str "module-" (:id @this))}
-                            [:div.module-tray (module-btn this)]
                             [:div.module-content.index-module-content]]]))
 
 
 (dommy/listen! [(dom/$ :body) :.index-module-content :a] :click
   (fn [e]
     (go
-      (let [link (last (clojure.string/split (.-href (.-target e)) #"/"))]
-        (log "link " link)
+      (let [project-link (last (clojure.string/split (.-href (.-target e)) #"/"))]
+        (log "project-link " project-link)
         (log "project to load")
-        (orchard.objects.app/show-project orchard.objects.app/db link)))
+        (log project-link)
+        (orchard.objects.app/open-page orchard.objects.app/db project-link)))
     (.preventDefault e)))

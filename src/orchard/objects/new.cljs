@@ -16,20 +16,11 @@
     [orchard.util.dom :as dom]))
 
 
-(defn create-new-document
-  [db {:keys [title project-id] :as data}]
-  (log "create-new-document")
-  (log-obj data)
-  (let [editor    (editor/editor-doc db)
-        tpl-doc   (single-column/single-column-template-doc db editor)
-        wiki-page (wiki-page/wiki-page db {:title title :template tpl-doc :project project-id})]
-    (go
-      (let [proj      (<! (model/get-object orchard.objects.app/db project-id))
-            ;; add the new wiki page to the projects document vector
-            proj      (update-in proj [:documents]
-                    (fn [docs]
-                      (conj docs (:id wiki-page))))]
-        (model/save-object! db (:id proj) proj)))
+(defn create-new-wiki-page
+  [db {:keys [title] :as data}]
+  (let [editor    (model/editor-module)
+        tpl-doc   (model/single-column-template (:id editor))
+        wiki-page (model/wiki-page {:title title :template (:id tpl-doc)})]
     (doseq [obj [editor tpl-doc wiki-page]]
       (model/save-object! db (:id obj) obj))
     wiki-page))
@@ -40,10 +31,7 @@
   [:select#project-titles.form-control
     [:optgroup  
       (for [p projects]
-        [:option {:value (:id p)} (:title p)])
-      [:option {:disabled "disabled"} "---------------"]]
-    [:optgroup
-      [:option {:value "new-project"} "New Project..."]]])
+        [:option {:value (:id p)} (:title p)])]])
 
 
 (defn project-title-input
@@ -56,13 +44,17 @@
   [:button#create-doc-btn.btn.btn-default "Create Document"]
   :click (fn [e]
            (.preventDefault e)
-           (let [$title-input   (dom/$ :#new-document-title)
-                 title          (.-value $title-input)
-                 $project-input (dom/$ :#project-titles)
-                 project-id     (.-value $project-input)
-                 $editor-input  (.getElementById js/document "editor-check")
-                 new-page       (create-new-document orchard.objects.app.db {:title title
-                                                                             :project project-id})])))
+           (go
+             (let [$title-input   (dom/$ :#new-document-title)
+                   title          (.-value $title-input)
+                   $project-input (dom/$ :#project-titles)
+                   project-id     (.-value $project-input)
+                   $editor-input  (.getElementById js/document "editor-check")
+                   new-page       (create-new-wiki-page orchard.objects.app/db {:title title})]
+              ;; associate project and new page
+              (model/add-document-to-project orchard.objects.app/db project-id (:id new-page))
+              ;; show new page
+              (orchard.objects.app/open-page orchard.objects.app/db (:id new-page))))))
 
 
 (defui create-project-button
@@ -76,6 +68,7 @@
                 (let [new-project (model/create-project orchard.objects.app/db {:title project-title})
                       projects    (<! (model/all-projects orchard.objects.app/db))]
                   (dom/replace-with (dom/$ :#new-project-title) (crate/html (project-title-input)))
+                  ;; update projects list
                   (dom/replace-with (dom/$ :#project-titles) (crate/html (project-select projects)))
                   ;; set select value to new project
                   (aset (dom/$ :#project-titles) "value" (:id new-project)))))))

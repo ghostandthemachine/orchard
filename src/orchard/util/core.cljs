@@ -428,6 +428,10 @@
   [coll k]
   (not (nil? (some #{k} coll))))
 
+(defn has-key?
+  [m k]
+  (has? (keys m) k))
+
 
 (defn node->tag
   [node]

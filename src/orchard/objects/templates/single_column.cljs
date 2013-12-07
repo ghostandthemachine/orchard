@@ -96,8 +96,10 @@
 (defn single-column-template-doc
   [db & modules]
   (let [id (util/uuid)
-        mod-ids (map :id modules)]
-    (model/save-object! db id
-      {:type :single-column-template
-       :modules mod-ids
-       :id id})))
+        mod-ids (map :id modules)
+        template {:type :single-column-template
+                  :modules mod-ids
+                  :id id}]
+    (log "create single-column-template")
+    (log-obj template)
+    (model/save-object! db id template)))

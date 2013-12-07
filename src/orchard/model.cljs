@@ -107,10 +107,31 @@
         project   (project  {:title title :root (:id page) :documents []})
         index     (assoc index :project (:id project))]
     (doseq [obj [index tpl page project]]
-      (log "save new project elements")
-      (log-obj obj)
       (save-object! db (:id obj) obj))
     project))
+
+
+(defn add-document-to-project
+  "Adds a document to a project. Takes the db, project-id, and document-id."
+  [db project-id document-id]
+  (go
+    (let [proj  (<! (get-object db project-id))
+          doc   (<! (get-object db document-id))]
+      ;; both must exist to make update
+      (if (and proj doc)
+        (let [proj  (<!
+                      (save-object! db project-id
+                        (update-in proj [:documents]
+                          (fn [docs]
+                            (conj docs document-id)))))]
+          ;; associate the project with the document
+          (<!
+            (save-object! db document-id
+              (assoc doc :project project-id)))
+          ;; updated project
+          proj)
+        ;; failed, rollback/return original
+        proj))))
 
 
 (defn html-module
@@ -131,3 +152,8 @@
    (merge doc (module :media-page))))
 
 
+
+(defn editor-module
+  []
+  (assoc (module :editor-module)
+          :text ""))

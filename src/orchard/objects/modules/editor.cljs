@@ -16,15 +16,6 @@
             [crate.core               :as crate]))
 
 
-(defn editor-doc
-  [db]
-  (let [id (uuid)]
-    (model/save-object! db id
-      {:type :editor-module
-      :text ""
-      :id   id})))
-
-
 (defn sel [this] (str "editor-" (:id @this)))
 
 
@@ -180,6 +171,14 @@
                                :id (str "module-" (:id @this))}
                           (editor-container this)]))
 
+
+(defn editor-doc
+  [db]
+  (let [id (uuid)]
+    (model/save-object! db id
+      {:type :editor-module
+      :text ""
+      :id   id})))
 
 (defn create-module
   [app]
