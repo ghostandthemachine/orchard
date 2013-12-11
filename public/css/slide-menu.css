@@ -3,8 +3,15 @@
 /* General styles for all menus */
  
 .slide-menu {
-    background: #47a3da;
     position: fixed;
+    color: #000;
+    background: rgba(0, 0, 0, 0.75);
+    font-size: 11px;
+}
+
+.sidebar-icon {
+    margin-right: 20px;
+    opacity: 0.9;
 }
  
 .slide-menu h3 {
@@ -15,26 +22,38 @@
     font-weight: 300;
     background: #0d77b6;
 }
- 
-.slide-menu a {
-    display: block;
-    color: #fff;
+
+.slide-menu label {
+    width: 100%;
+}
+
+li.tree-child {
+    margin-left: 35px;
+}
+
+.slide-menu span.sidebar-element {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.75);
     font-size: 1.1em;
     font-weight: 300;
+    width: 100%;
+    text-align: left;
 }
  
-.slide-menu a:hover {
-    background: #258ecd;
+.slide-menu span.sidebar-element:hover {
+    background: rgba(200, 200, 200, 0.75);
+    color: rgba(100, 100, 100, 1);
 }
  
-.slide-menu a:active {
-    background: #afdefa;
+.slide-menu span.sidebar-element:active {
+    background: #DDD;
     color: #47a3da;
 }
  
 
 .slide-menu-btn {
-    background: #47a3da;
+    /*background: #47a3da;*/
+    background: rgba(0, 0, 0, 0.5);
     position: fixed;
 }
 
@@ -42,11 +61,11 @@
 
 .slide-menu-btn-vertical {
     width: 25px;
-    height: 30px;
-    top: 10px;
-    padding-top: 6px;
+    height: 25px;
+    top: 3px;
+    padding-top: 4px;
     padding-left: 7px;
-    z-index: 999999999;
+    z-index: 9999;
 }
 
 .slide-menu-btn-right {
@@ -66,19 +85,21 @@
     width: 240px;
     height: 100%;
     top: 0;
-    z-index: 999999999;
+    z-index: 9999;
+    overflow-y: scroll;
+    padding-bottom: 50px;
 }
  
-.slide-menu-vertical a {
-    border-bottom: 1px solid #258ecd;
-    padding: 1em;
+.slide-menu-vertical span.sidebar-element {
+    /*border-bottom: 1px solid #555;*/
+    border-left: 1px solid #555;
 }
  
 .slide-menu-horizontal {
     width: 100%;
     height: 150px;
     left: 0;
-    z-index: 999999999;
+    z-index: 9999;
     overflow: hidden;
 }
  
@@ -206,3 +227,7 @@
 .white, .white a {
   color: #fff;
 }
+
+/*.tree-item {
+    height: 20px;
+}*/
