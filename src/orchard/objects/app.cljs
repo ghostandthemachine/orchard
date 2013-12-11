@@ -99,7 +99,11 @@
   [db page-id]
   (go
     (let [page (<! (model/load-object db page-id))]
-      (object/raise workspace/workspace :show-page page))))
+      (object/raise workspace/workspace :show-page page)
+      ; (model/update-app-data db (fn [app] (merge app {:last-page page-id})))
+      (go
+        (let [doc  (<! (model/get-object-with-dependants db page-id :project))]
+          (object/assoc! workspace/workspace :current-project (get-in doc [:project :id])))))))
 
 
 (defn show-project
@@ -138,7 +142,7 @@
   :reaction (fn [this db]
               ;(setup-tray)
               (nw/set-menu-bar! (main-menu))
-              ; (restore-session)
+              (restore-session)
               (.on win "close"
                    (fn []
                      (save-session)
@@ -150,7 +154,16 @@
               (aset js/window "onresize" #(dispatch/fire :resize-window %))
               (comment .tooltip (js/$ ".sidebar-tab-item"))
               (nw/show)
-              (show-project db :home)))
+              ;; load last page open for now
+              (show-project db :home)
+              ; (go
+              ;   (log "load last page on start")
+              ;   (let [app-data      (<! (model/get-app-data db))
+              ;         last-page-id  (:last-page app-data)]
+              ;     (log "app data found")
+              ;     (log-obj app-data)
+              ;     (open-page db last-page-id)))
+              ))
 
 
 (object/behavior* ::quit
@@ -195,12 +208,23 @@
     6   orchard.objects.nav/toggle
     ;; go home
     8   (partial orchard.objects.app/open-page :home)
-    ;; refesh
+    ;; refesh ctrl-r
     18  (partial object/raise orchard.objects.app/app :refresh)
-    ;; create new doc
+    ;; create new doc ctrl-n
     14  (partial nav/start-create-document nav/workspace-nav)
-    ;; show dev-tools
-    4   (partial object/raise orchard.objects.app/app :show-dev-tools)})
+    ;; show dev-tools ctrl-d
+    4   (partial object/raise orchard.objects.app/app :show-dev-tools)
+    ;; toggle project navigator ctrl-m
+    13  (fn [_]
+          (go
+            (if (sidebar/open?)
+              (do
+                (sidebar/toggle-menu)
+                (sidebar/toggle-btn))
+              (do
+                (<! (sidebar/update-sidebar))
+                (sidebar/toggle-menu)
+                (sidebar/toggle-btn)))))})
 
 
 (def ctrl-shift-events

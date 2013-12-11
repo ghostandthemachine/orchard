@@ -50,9 +50,11 @@
                    $project-input (dom/$ :#project-titles)
                    project-id     (.-value $project-input)
                    $editor-input  (.getElementById js/document "editor-check")
-                   new-page       (create-new-wiki-page orchard.objects.app/db {:title title})]
+                   new-page       (create-new-wiki-page orchard.objects.app/db {:title title :project project-id})]
               ;; associate project and new page
               (model/add-document-to-project orchard.objects.app/db project-id (:id new-page))
+              ;; update nav
+              (orchard.sidebar/update-sidebar)
               ;; show new page
               (orchard.objects.app/open-page orchard.objects.app/db (:id new-page))))))
 
@@ -70,6 +72,8 @@
                   (dom/replace-with (dom/$ :#new-project-title) (crate/html (project-title-input)))
                   ;; update projects list
                   (dom/replace-with (dom/$ :#project-titles) (crate/html (project-select projects)))
+                  ;; update nav
+                  (orchard.sidebar/update-sidebar)  
                   ;; set select value to new project
                   (aset (dom/$ :#project-titles) "value" (:id new-project)))))))
 
@@ -77,21 +81,20 @@
 ;TODO: once finer grain pouch queries are working the templates should be loaded not hard coded
 (defui new-document-form
   [this projects]
-  [:div.col-md-6
-    [:form.new-document-form
-      [:div.form-group
-        [:label {:for "project-titles"} "Select Project"]
-        (project-select projects)]
-      [:div.form-group
-        [:label {:for "new-project-title"} "Project Title"]
-        (project-title-input)]
-      (create-project-button)
-      [:br]
-      [:br]
-      [:div.form-group
-        [:label {:for "new-document-title"} "Document Title"]
-        [:input#new-document-title.form-control {:type "text" :placeholder "New Document"}]]
-      (create-button)]])
+  [:form.new-document-form
+    [:div.form-group
+      [:label {:for "project-titles"} "Select Project"]
+      (project-select projects)]
+    [:div.form-group
+      [:label {:for "new-project-title"} "Project Title"]
+      (project-title-input)]
+    (create-project-button)
+    [:br]
+    [:br]
+    [:div.form-group
+      [:label {:for "new-document-title"} "Document Title"]
+      [:input#new-document-title.form-control {:type "text" :placeholder "New Document"}]]
+    (create-button)])
 
 
 (object/object* :new-document
@@ -99,13 +102,13 @@
   :behaviors []
   :init (fn [this projects]
           [:div.container.new-document-container
-            [:div.span9.offset3
-              [:div.row
-                [:h3 "New Wiki Document"]
-                [:br]
-                [:br]]
-              [:div.row
-                (new-document-form this projects)]]]))
+            [:div.row
+              [:div.col-xs-12.col-md-4
+                [:div.panel.panel-default
+                  [:div.panel-heading
+                    [:h3.panel-title "Create"]]
+                  [:div.panel-body
+                    (new-document-form this projects)]]]]]))
 
 
 (defn load-new-doc

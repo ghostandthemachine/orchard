@@ -1,12 +1,15 @@
 (ns orchard.objects.logger
   (:require-macros 
-    [orchard.macros :refer [defui defgui]])
+    [orchard.macros :refer [defui defgui]]
+    [cljs.core.async.macros :refer [go]])
   (:require [orchard.object :as object]
             [orchard.util.log :refer (log log-obj)]
             [orchard.util.dom :as dom]
             [orchard.util.core :as util]
             [orchard.dispatch :as dispatch]
-            [crate.core :as crate]))
+            [crate.core :as crate]
+            [cljs.core.async :refer [chan >! <! put!]]))
+
 
 (def ready* (atom false))
 (defn ready? [] @ready*)
@@ -79,11 +82,11 @@
    [:div.tabs-container
     [:ul#logger-tabs.nav.nav-tabs
      (tab "#log" "Log" :active)
-     (tab "#couchdb" "Couchdb")]]
+     (tab "#model" "model")]]
    [:div.tab-content.logger-content-panes
     [:div#log.tab-pane.log-pane.active
      [:ul.log-list]]
-    [:div#couchdb.tab-pane.log-pane
+    [:div#model.tab-pane.log-pane
      [:ul.log-list]]]])
 
 
@@ -122,6 +125,12 @@
 (dispatch/react-to #{:log-message}
                    (fn [ev & [data]]
                      (post :log data)))
+
+(go
+  (while true
+    (let [msg (<! orchard.model/msg-chan)]
+      (post :model msg))))
+
 
 (def visible* (atom false))
 

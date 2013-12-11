@@ -17,25 +17,50 @@
   (object/->content doc))
 
 
+(defn push-history
+  [this id]
+  (object/update! this [:history]
+    (fn [history]
+      (let [idx   (:index history)
+            stack (:stack history)]
+        {:index (inc idx)
+         :stack (conj stack id)}))))
+
+
+(defn take-from
+  [coll x y]
+  (drop x (take (+ x y) coll)))
+
+
+(defn trim-history-to-end
+  [this]
+  (object/update! this [:history]
+    (fn [history]
+      (let [idx   (:index history)
+            stack (:stack history)]
+        {:index idx
+         :stack (drop-last (- (count stack) idx 1) stack)}))))
+
+
+
 ; TODO:
 ; Change this to a more generic show-content, which just takes a UI element
 ; and loads it onto the main page.  (The ready handler(s) for the enclosed
 ; content should handle any initialization necessary.)
-
 (object/behavior* ::show-page
                   :triggers #{:show-page}
                   :reaction (fn [this obj]
                               (dispatch/fire :page-loading obj)
                               (let [workspace$ (dom/$ "#workspace")
                                     active     (:wiki-page @this)]
+                                (log "show-page")
+                                (log-obj this)
+                                (log-obj obj)
                                 (when active
                                   (dom/remove (:content @active)))
-
                                 (object/assoc! this
-                                  :wiki-page obj
-                                  :current-project (or (:project @obj) "No Project"))
-
-                                (object/raise obj :ready)
+                                  :wiki-page obj)
+                                ;; update history
                                 (dispatch/fire :page-loaded obj))))
 
 
@@ -65,12 +90,19 @@
                 :width 0
                 :transients '()
                 :max-width default-width
+                :history {:stack []
+                          :index 0}
                 :init (fn [this]
                         [:div#workspace
                           (bound (subatom this :wiki-page) render-wiki-page)]))
 
 (def workspace (object/create ::workspace))
 (dom/replace-with (dom/$ :#workspace) (:content @workspace))
+
+
+(defn current-project
+  []
+  (:current-project @workspace))
 
 
 ; (defn channel-type-supported?

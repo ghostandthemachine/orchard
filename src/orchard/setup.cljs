@@ -18,6 +18,7 @@
         project   (assoc project :id :home)]
     (doseq [obj [index html tpl page project]]
       (model/save-object! db (:id obj) obj))
+    ; (model/update-app-data db {:last-page (:id page)})
     project))
 
 

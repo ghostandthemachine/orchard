@@ -82,6 +82,9 @@
   (all-objects [this]
     (go (map second (local-item-seq))))
 
+  (delete-object [this id]
+    (go (local-remove (app-id id))))
+
   ObjectIndex
   (objects-of-type [this obj-type]
     (go (map second (filter (fn [[k v]] (= (name obj-type) (:type v))) (local-item-seq))))))

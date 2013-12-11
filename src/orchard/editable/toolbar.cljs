@@ -3,6 +3,7 @@
     [cljs.core.async.macros :refer [go]]
     [orchard.macros :refer [defui]])
   (:require [orchard.util.dom :as dom]
+            [orchard.util.log :refer (log log-obj)]  
             [orchard.editable.core :as ed]
             [orchard.model :as model]
             [crate.core :as crate]
@@ -40,10 +41,12 @@
               (go
                 (let [db          orchard.objects.app/db
                       s           (string/trim (ed/selected-text))
+                      ; _ (log s)
                      [proj-title page-title]
                                   (string/split s #"/")
                       proj-id     (:id (first (<! (model/project-by-title db proj-title))))
                       page-id     (:id (first (<! (model/page-by-title db proj-id page-title))))]
+                  (log page-id)
                   (ed/create-link page-id))))))
 
 
@@ -74,26 +77,31 @@
   :click (fn [_] (ed/justify-selection loc)))
 
 
-(defn view
+(defui view
   [& opts]
   (let [opts (apply hash-map (flatten (partition 2 opts)))]
-    [:div.editable-toolbar
-      [:div {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
-        (bold-btn)
-        (italic-btn)
-        (underline-btn)
-        (strike-through-btn)
-        (anchor-btn)]
-      [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
-        (blockquote-btn)
-        (header-btn 1)
-        (header-btn 2)
-        (header-btn 3)
-        (header-btn 4)]
-      [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
-        (ordered-list-btn)
-        (unordered-list-btn)]
-      [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
-        (justify-btn :left)
-        (justify-btn :center)
-        (justify-btn :right)]]))
+    [:div.editable-toolbar-container
+      [:div.editable-toolbar
+        [:div {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
+          (bold-btn)
+          (italic-btn)
+          (underline-btn)
+          (strike-through-btn)
+          (anchor-btn)]
+        [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
+          (blockquote-btn)
+          (header-btn 1)
+          (header-btn 2)
+          (header-btn 3)
+          (header-btn 4)]
+        [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
+          (ordered-list-btn)
+          (unordered-list-btn)]
+        [:div  {:class "btn-group btn-group-sm editable-toolbar-subgroup"}
+          (justify-btn :left)
+          (justify-btn :center)
+          (justify-btn :right)]]])
+  ; :mouseout   (fn [_]
+  ;               (log "mouseout")
+  ;               (.hide (js/$ ".editable-toolbar-container .editable-toolbar") 500))
+  )

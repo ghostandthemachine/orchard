@@ -22,7 +22,7 @@
 
 (defn default-editor-element
   [opts]
-  [:div.editable])
+  [:div.editable {:spellcheck "true"}])
 
 
 (def icon [:span.btn.btn-primary.editor-icon "editor"])
@@ -85,7 +85,7 @@
   (let [opts              (merge default-opts (apply hash-map (flatten (partition 2 opts))))
 
         element           (crate/html (default-editor-element opts))
-        toolbar           (crate/html (toolbar/view))
+        toolbar           (toolbar/view)
 
         mouse-click-chan  (event-chan element :click)
         mouse-down-chan   (event-chan element :mousedown)
@@ -193,6 +193,11 @@
 (dommy/listen! [(dom/$ :body) :.editor-container :a] :click
   (fn [e]
     (go
-      (let [page-link (last (clojure.string/split (.-href (.-target e)) #"/"))]
-        (orchard.objects.app/open-page orchard.objects.app/db page-link)))
+      (let [page-link (last (clojure.string/split (.-href (.-target e)) #"/"))
+            ; exists? (<! (model/exists? page-link))
+            ]
+        (orchard.objects.app/open-page orchard.objects.app/db page-link)
+        ; (when exists?
+        ;   (orchard.objects.app/open-page orchard.objects.app/db page-link))
+        ))
     (.preventDefault e)))

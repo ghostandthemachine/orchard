@@ -16,20 +16,74 @@
     [crate.binding         :refer (bound subatom)]))
 
 
+
+
+(defn icon [n]
+  [:span {:class (str "glyphicon " n)}])
+
+
+(defn create-new-wiki-page
+  [db {:keys [title] :as data}]
+  (let [editor    (model/editor-module)
+        tpl-doc   (model/single-column-template (:id editor))
+        wiki-page (model/wiki-page {:title title :template (:id tpl-doc)})]
+    (doseq [obj [editor tpl-doc wiki-page]]
+      (model/save-object! db (:id obj) obj))
+    wiki-page))
+
+
+
+(defui delete-page-btn
+  [page]
+  [:td.icon-cell (icon "glyphicon-trash")]
+  :click  (fn [e]
+            (model/delete-page orchard.objects.app/db (:id page))
+            (orchard.objects.app/show-project orchard.objects.app/db (orchard.objects.workspace/current-project))))
+
+
+(defui create-document-btn
+  []
+  [:span.input-group-addon "new"]
+  :click (fn [e]
+           (go
+             (let [$title-input   (dom/$ :#new-document-title)
+                   title          (.-value $title-input)
+                   project-id     (orchard.objects.workspace/current-project)
+                   $editor-input  (.getElementById js/document "editor-check")
+                   new-page       (create-new-wiki-page orchard.objects.app/db {:title title :project project-id})]
+              ;; associate project and new page
+              (model/add-document-to-project orchard.objects.app/db project-id (:id new-page))
+              ;; update nav
+              (orchard.sidebar/update-sidebar)
+              ;; show new page
+              (orchard.objects.app/open-page orchard.objects.app/db (:id new-page))))
+            (.preventDefault e)))
+
+
+
 (defui render-present
-  [proj docs]
+  [proj]
   [:div.module-content.index-module-content
     [:div.row
-      [:h3 "Index"]]
+      [:h3
+        (icon "glyphicon-folder-open")
+        "     "
+        (:title proj)]]
     [:div.row
-      [:div.span4
-       [:ul
-        (for [doc docs]
-          (let [lbl (str (:title proj) "/" (:title doc))]
-            [:li
-              [:a {:href (:id doc)} lbl]]))]]
-      [:div.span4
-        [:canvas#tree-canvas {:width 400 :height 400}]]]])
+      [:table.table.table-striped
+        [:tbody
+          (for [doc (:documents proj)]
+            (let [_ (log (:title doc))
+                  lbl (:title doc)]
+              [:tr
+                [:td.icon-cell (icon "glyphicon-file")]
+                [:td
+                  [:a {:href (:id doc)} lbl]]
+                (delete-page-btn doc)]))]]]
+    [:div.row
+      [:div.input-group
+        (create-document-btn)
+        [:input#new-document-title.form-control {:type "text" :placeholder "document name..."}]]]])
 
 
 (defui render-edit
@@ -46,11 +100,12 @@
 (defn load-index
   [this]
   (go
-    (let [proj  (<! (model/get-object orchard.objects.app/db (:project @this)))
-          docs* (atom [])]
-      (doseq [id (:documents proj)]
-        (swap! docs* conj (<! (model/get-object orchard.objects.app/db id))))
-      (dom/replace-with ($module this) (render-present proj @docs*)))))
+    (let [db orchard.objects.app/db
+          id (:project @this)
+          proj  (<! (model/get-object-with-dependants db id :documents))]
+      (log "load-index id: " id)
+      (log-obj (:documents proj))
+      (dom/replace-with ($module this) (render-present proj)))))
 
 
 (object/object* :project-index-module
